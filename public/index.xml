@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ghostwriter example</title>
+    <link>/</link>
+    <description>Recent content on Ghostwriter example</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>My Name</copyright>
+    <lastBuildDate>Fri, 03 Apr 2015 02:13:50 +0000</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About</title>
+      <link>/page/about/</link>
+      <pubDate>Fri, 03 Apr 2015 02:13:50 +0000</pubDate>
+      
+      <guid>/page/about/</guid>
+      <description>About My name is Josh Erickson and I live in Eureka, MT. I&amp;rsquo;m a hydrologist for the USDA Forest Service and am married to my lovely wife Mandy who is super beauitiful, kind, caring, and patient. I decided to write a blog so that discussions may form and also to provide some of the content I&amp;rsquo;m using on a day-to-day basis with R. Hopefully you enjoy.</description>
+    </item>
+    
+    <item>
+      <title>Contact</title>
+      <link>/page/contact/</link>
+      <pubDate>Fri, 03 Apr 2015 02:13:50 +0000</pubDate>
+      
+      <guid>/page/contact/</guid>
+      <description>Contact Please leave comments or contact me below. Thanks.
+joshua.l.erickson@usda.gov</description>
+    </item>
+    
+    <item>
+      <title>Stream Occurence</title>
+      <link>/project/walkinglongformat/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project/walkinglongformat/</guid>
+      <description>IntroductionAccessing DataMethodsSummaryVariablesPre-processingSplitting DataGuidanceProportionBalanced?Cause and effectPrevalanceData LeakageStructuresEvaluation TechniquesModelingModel SelectionRFE Random ForestRFE GBMFFS Random ForestFFS GBMQuick IntroRFE downsizingRFE tuning Random ForestRFE tuning GBMRFE tuned partial dependency plotsFFS tuned Random ForestFFS tuning GBMModel AssessmentDiscussion/ResultsReferencesIntroductionIntroduction</description>
+    </item>
+    
+  </channel>
+</rss>
