@@ -57,7 +57,7 @@ img { display: block; margin: 40px 0; width: auto; max-width: 100%; }
 img[src$="align-center"] { margin: auto; }
 img[src$="align-left"] { float: left; margin-right: 40px; }
 img[src$="align-right"] { float: right; margin-left: 40px; }
-pre { border: 1px solid #dddbcc; border-radius: 3px; margin: 0 0 20px; overflow-x: auto; padding: 10px; font-size: 16px; }
+pre { border: 1px solid #dddbcc; border-radius: 3px; margin: 0 0 20px; overflow-x: auto; padding: 10px; font-size: 16px;max-height: 300px;overflow-y: auto; }
 pre code { padding: 0; }
 code { padding: 2px 4px; font-size: 90%; border-radius: 4px; background-color: #f1f0ea; }
 hr { border: none; border-bottom: 1px dotted #303030; margin: 45px 0; }
