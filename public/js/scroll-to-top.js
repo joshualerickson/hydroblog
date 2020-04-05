@@ -1,6 +1,5 @@
 // Set a variable for our button element.
 const scrollToTopButton = document.getElementById('js-top');
-
 // Let's set up a function that shows our scroll-to-top button if we scroll beyond the height of the initial window.
 const scrollFunc = () => {
   // Get the current scroll value
@@ -35,4 +34,4 @@ const scrollToTop = () => {
 scrollToTopButton.onclick = function(e) {
   e.preventDefault();
   scrollToTop();
-};
+}
