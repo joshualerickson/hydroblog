@@ -5022,6 +5022,7 @@ grid.arrange(g1,g0,g2,g00,g3,g5,g4, g6,g111,g222,g000, ncol = 2)
 
 ```{r, eval=FALSE}
 #we'll use this tunegrid for all gbm models
+
 gbmGrid <- expand.grid(interaction.depth = c(1,2,4,6,8), n.trees = c(500,1000,1500,2000,3000), shrinkage = c(0.001,.05,0.1,0.2,0.5), n.minobsinnode = c(10,15,25))
 #get variable names from ffs
 
@@ -5041,7 +5042,8 @@ rec_tuneKgffsprev <-   recipe(stream ~ ., data = trainprevtune) %>%
   update_role(-accum30,-cad30RS,-twi30agg,-deficitRS,-stream, new_role = "bring along") 
 
 rec_tuneKgffsprevDS <-   recipe(stream ~ ., data = trainprevtune) %>% 
- update_role(-accum30,-cad30RS,-twi30agg,-deficitRS,-stream, new_role = "bring along")
+ update_role(-accum30,-cad30RS,-twi30agg,-deficitRS,-stream, new_role = "bring along") %>% 
+step_downsample(stream)
   
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
@@ -5137,6 +5139,335 @@ g000 <- ggplot(met, aes(x = prob_threshold, y = Data, color = Resampled)) +
 grid.arrange(g1,g0,g2,g00,g3,g5,g4, g6,g111,g222,g000, ncol = 2)
 
 ```
+
+#### FFS tuned partial dependency plots
+
+Now that we've tuned both models (rf and gbm) we can start to look at some of the variable dependency plots. This will give us an idea of how the variables are reacting to the response and where the model seems to find it important. What will be interesting is how each structure (12th,14th,blockCV,Kmeans) reacts and also the between balanced and prevalence. We'll basically just plot all the pdp's by model type and structure type and variable. 
+
+
+*Look at accum30 for random forest*
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+library(vip)
+library(randomForest)
+
+t1 <- partial(ffs12tune, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC Random Forest Balanced")
+t2 <- partial(ffs12tuneprev, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC Random Forest Prevalence")
+t3 <- partial(ffsMedtune, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="RFE BlockCV Medium Random Forest Balanced")
+t4 <- partial(ffsMedtuneprev, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium Random Forest Prevalence")
+t5 <- partial(ffs14tune, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="RFE 14th HUC Random Forest Balanced")
+t6 <- partial(ffs14tuneprev, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC Random Forest Prevalence")
+t7 <- partial(ffsKtune, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="RFE Kmeans Random Forest Balanced")
+t8 <- partial(ffsKtuneprev, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS Kmeans Random Forest Prevalence")
+
+```
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(t1, t3, t5, t7, 
+             t2,t4,t6,t8,ncol = 4)  
+
+```
+*Look at accum30 for gbm*
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+library(vip)
+library(gbm)
+
+t9 <- partial(ffs12gtune, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC GBM Balanced")
+t10 <- partial(ffs12gtuneprev, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC GBM Prevalence")
+t11 <- partial(ffsMedgtune, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium GBM Balanced")
+t12 <- partial(ffsMedgtuneprev, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium GBM Prevalence")
+t13 <- partial(ffs14gtune, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC GBM Balanced")
+t14 <- partial(ffs14gtuneprev, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC GBM Prevalence")
+t15 <- partial(ffsKgtune, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS Kmeans GBM Balanced")
+t16 <- partial(ffsKgtuneprev, pred.var = "accum30", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS Kmeans GBM Prevalence")
+
+```
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(t9, t11, t13, t15, 
+             t10,t12,t14,t16,ncol = 4)  
+
+```
+
+
+*Look at nppmmid30agg for Random Forest*
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+library(vip)
+
+t17 <- partial(ffs12tune, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC Random Forest Balanced")
+t18 <- partial(ffs12tuneprev, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC Random Forest Prevalence")
+t19 <- partial(ffsMedtune, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium Random Forest Balanced")
+t20 <- partial(ffsMedtuneprev, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium Random Forest Prevalence")
+t21 <- partial(ffs14tune, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC Random Forest Balanced")
+t22 <- partial(ffs14tuneprev, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC Random Forest Prevalence")
+t23 <- partial(ffsKtune, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS Kmeans Random Forest Balanced")
+t24 <- partial(ffsKtuneprev, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS Kmeans Random Forest Prevalence")
+
+```
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(t17, t19, t21, t23, 
+             t18,t20,t22,t24,ncol = 4)  
+
+```
+
+
+*Look at nppmmid30agg for GBM*
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+library(vip)
+
+t25 <- partial(ffs12gtune, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC GBM Balanced")
+t26 <- partial(ffs12gtuneprev, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC GBM Prevalence")
+t27 <- partial(ffsMedgtune, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium GBM Balanced")
+t28 <- partial(ffsMedgtuneprev, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium GBM Prevalence")
+t29 <- partial(ffs14gtune, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC GBM Balanced")
+t30 <- partial(ffs14gtuneprev, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC GBM Prevalence")
+t31 <- partial(ffsKgtune, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS Kmeans GBM Balanced")
+t32 <- partial(ffsKgtuneprev, pred.var = "nppmmid30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS Kmeans GBM Prevalence")
+```
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(t25, t27, t29, t31, 
+             t26,t28,t30,t32,ncol = 4)  
+
+```
+
+*TPI for GBM*
+
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+library(vip)
+t41 <- partial(ffs12gtune, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC GBM Balanced")
+t42 <- partial(ffs12gtuneprev, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC GBM Prevalence")
+t43 <- partial(ffsMedgtune, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium GBM Balanced")
+t44 <- partial(ffsMedgtuneprev, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium GBM Prevalence")
+t45 <- partial(ffs14gtune, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC GBM Balanced")
+t46 <- partial(ffs14gtuneprev, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC GBM Prevalence")
+t47 <- partial(ffsKgtune, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS Kmeans GBM Balanced")
+t48 <- partial(ffsKgtuneprev, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS Kmeans GBM Prevalence")
+
+```
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(r41, r43, r45, r47, 
+             r42,r44,r46,r48,ncol = 4)  
+
+```
+
+*Look at tpi30agg for Random Forest*
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+library(vip)
+oneR1
+e33 <- partial(ffs12tune, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC Random Forest Balanced")
+e34 <- partial(ffs12tuneprev, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC Random Forest Prevalence")
+e35 <- partial(ffsMedtune, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium Random Forest Balanced")
+e36 <- partial(ffsMedtuneprev, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium Random Forest Prevalence")
+e37 <- partial(ffs14tune, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC Random Forest Balanced")
+e38 <- partial(ffs14tuneprev, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC Random Forest Prevalence")
+e39 <- partial(ffsKtune, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS Kmeans Random Forest Balanced")
+e40 <- partial(ffsKtuneprev, pred.var = "tpi30agg", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS Kmeans Random Forest Prevalence")
+
+```
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(e33, e35, e37, e39, 
+             e34,e36,e38,e40,ncol = 4)  
+
+```
+
+*Look at cpg30precip for Random Forest*
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+library(vip)
+
+t49 <- partial(rfe12tune, pred.var = "cpg30precip", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC Random Forest Balanced")
+t50 <- partial(rfe12tuneprev, pred.var = "cpg30precip", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC Random Forest Prevalence")
+t51 <- partial(rfeMedtune, pred.var = "cpg30precip", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium Random Forest Balanced")
+t52 <- partial(rfeMedtuneprev, pred.var = "cpg30precip", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium Random Forest Prevalence")
+t53 <- partial(rfe14tune, pred.var = "cpg30precip", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC Random Forest Balanced")
+t54 <- partial(rfe14tuneprev, pred.var = "cpg30precip", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC Random Forest Prevalence")
+t55 <- partial(rfeKtune, pred.var = "cpg30precip", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS Kmeans Random Forest Balanced")
+t56 <- partial(rfeKtuneprev, pred.var = "cpg30precip", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS Kmeans Random Forest Prevalence")
+
+```
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(t49, t51, t53, t55, 
+             t50,t52,t54,t56,ncol = 4)  
+
+```
+
+*FFS with cpg30precip for GBM did not select the variable at all!*
+
+
+
+
+*Look at cad30RS for Random Forest*
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+library(vip)
+t65 <- partial(ffs12tune, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC Random Forest Balanced")
+t66 <- partial(ffs12tuneprev, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC Random Forest Prevalence")
+t67 <- partial(ffsMedtune, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium Random Forest Balanced")
+t68 <- partial(ffsMedtuneprev, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium Random Forest Prevalence")
+t69 <- partial(ffs14tune, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC Random Forest Balanced")
+t70 <- partial(ffs14tuneprev, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC Random Forest Prevalence")
+t71 <- partial(ffsKtune, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS Kmeans Random Forest Balanced")
+t72 <- partial(ffsKtuneprev, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS Kmeans Random Forest Prevalence")
+
+```
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(t65, t67, t69, t71, 
+             t66,t68,t70,t72,ncol = 4)  
+
+```
+
+
+
+
+*Look at cad30RS for GBM*
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+library(vip)
+
+t73 <- partial(ffs12gtune, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC GBM Balanced")
+t74 <- partial(ffs12gtuneprev, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC GBM Prevalence")
+t75 <- partial(ffsMedgtune, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium GBM Balanced")
+t76 <- partial(ffsMedgtuneprev, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium GBM Prevalence")
+t77 <- partial(ffs14gtune, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC GBM Balanced")
+t78 <- partial(ffs14gtuneprev, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC GBM Prevalence")
+t79 <- partial(ffsKgtune, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS Kmeans GBM Balanced")
+t80 <- partial(ffsKgtuneprev, pred.var = "cad30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS Kmeans GBM Prevalence")
+
+```
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(t73, t75, t77, t79, 
+             t74,t76,t78,t80,ncol = 4)  
+```
+
+*Look at decid30RS for random Forest*
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+library(vip)
+e81 <- partial(ffs12tune, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC Random Forest Balanced")
+e82 <- partial(ffs12tuneprev, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC Random Forest Prevalence")
+e83 <- partial(ffsMedtune, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium Random Forest Balanced")
+e84 <- partial(ffsMedtuneprev, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium Random Forest Prevalence")
+e85 <- partial(ffs14tune, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC Random Forest Balanced")
+e86 <- partial(ffs14tuneprev, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC Random Forest Prevalence")
+e87 <- partial(ffsKtune, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS Kmeans Random Forest Balanced")
+e88 <- partial(ffsKtuneprev, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS Kmeans Random Forest Prevalence")
+
+```
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(e81, e83, e85, e87, 
+             e82,e84,e86,e88,ncol = 4)  
+
+```
+
+
+
+*Look at decid30RS for GBM*
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+library(vip)
+t89 <- partial(ffs12gtune, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC GBM  Balanced")
+t90 <- partial(ffs12gtuneprev, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC GBM Prevalence")
+t91 <- partial(ffsMedgtune, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium GBM Balanced")
+t92 <- partial(ffsMedgtuneprev, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium GBM Prevalence")
+t93 <- partial(ffs14gtune, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC GBM Balanced")
+t94 <- partial(ffs14gtuneprev, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC GBM Prevalence")
+t95 <- partial(ffsKgtune, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS Kmeans GBM Balanced")
+t96 <- partial(ffsKgtuneprev, pred.var = "decid30RS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS Kmeans GBM Prevalence")
+
+```
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(t89, t91, t93, t95, 
+             t90,t92,t94,t96,ncol = 4)  
+
+```
+
+*Look at deficitRS for Random Forest*
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+library(vip)
+rfe14gprev$optVariables
+
+e89 <- partial(ffs12tune, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC Random Forest Balanced")
+e90 <- partial(ffs12tuneprev, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC Random Forest Prevalence")
+e91 <- partial(ffsMedtune, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium Random Forest Balanced")
+e92 <- partial(ffsMedtuneprev, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium Random Forest Prevalence")
+e93 <- partial(ffs14tune, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC Random Forest Balanced")
+e94 <- partial(ffs14tuneprev, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC Random Forest Prevalence")
+e95 <- partial(ffsKtune, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS Kmeans Random Forest Balanced")
+e96 <- partial(ffsKtuneprev, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS Kmeans Random Forest Prevalence")
+
+```
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(e89, e91, e93, e95, 
+             e90,e92,e94,e96,ncol = 4)  
+```
+*Look at deficitRS for GBM*
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+library(vip)
+
+t96 <- partial(ffs12gtune, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC GBM Balanced")
+t97 <- partial(ffs12gtuneprev, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 12th HUC GBM Prevalence")
+t98 <- partial(ffsMedgtune, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium GBM Balanced")
+t99 <- partial(ffsMedgtuneprev, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS BlockCV Medium GBM Prevalence")
+t100 <- partial(ffs14gtune, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC GBM Balanced")
+t101 <- partial(ffs14gtuneprev, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS 14th HUC GBM Prevalence")
+t102 <- partial(ffsKgtune, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = traintune, rug=TRUE,smooth=TRUE, main="FFS Kmeans GBM Balanced")
+t103 <- partial(ffsKgtuneprev, pred.var = "deficitRS", trim.outliers = TRUE, prob = TRUE) %>% plotPartial(train = trainprevtune, rug=TRUE,smooth=TRUE, main="FFS Kmeans GBM Prevalence")
+
+```
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(t96, t98,t100, t102, 
+             t97,t99,t101,t103,ncol = 4)  
+```
+
+
+
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+pd <- partial(ffs12tune, pred.var = c("decid30RS","deficitRS"), prob = TRUE)
+pd80 <- plotPartial(pd,colorkey = TRUE,contour = TRUE, main = "FFS 12th HUC Random Forest Balance",
+col.regions = colorRampPalette(c("blue", "yellow","red"))(100))
+pd81 <- plotPartial(pd, levelplot = FALSE, zlab = "yhat",drape=TRUE,
+colorkey = TRUE,contour = TRUE,screen = list(z = -60, x = -60), alpha = 0.5, main = "FFS 12th HUC Random Forest Balance",
+col.regions = colorRampPalette(c("blue", "yellow","red"))(100))
+```
+
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(pd80,pd81, ncol = 2)
+```
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+pd3 <- partial(ffs14tune, pred.var = c("decid30RS","deficitRS"), prob = TRUE)
+pd82 <- plotPartial(pd3,colorkey = TRUE,contour = TRUE, main = "FFS Kmeans Random Forest",
+col.regions = colorRampPalette(c("blue", "yellow","red"))(100))
+pd83 <- plotPartial(pd3, levelplot = FALSE, zlab = "yhat",drape=TRUE,
+colorkey = TRUE,contour = TRUE,screen = list(z = -60, x = -60), alpha = 0.5, main = "FFS Kmeans Random Forest",
+col.regions = colorRampPalette(c("blue", "yellow","red"))(100))
+```
+
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(pd82,pd83, ncol = 2)
+```
+
+
+```{r, eval=FALSE, echo=FALSE}
+library(pdp)
+pd6 <- partial(ffsKtune, pred.var = c("cpg30precip","deficitRS"), prob = TRUE, trim.outliers = TRUE)
+pd84 <- plotPartial(pd6,colorkey = TRUE,contour = TRUE, main = "FFS Kmeans Random Forest Balanced",
+col.regions = colorRampPalette(c("blue", "yellow","red"))(100))
+pd85 <- plotPartial(pd6, levelplot = FALSE, zlab = "yhat",drape=TRUE,
+colorkey = TRUE,contour = TRUE, alpha = 0.5,,screen = list(z = -45, x = -70, y = -5), main = "FFS Kmeans Random Forest balanced",
+col.regions = colorRampPalette(c("blue", "yellow","red"))(100))
+```
+
+```{r echo=FALSE,eval=TRUE,message=FALSE, fig.align='center', fig.height=8, fig.width=20}
+grid.arrange(pd84,pd85, ncol = 2)
+```
+
 
 ## Model Assessment
 

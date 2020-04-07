@@ -4,14 +4,14 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Stream Occurence &middot; Josh Erickson</title>
-        <meta name="description" content="IntroductionAccessing DataMethodsSummaryVariablesPre-processingSplitting DataGuidanceProportionBalanced?Cause and effectPrevalanceData LeakageStructuresEvaluation TechniquesModelingModel SelectionRFE Random ForestRFE GBMFFS Random ForestFFS GBMQuick IntroRFE downsizingRFE tuning Random ForestRFE tuning GBMRFE tuned partial dependency plotsFFS tuned Random ForestFFS tuning GBMModel AssessmentDiscussion/ResultsReferencesIntroductionIntroduction">
+        <meta name="description" content="IntroductionAccessing DataMethodsSummaryVariablesPre-processingSplitting DataGuidanceProportionBalanced?Cause and effectPrevalanceData LeakageStructuresEvaluation TechniquesModelingModel SelectionRFE Random ForestRFE GBMFFS Random ForestFFS GBMQuick IntroRFE downsizingRFE tuning Random ForestRFE tuning GBMRFE tuned partial dependency plotsFFS tuned Random ForestFFS tuning GBMFFS tuned partial dependency plotsModel AssessmentDiscussion/ResultsReferencesIntroductionIntroduction">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
         <meta name="generator" content="Hugo 0.68.3" />
         <meta name="robots" content="index,follow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta property="og:title" content="Stream Occurence">
-<meta property="og:description" content="IntroductionAccessing DataMethodsSummaryVariablesPre-processingSplitting DataGuidanceProportionBalanced?Cause and effectPrevalanceData LeakageStructuresEvaluation TechniquesModelingModel SelectionRFE Random ForestRFE GBMFFS Random ForestFFS GBMQuick IntroRFE downsizingRFE tuning Random ForestRFE tuning GBMRFE tuned partial dependency plotsFFS tuned Random ForestFFS tuning GBMModel AssessmentDiscussion/ResultsReferencesIntroductionIntroduction">
+<meta property="og:description" content="IntroductionAccessing DataMethodsSummaryVariablesPre-processingSplitting DataGuidanceProportionBalanced?Cause and effectPrevalanceData LeakageStructuresEvaluation TechniquesModelingModel SelectionRFE Random ForestRFE GBMFFS Random ForestFFS GBMQuick IntroRFE downsizingRFE tuning Random ForestRFE tuning GBMRFE tuned partial dependency plotsFFS tuned Random ForestFFS tuning GBMFFS tuned partial dependency plotsModel AssessmentDiscussion/ResultsReferencesIntroductionIntroduction">
 <meta property="og:type" content="article">
 <meta property="og:url" content="/project/walkinglongformat/">
         <link rel="stylesheet" href="/dist/site.css">
@@ -144,6 +144,7 @@
 <li><a href="#rfe-tuned-partial-dependency-plots">RFE tuned partial dependency plots</a></li>
 <li><a href="#ffs-tuned-random-forest">FFS tuned Random Forest</a><ul>
 <li><a href="#ffs-tuning-gbm">FFS tuning GBM</a></li>
+<li><a href="#ffs-tuned-partial-dependency-plots">FFS tuned partial dependency plots</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#model-assessment">Model Assessment</a></li>
@@ -5931,6 +5932,7 @@ ffs14gtuneprevThreshDS &lt;- thresholder(ffs14gtuneprevDS, threshold = seq(0,1,.
 <p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-207-1.png" width="1248" style="display: block; margin: auto;" /></p>
 <p><em>FFS Kmeans GBM Tune</em></p>
 <pre class="r"><code>#we&#39;ll use this tunegrid for all gbm models
+
 gbmGrid &lt;- expand.grid(interaction.depth = c(1,2,4,6,8), n.trees = c(500,1000,1500,2000,3000), shrinkage = c(0.001,.05,0.1,0.2,0.5), n.minobsinnode = c(10,15,25))
 #get variable names from ffs
 
@@ -5950,7 +5952,8 @@ rec_tuneKgffsprev &lt;-   recipe(stream ~ ., data = trainprevtune) %&gt;%
   update_role(-accum30,-cad30RS,-twi30agg,-deficitRS,-stream, new_role = &quot;bring along&quot;) 
 
 rec_tuneKgffsprevDS &lt;-   recipe(stream ~ ., data = trainprevtune) %&gt;% 
- update_role(-accum30,-cad30RS,-twi30agg,-deficitRS,-stream, new_role = &quot;bring along&quot;)
+ update_role(-accum30,-cad30RS,-twi30agg,-deficitRS,-stream, new_role = &quot;bring along&quot;) %&gt;% 
+step_downsample(stream)
   
 cluster &lt;- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
@@ -5996,6 +5999,40 @@ registerDoSEQ()
 ffsKgtuneThresh &lt;- thresholder(ffsKgtune, threshold = seq(0,1,.02))
 ffsKgtuneprevThresh &lt;- thresholder(ffsKgtuneprev, threshold = seq(0,1,.02))
 ffsKgtuneprevThreshDS &lt;- thresholder(ffsKgtuneprevDS, threshold = seq(0,1,.02))</code></pre>
+</div>
+<div id="ffs-tuned-partial-dependency-plots" class="section level4">
+<h4>FFS tuned partial dependency plots</h4>
+<p>Now that we’ve tuned both models (rf and gbm) we can start to look at some of the variable dependency plots. This will give us an idea of how the variables are reacting to the response and where the model seems to find it important. What will be interesting is how each structure (12th,14th,blockCV,Kmeans) reacts and also the between balanced and prevalence. We’ll basically just plot all the pdp’s by model type and structure type and variable.</p>
+<p><em>Look at accum30 for random forest</em></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-211-1.png" width="1920" style="display: block; margin: auto;" />
+<em>Look at accum30 for gbm</em></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-213-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p><em>Look at nppmmid30agg for Random Forest</em></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-215-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p><em>Look at nppmmid30agg for GBM</em></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-217-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p><em>TPI for GBM</em></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-219-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p><em>Look at tpi30agg for Random Forest</em></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-221-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p><em>Look at cpg30precip for Random Forest</em></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-223-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p><em>FFS with cpg30precip for GBM did not select the variable at all!</em></p>
+<p><em>Look at cad30RS for Random Forest</em></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-225-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p><em>Look at cad30RS for GBM</em></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-227-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p><em>Look at decid30RS for random Forest</em></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-229-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p><em>Look at decid30RS for GBM</em></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-231-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p><em>Look at deficitRS for Random Forest</em></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-233-1.png" width="1920" style="display: block; margin: auto;" />
+<em>Look at deficitRS for GBM</em></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-235-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-237-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-239-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p><img src="/project/walkingLongFormat_files/figure-html/unnamed-chunk-241-1.png" width="1920" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 </div>
