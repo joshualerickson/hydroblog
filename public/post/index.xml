@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Josh Erickson</copyright>
-    <lastBuildDate>Sun, 05 Apr 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 09 Jun 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Exploring Catchments</title>
+      <link>/2020/06/09/2020-06-09-exploring-harvest-units/</link>
+      <pubDate>Tue, 09 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/06/09/2020-06-09-exploring-harvest-units/</guid>
+      <description>Zonal StatisticsThis is a quick workflow using some rasters, polygons, and a few packages in R that i’ve used for a couple analysis recently. The main purpose of this workflow is to show the code used and how to get some simple zonal statistics in R and explore them relatively easy. Thus, there will be a lot of code! If you take anything out of this I hope it would be that zonal statistics in R are pretty awesome right now.</description>
+    </item>
     
     <item>
       <title>Welcome</title>
@@ -18,7 +27,7 @@
       <pubDate>Sun, 05 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/04/05/welcome/</guid>
-      <description>This is an attempt to make hydrology topics and workflows available to whomever. There will be three different resources you can look at: blog, long winded, and projects. Blog is a brief rant, discussion, or workflow that will be relatively short. As you can imagine, long winded posts will be longer rants, discussions, or workflows. And, for the projects resource it will be the very tedious, dense, copious, and downright exaustive workflows.</description>
+      <description>This is an attempt to make hydrology topics and workflows available to whomever. There will be a couple different resources you can look at: blog and projects. Blog is a brief rant, discussion, or workflow that will be relatively short. As you can imagine, projects resource it will be the very tedious, dense, copious, and downright exaustive workflows. Please keep an open mind as this might get very pedantic at times while also being very domain adjacent!</description>
     </item>
     
   </channel>

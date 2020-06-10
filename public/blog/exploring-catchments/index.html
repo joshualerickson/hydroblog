@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Exploring Catchments &middot; Josh Erickson</title>
+        <meta name="description" content="Looking at relationships between watershed catchments and remote sensing data">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="generator" content="Hugo 0.68.3" />
+        <meta name="robots" content="index,follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Exploring Catchments">
+<meta property="og:description" content="Looking at relationships between watershed catchments and remote sensing data">
+<meta property="og:type" content="article">
+<meta property="og:url" content="/blog/exploring-catchments/">
+        <link rel="stylesheet" href="/dist/site.css">
+        <link rel="stylesheet" href="/dist/syntax.css">
+        <link rel="stylesheet" href="/dist/atom-one-light.css">
+<script src="/js/highlight.pack.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        
+        
+        
+        
+    </head>
+    <body>
+        
+
+        <div id="wrapper">
+            <header class="site-header">
+                <div class="container">
+                    <div class="site-title-wrapper">
+                        
+                            <h1 class="site-title">
+                                <a title="Welcome" href="/">Welcome</a>
+                            </h1>
+                        
+
+
+<a class="top-link hide" href="" id="js-top">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6"><path d="M12 6H0l6-6z"/></svg>
+  <span class="screen-reader-text">Top</span>
+</a>
+                        
+                        <a class="button-square" href="/index.xml"><i class="fa fa-rss"></i></a>
+                        
+                        
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Github" title="Github" href="https://github.com/joshualerickson" rel="me">
+                                <i class="fa fa-github-alt"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Stack Overflow" title="Stack Overflow" href="https://stackoverflow.com/users/12771384/josh-erickson" rel="me">
+                                <i class="fa fa-stack-overflow"></i>
+                            </a>
+                        
+                        
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Email" title="Email" href="mailto:joshua.l.erickson@usda.gov">
+                                <i class="fa fa-envelope"></i>
+                            </a>
+                        
+                    </div>
+
+                    <ul class="site-nav">
+                        
+    <li class="site-nav-item">
+        <a title="Blog" href="/blog/">Blog</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="Long-winded" href="/winded/">Long-winded</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="Projects" href="/project/">Projects</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="Contact" href="/page/contact/">Contact</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="About" href="/page/about/">About</a>
+    </li>
+
+                    </ul>
+                </div>
+            </header>
+
+            <div id="container">
+
+
+<div class="container">
+    <article class="post-container">
+        <header class="post-header">
+    <h1 class="post-title">Exploring Catchments</h1>
+    
+        <p class="post-description">Looking at relationships between watershed catchments and remote sensing data</p>
+    
+</header>
+
+        <div class="post-content clearfix">
+    
+
+    
+
+
+<div style="margin-bottom:100px;">
+
+
+
+<div id="zonal-statistics" class="section level1">
+<h1>Zonal Statistics</h1>
+<p>This is a quick workflow using some rasters, polygons, and a few packages in R that i’ve used for a couple analysis recently. The main purpose of this workflow is to show the code used and how to get some simple zonal statistics in R and explore them relatively easy. Thus, there will be a lot of code! If you take anything out of this I hope it would be that zonal statistics in R are pretty awesome right now. The advantage of doing this in R (IMO) has to do with the <code>tidyverse</code> package. The tidyverse philosophy is about doing exploratory data analysis (EDA) as freely and efficient as possible (FREEDOM!). With the addition of some other spatial data packages (<code>raster</code>,<code>sf</code>,<code>exactextractr</code>) that are <code>tidyverse</code> friendly (especially <code>sf</code>, can’t stop saying good things about <a href="https://github.com/r-spatial">r-spatial</a> and some functional programming from the tidyverse, we can explore spatial data pretty quickly! I’m really stoked with <code>sf</code>and <code>exactextractr</code> for providing the heavy lifting when dealing with this type of analysis in R. Remember, drin.. I mean, geospatial responsibly…</p>
+<p>We will get started by bringing in a raster and extracting the values based on a polygon (HUC). This is just a quick intro to <code>sf</code> and <code>raster</code>. Remember to keep your datum and crs the same.</p>
+<pre class="r"><code>library(ggbiplot)
+library(raster)
+library(tidyverse)
+library(sf)
+library(exactextractr)
+HUC12 &lt;- read_sf(&quot;D:/Rcodes/Water_Prediction/Hird_Water_Prediction/waterD/waterPred/Final_workflow/ksank12thclip.shp&quot;)
+
+HUC12 &lt;- st_transform(HUC12, &quot;+proj=aea +lat_1=46 +lat_2=48 +lat_0=44 +lon_0=-109.5 +x_0=600000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs&quot; )
+
+HUC12 &lt;- HUC12[,1]
+
+prism &lt;- raster(&quot;PRISM.tif&quot;)
+
+crs(prism) &lt;- &quot;+proj=aea +lat_1=46 +lat_2=48 +lat_0=44 +lon_0=-109.5 +x_0=600000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs&quot;
+
+prism &lt;- crop(prism, deficit)
+
+HUC12$mean_prism &lt;- exact_extract(prism, HUC12, &#39;mean&#39;)</code></pre>
+<p>I like using this combo of <code>sf</code> and <code>exactextractr</code> because you can then transform and manipulate the data just like you would with any other data frame (e.g., <code>dplyr</code>) except now you can plot the <code>sf</code> object in the style of <code>ggplot2</code>.</p>
+<pre class="r"><code>HUC12 %&gt;% filter(mean_prism &gt; 800) %&gt;% ggplot() + geom_sf(aes(fill = mean_prism))</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>HUC12 %&gt;% mutate(prism_deviation = mean(mean_prism)-mean_prism) %&gt;% ggplot() + geom_sf(aes(fill = prism_deviation))</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+<p>By using <code>exact_extract</code> we can bring in a lot of different rasters and explore the summary stats at different structures, e.g. polygons or hydrological unit codes (HUC). So let’s start by adding more rasters to the current polygon(s) <code>HUC12</code>. Feel free to bring in whatever raster you want or polygon as well.</p>
+<pre class="r"><code>HUC12$mean_deficit &lt;- exact_extract(deficit, HUC12, &#39;mean&#39;)
+HUC12$mean_decid &lt;- exact_extract(deciduous, HUC12, &#39;mean&#39;)
+HUC12$mean_cpg &lt;- exact_extract(cpgPrecip, HUC12, &#39;mean&#39;)
+HUC12$mean_npp &lt;- exact_extract(nppMid30, HUC12, &#39;mean&#39;)
+HUC12$mean_cad &lt;- exact_extract(CAD, HUC12, &#39;mean&#39;)
+HUC12$mean_ndvi &lt;- exact_extract(ndvi, HUC12, &#39;mean&#39;)
+HUC12$mean_lnAccum &lt;- exact_extract(lnAccum, HUC12, &#39;mean&#39;)</code></pre>
+<pre class="r"><code>plot(HUC12[-1])</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Now we might want to look at a smaller scale like a HUC 14. So, just bring in a shape file or database and use as the new polygon to run stats on.</p>
+<pre class="r"><code>HUC14 &lt;- read_sf(&quot;D:/Rcodes/Water_Prediction/Hird_Water_Prediction/waterD/waterPred/Final_workflow/ksank14thclip.shp&quot;)
+
+HUC14 &lt;- st_transform(HUC14, &quot;+proj=aea +lat_1=46 +lat_2=48 +lat_0=44 +lon_0=-109.5 +x_0=600000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs&quot; )
+
+HUC14 &lt;- HUC14[,4]
+HUC14 &lt;- rename(HUC14, Name = HU_14_NAME )</code></pre>
+<p>Now do the same for the 14th HUC</p>
+<pre class="r"><code>HUC14$mean_prism &lt;- exact_extract(prism, HUC14, &#39;mean&#39;)
+HUC14$mean_deficit &lt;- exact_extract(deficit, HUC14, &#39;mean&#39;)
+HUC14$mean_decid &lt;- exact_extract(deciduous, HUC14, &#39;mean&#39;)
+HUC14$mean_cpg &lt;- exact_extract(cpgPrecip, HUC14, &#39;mean&#39;)
+HUC14$mean_npp &lt;- exact_extract(nppMid30, HUC14, &#39;mean&#39;)
+HUC14$mean_cad &lt;- exact_extract(CAD, HUC14, &#39;mean&#39;)
+HUC14$mean_ndvi &lt;- exact_extract(ndvi, HUC14, &#39;mean&#39;)
+HUC14$mean_lnAccum &lt;- exact_extract(lnAccum, HUC14, &#39;mean&#39;)</code></pre>
+<pre class="r"><code>plot(HUC14[-1])</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>From here we can start exploring the data spatially (e.g. mapping). How about looking at the mean prism data from both the HUC14 and HUC12.</p>
+<pre class="r"><code>ggplot(data = HUC12)  + geom_sf(data = HUC14, aes(fill = mean_prism))+ geom_sf(aes(color = cut_number(mean_prism, 6)), size = 2, fill = NA) + 
+  scale_fill_distiller(palette = &quot;RdBu&quot;, trans = &quot;reverse&quot;) + scale_color_brewer(palette = &quot;RdBu&quot;)</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Or, see if there are any trends with PRISM and NPP, i.e. water and energy.</p>
+<pre class="r"><code>ggplot(data = HUC12)  + geom_sf(data = HUC12, aes(fill = mean_prism))+ geom_sf(aes(color = cut_number(mean_npp, 6)), size = 2, fill = NA) + 
+  scale_fill_distiller(palette = &quot;RdBu&quot;, trans = &quot;reverse&quot;) + scale_color_brewer(palette = &quot;RdBu&quot;)</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>We can see that it’s hard to interpret the polygons because there are so many colors and outlines, etc… So maybe lets just look at them individually. It does give you an idea of how changing polygon size can really affect the results and we haven’t even started down the path of mod, median, sd, etc…. Regardless, let’s keep exploring.</p>
+<pre class="r"><code>HUC14 %&gt;% mutate(prism_cut = cut_number(mean_prism, n = 5)) %&gt;% ggplot() + geom_sf(aes(fill = prism_cut))  + scale_fill_brewer(palette = &quot;RdBu&quot;)</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>HUC12 %&gt;% mutate(prism_cut = cut_number(mean_prism, n = 5)) %&gt;% ggplot() + geom_sf(aes(fill = prism_cut)) + scale_fill_brewer(palette = &quot;RdBu&quot;)</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
+<p>Much better! But what about the distributions? The nice thing about this workflow is we can jump right into a data frame and histograms.</p>
+<pre class="r"><code>HUC14 %&gt;% mutate(prism_cut = cut_interval(mean_prism, 4)) %&gt;% ggplot() + geom_bar(aes(prism_cut))</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code>HUC12 %&gt;% mutate(prism_cut = cut_interval(mean_prism, 4)) %&gt;% ggplot() + geom_bar(aes(prism_cut))</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
+<pre class="r"><code>HUC14 %&gt;% ggplot() + geom_histogram(aes(mean_prism))</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-11-3.png" width="672" /></p>
+<pre class="r"><code>HUC12 %&gt;% ggplot() + geom_histogram(aes(mean_prism), binwidth = 150)</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-11-4.png" width="672" /></p>
+<p>As you can see here, most of our data is in different ranges depending on the polygon size, which leads to different shapes of the distributions. This might affect how we interpret the trends or relationships. That being said, this is where domain knoweledge is <strong>key</strong> for EDA! Now that we’ve looked at how the PRISM data is distributed across the different HUCs we might want to look at some possible covariations. Let’s plot and see if there is anything. Here we need to drop the geometry to use base R <code>plot()</code>.</p>
+<pre class="r"><code>HUC12 %&gt;% st_drop_geometry() %&gt;% select(-Name) %&gt;% plot()</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>HUC14 %&gt;% st_drop_geometry() %&gt;% select(-Name) %&gt;% plot()</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
+<p>To me NPP and PRISM look like an interesting combination. If you increase PRISM you get to a point where NPP increases but then levels off. Maybe there is something to explore here. Also, NDVI and PRISM look interesting as well. This probably has to do with NPP being highly colinear with NDVI. We can check the correlation as well.</p>
+<pre class="r"><code>HUC14 %&gt;% select(mean_ndvi, mean_npp, mean_prism) %&gt;% st_drop_geometry() %&gt;% plot()</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre class="r"><code>HUC14 %&gt;% select(mean_ndvi, mean_npp, mean_prism) %&gt;% st_drop_geometry() %&gt;% pairs.panels()</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
+<p>This is great but it’s always nice to look at the data in a multivariate way – that is to say, adding some color or size with a third variable. Hopefully see if there are any interactions with other covariates, i.e. multivariate.</p>
+<pre class="r"><code>HUC14 %&gt;% st_drop_geometry() %&gt;% ggplot(aes(mean_prism, mean_npp)) + geom_point(aes(color = cut_number(round(mean_deficit), 4)), size = 2) + geom_smooth()+ labs(title = &quot;Net Primary Productivity (NPP) and PRISM&quot;, subtitle = &quot;Water Deficit as color&quot;,color = &quot;Water Deficit&quot;, x = &quot;PRISM 30-year median&quot;, y = &quot;NPP 30-year median&quot;)</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<pre class="r"><code>HUC14 %&gt;% st_drop_geometry() %&gt;% ggplot(aes(mean_prism, mean_npp)) + geom_point(aes(color = cut_interval(round(mean_cad), 4)), size = 2) + geom_smooth() + ggtitle(&quot;Net Primary Productivity (NPP) and PRISM&quot;, subtitle = &quot;Cold Air Drainage as color&quot;) + labs(color = &quot;Cold Air Drainage&quot;, x = &quot;PRISM 30 year median&quot;, y = &quot;NPP 30-year median&quot;)</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
+<pre class="r"><code>HUC14 %&gt;% st_drop_geometry() %&gt;% ggplot(aes(mean_prism, mean_npp)) + geom_point(aes(color = cut_interval(round(mean_ndvi,3), 4)), size = 2) + geom_smooth() + ggtitle(&quot;Net Primary Productivity (NPP) and PRISM&quot;, subtitle = &quot;NDVI 30-year median as color&quot;) + labs(color = &quot;NDVI&quot;, x = &quot;PRISM 30 year median&quot;, y = &quot;NPP 30-year median&quot;)</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-14-3.png" width="672" /></p>
+<p>I like the last plot with 30 year NDVI as the color. It looks like it might help collect some of the edge effects and outliers within the data, so we will play around with that combination. There are many ways to further explore these relationships. I’m really getting into PCA right now (Principal Component Analysis) so I decided to go that route but remember this is just exploring and a tutorial for exploring. Not a full blown analysis! PCA in itself is highly exploratory (unsupervised). That being said, here is a quick and dirty PCA exploration.</p>
+<p>Let’s run PCA on all variables except for NPP and see what kind of seperation we get when running PCA.</p>
+<pre class="r"><code>HUC14 &lt;- HUC14 %&gt;% mutate(NPP = cut_interval(round(mean_npp), 6))
+pca_huc14 &lt;- HUC14[,c(1,7,11)] %&gt;% st_drop_geometry()
+
+#clean up to make similar scale (high good, low bad)
+pca_huc14 &lt;- pca_huc14 %&gt;% as_tibble() %&gt;% mutate_at(vars(mean_deficit, mean_decid, mean_cad), ~max(., na.rm = TRUE) - (.))
+
+huc_pca &lt;- prcomp(pca_huc14, center = TRUE, scale. = TRUE)</code></pre>
+<pre class="r"><code>summary(huc_pca)</code></pre>
+<pre><code>## Importance of components:
+##                           PC1    PC2    PC3     PC4    PC5     PC6     PC7
+## Standard deviation     1.9522 1.1439 0.9713 0.74986 0.5575 0.24472 0.06042
+## Proportion of Variance 0.5445 0.1869 0.1348 0.08033 0.0444 0.00856 0.00052
+## Cumulative Proportion  0.5445 0.7314 0.8662 0.94652 0.9909 0.99948 1.00000</code></pre>
+<pre class="r"><code>huc_pca$rotation</code></pre>
+<pre><code>##                      PC1          PC2          PC3        PC4        PC5         PC6           PC7
+## mean_prism   -0.45965413  0.182104217 -0.345202478  0.1344540 -0.2804889  0.20379843 -0.7057660261
+## mean_deficit -0.49289719  0.061672139 -0.002303454 -0.2064603  0.1012397 -0.83670987  0.0168780590
+## mean_decid    0.20790809  0.682150023 -0.234584610  0.4078806  0.5077171 -0.11077855 -0.0007205007
+## mean_cpg     -0.46279415  0.195009266 -0.323434906  0.1202062 -0.2650388  0.24043463  0.7075866746
+## mean_cad      0.43944334  0.006362884 -0.201989759  0.3658554 -0.6692124 -0.42856782  0.0261418697
+## mean_ndvi    -0.30198515 -0.323519259  0.419564418  0.7833836  0.1171387 -0.02617019  0.0031162914
+## mean_lnAccum  0.06372409 -0.595795382 -0.710180049  0.1045948  0.3485507 -0.06282376  0.0153921340</code></pre>
+<pre class="r"><code>ggbiplot(huc_pca,ellipse=TRUE, groups=HUC14$NPP) + scale_color_brewer(palette = &quot;RdBu&quot;)</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre class="r"><code>ggbiplot(huc_pca,ellipse=TRUE, choices = c(3,4), groups=HUC14$NPP) + scale_color_brewer(palette = &quot;RdBu&quot;)</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-16-2.png" width="672" /></p>
+<p>Now we can look at how the 12th HUC seperates the data.</p>
+<pre class="r"><code>pca_huc12&lt;- HUC12 %&gt;% mutate(NPP = cut_interval(mean_npp, 3))
+
+pca_huc12 &lt;- HUC12[, -c(1, 7,11)] %&gt;% st_drop_geometry()
+
+#clean up to make similar scale (high good, low bad)
+pca_huc12 &lt;- pca_huc12 %&gt;% as_tibble() %&gt;% mutate_at(vars(mean_deficit, mean_decid, mean_cad), ~max(., na.rm = TRUE) - (.))
+
+pca_pca12 &lt;- prcomp(pca_huc12, center = TRUE, scale. = TRUE)</code></pre>
+<pre class="r"><code>summary(huc_pca12)</code></pre>
+<pre><code>## Importance of components:
+##                           PC1    PC2    PC3     PC4    PC5     PC6     PC7
+## Standard deviation     1.9522 1.1439 0.9713 0.74986 0.5575 0.24472 0.06042
+## Proportion of Variance 0.5445 0.1869 0.1348 0.08033 0.0444 0.00856 0.00052
+## Cumulative Proportion  0.5445 0.7314 0.8662 0.94652 0.9909 0.99948 1.00000</code></pre>
+<pre class="r"><code>huc_pca12$rotation</code></pre>
+<pre><code>##                      PC1          PC2          PC3        PC4        PC5         PC6           PC7
+## mean_prism   -0.45965413  0.182104217 -0.345202478  0.1344540  0.2804889 -0.20379843 -0.7057660261
+## mean_deficit  0.49289719 -0.061672139  0.002303454  0.2064603  0.1012397 -0.83670987 -0.0168780590
+## mean_decid   -0.20790809 -0.682150023  0.234584610 -0.4078806  0.5077171 -0.11077855  0.0007205007
+## mean_cpg     -0.46279415  0.195009266 -0.323434906  0.1202062  0.2650388 -0.24043463  0.7075866746
+## mean_cad     -0.43944334 -0.006362884  0.201989759 -0.3658554 -0.6692124 -0.42856782 -0.0261418697
+## mean_ndvi    -0.30198515 -0.323519259  0.419564418  0.7833836 -0.1171387  0.02617019  0.0031162914
+## mean_lnAccum  0.06372409 -0.595795382 -0.710180049  0.1045948 -0.3485507  0.06282376  0.0153921340</code></pre>
+<pre class="r"><code>ggbiplot(pca_pca12,ellipse=TRUE, groups=HUC12$NPP)</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<pre class="r"><code>ggbiplot(pca_pca12,ellipse=TRUE, choices = c(3,4), groups=HUC12$NPP)</code></pre>
+<p><img src="/blog/2020-06-09-exploring-harvest-units_files/figure-html/unnamed-chunk-18-2.png" width="672" /></p>
+<p>This is pretty cool! It looks like the bigger the dependance structure (e.g. 14th to 12th) the more you can tease out a signal with the variables. This is all unsupervised and might be affected by outliers… However, there does seem to be a pattern between hydrological units and NPP patterns, which might be helpful for understanding NPP trends given these dependance structures or ‘productivity’ relationships given the variables. Further investigation would be interesting and of course absolutely necessary :)</p>
+</div>
+
+</div>
+
+        <footer class="post-footer clearfix">
+    
+        <p class="post-tags">
+            <span>Tagged:</span>
+            
+            
+                <a href="/tags/https//github.com/r-spatial/">https://github.com/r-spatial</a>, 
+            
+                <a href="/tags/https//github.com/isciences/exactextractr/">https://github.com/isciences/exactextractr</a>
+            
+        </p>
+    
+
+    <div class="share">
+        
+
+        
+
+        
+        
+    </div>
+</footer>
+    </article>
+</div>
+<div class="comments">
+        <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-hydroblog-netlify-com" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="site-title-wrapper">
+                    <h1 class="site-title">
+                        <a title="Welcome" href="/">Welcome</a>
+                    </h1>
+                    <a class="button-square button-jump-top js-jump-top" href="#">
+                        <i class="fa fa-angle-up"></i>
+                    </a>
+                </div>
+
+                <p class="footer-copyright">
+                    <span>&copy; 2020 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                </p>
+                <p class="footer-copyright">
+                    <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
+                    <span>/ <a href="https://github.com/jbub/ghostwriter">Ported</a> to Hugo By <a href="https://github.com/jbub">jbub</a></span>
+                </p>
+            </div>
+        </footer>
+
+        <script src="/js/jquery-1.11.3.min.js"></script>
+        <script src="/js/jquery.fitvids.js"></script>
+        <script src="/js/scripts.js"></script>
+    </body>
+</html>
+

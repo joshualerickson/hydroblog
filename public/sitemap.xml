@@ -3,12 +3,12 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/blog/</loc>
+    <loc>/2020/06/09/2020-06-09-exploring-harvest-units/</loc>
     <lastmod>2020-06-09T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/blog/exploring-harvest-units/</loc>
+    <loc>/post/</loc>
     <lastmod>2020-06-09T00:00:00+00:00</lastmod>
   </url>
   
@@ -18,27 +18,7 @@
   </url>
   
   <url>
-    <loc>/post/</loc>
-    <lastmod>2020-04-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/blog/test/</loc>
-    <lastmod>2020-04-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/winded/test/</loc>
-    <lastmod>2020-04-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/2020/04/05/welcome/</loc>
-    <lastmod>2020-04-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/winded/</loc>
     <lastmod>2020-04-05T00:00:00+00:00</lastmod>
   </url>
   
@@ -55,6 +35,14 @@
   <url>
     <loc>/page/</loc>
     <lastmod>2015-04-03T02:13:50+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/https/github.com/isciences/exactextractr/</loc>
+  </url>
+  
+  <url>
+    <loc>/tags/https/github.com/r-spatial/</loc>
   </url>
   
   <url>

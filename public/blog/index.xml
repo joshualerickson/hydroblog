@@ -13,12 +13,12 @@
     
     
     <item>
-      <title>Exploring Harvest Units</title>
-      <link>/blog/exploring-harvest-units/</link>
+      <title>Exploring Catchments</title>
+      <link>/blog/exploring-catchments/</link>
       <pubDate>Tue, 09 Jun 2020 00:00:00 +0000</pubDate>
       
-      <guid>/blog/exploring-harvest-units/</guid>
-      <description>Summary StatisticsThis is a quick tutorial using some rasters, polygons, and a few packages in R that i’ve used for a couple analysis recently. The main purpose of this workflow is to show the code used and how to get some simple zonal statistics in R and explore them relatively easy. If you take anything out of this I hope it would be that zonal statistics in R are pretty awesome right now.</description>
+      <guid>/blog/exploring-catchments/</guid>
+      <description>Zonal StatisticsThis is a quick workflow using some rasters, polygons, and a few packages in R that i’ve used for a couple analysis recently. The main purpose of this workflow is to show the code used and how to get some simple zonal statistics in R and explore them relatively easy. Thus, there will be a lot of code! If you take anything out of this I hope it would be that zonal statistics in R are pretty awesome right now.</description>
     </item>
     
     <item>
