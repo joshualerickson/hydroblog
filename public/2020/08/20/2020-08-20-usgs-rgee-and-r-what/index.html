@@ -3,17 +3,17 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Posts &middot; Josh Erickson</title>
-        <meta name="description" content="Think. Don&#39;t Think">
+        <title>USGS, GEE and R. What?!? &middot; Josh Erickson</title>
+        <meta name="description" content="For realzy.">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
         <meta name="generator" content="Hugo 0.68.3" />
         <meta name="robots" content="index,follow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta property="og:title" content="Posts">
-<meta property="og:description" content="Think. Don&#39;t Think">
-<meta property="og:type" content="website">
-<meta property="og:url" content="/post/">
+        <meta property="og:title" content="USGS, GEE and R. What?!?">
+<meta property="og:description" content="For realzy.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="/2020/08/20/2020-08-20-usgs-rgee-and-r-what/">
         <link rel="stylesheet" href="/dist/site.css">
         <link rel="stylesheet" href="/dist/syntax.css">
         <link rel="stylesheet" href="/dist/atom-one-light.css">
@@ -23,8 +23,6 @@
 </script>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-        
-            <link href="/post/index.xml" rel="alternate" type="application/rss+xml">
         
         
         
@@ -97,48 +95,76 @@
             <div id="container">
 
 
-<div id="post-index" class="container">
+<div class="container">
+    <article class="post-container" itemscope="" itemtype="http://schema.org/BlogPosting">
+        <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">USGS, GEE and R. What?!?</h1>
     
-    <header class="post-header">
-        <h1 class="post-title" itemprop="name">Hydro Thoughts</h1>
-        <p>Think. Don&#39;t Think</p>
-    </header>
+        <p class="post-description" itemprop="description">For realzy.</p>
+    
+    <p class="post-date">
+        <span>Published <time datetime="2020-08-20" itemprop="datePublished">Thu, Aug 20, 2020</time></span>
+        <span>by</span>
+        <span itemscope="" itemprop="author" itemtype="https://schema.org/Person">
+            <span itemprop="name">
+                <a href="#" itemprop="url" rel="author">Josh Erickson</a>
+            </span>
+        </span>
+    </p>
+    
+        <p class="post-reading post-line">
+            <span>Estimated reading time: 2 min</span>
+        </p>
+    
+</header>
+
+        <div class="post-content clearfix" itemprop="articleBody">
+    
+
+    
 
 
+<p>Over the next month I’m going to be posting some quick examples from a few R packages that I’ve stumbled into. One is the <code>dataRetrieval</code> package by USGS. In short, it let’s you download any gauging station data across the country right into R and in a tidy format. How sweet is that? USGS also has other packages like the suite of <code>smwr</code> packages. These packages provide the user with some commonly used (but often tedious) functions used in hydrology, e.g. log pearson, data munging, etc. These packages are just the tip of the iceberg for hydrology applications so I will just cover the basics and stuff I use on a weekly basis. For more information look up the <a href="https://owi.usgs.gov/R/#:~:text=USGS%2DR%20is%20a%20community,group%20of%20USGS%2DR%20developers.">USGS</a> site which provides a great platform for finding your way through USGS and R. In addition to all the cool stuff with USGS and R, some folks developed an R package that can interface with google earth engine (GEE)!</p>
+<p>GEE is a open source platform that allows users to pull remote sensing data with a few lines of code. This is huge because we all know the pains of trying to figure out other platforms all foran image from 1996 at such and such location. Well, now it’s a few lines code and not only on the web but now in R. I’ll go through some examples using the Parameter elevation Regression on Independent Slopes Model (PRISM) grids by looking at precipitation over time and space with a few lines of code.</p>
+<p>Finally, both the USGS and RGEE packages will help me do a short series on common distributions in hydrology, e.g. normal, lognormal, pearson/log pearson, etc. This will be fun bringing together both spatial and tabular data to explore the central tendancy, dispersion, shape and skew of precipitation and discharge data.
+Have a good one.</p>
 
-    <ol class="post-list">
-        
-        
-            <li class="post-stub" itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting">
-    <a href="/2020/08/20/2020-08-20-usgs-rgee-and-r-what/" itemprop="url" title="Go to post detail">
-        <h4 class="post-stub-title" itemprop="name">USGS, GEE and R. What?!?</h4>
-        <time class="post-stub-date" datetime="2020-08-20">Published Thu, Aug 20, 2020</time>
-        
-    </a>
-</li>
-        
-            <li class="post-stub" itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting">
-    <a href="/2020/06/09/2020-06-09-exploring-harvest-units/" itemprop="url" title="Go to post detail">
-        <h4 class="post-stub-title" itemprop="name">Exploring Catchments</h4>
-        <time class="post-stub-date" datetime="2020-06-09">Published Tue, Jun 9, 2020</time>
-        
-    </a>
-</li>
-        
-            <li class="post-stub" itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting">
-    <a href="/2020/04/05/welcome/" itemprop="url" title="Go to post detail">
-        <h4 class="post-stub-title" itemprop="name">Welcome</h4>
-        <time class="post-stub-date" datetime="2020-04-05">Published Sun, Apr 5, 2020</time>
-        
-    </a>
-</li>
-        
-    </ol>
+</div>
 
-    <div class="post-navigation">
+        <footer class="post-footer clearfix">
+    
+        <p class="post-tags">
+            <span>Tagged:</span>
+            
+            
+                <a href="/tags/https//github.com/usgs-r/dataretrieval/">https://github.com/USGS-R/dataRetrieval</a>, 
+            
+                <a href="/tags/https//github.com/r-spatial/rgee/">https://github.com/r-spatial/rgee</a>
+            
+        </p>
+    
+
+    <div class="share">
         
 
+        
+
+        
+        
     </div>
+</footer>
+
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://https-hydroblog-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </article>
 </div>
 
             </div>
@@ -170,3 +196,4 @@
         <script src="/js/scripts.js"></script>
     </body>
 </html>
+
