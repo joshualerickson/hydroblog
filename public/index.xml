@@ -13,6 +13,17 @@
     
     
     <item>
+      <title>Data Retrieval</title>
+      <link>/2020/08/20/2020-08-20-data-retrieval/</link>
+      <pubDate>Thu, 20 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/08/20/2020-08-20-data-retrieval/</guid>
+      <description>This is a quick peek into the perks of using R and USGS package dataRetrieval. This package is pretty slick and has a lot of functions associated with it. We will just look into some basic functions like readNWISdv to get some USGS gauging data and then do some quick exploratory data analysis to using the tidyverse.
+First, load the packages (or install) from the library().
+library(dataRetrieval)library(tidyverse)Now we can start bringing in some river data.</description>
+    </item>
+    
+    <item>
       <title>USGS, GEE and R. What?!?</title>
       <link>/2020/08/20/2020-08-20-usgs-rgee-and-r-what/</link>
       <pubDate>Thu, 20 Aug 2020 00:00:00 +0000</pubDate>
