@@ -12,6 +12,9 @@ description: 'R-spatial is killing it!'
 ---
 ```{r setup, include=FALSE}
 load("D:/R_folder/hydrotalks/hblog/environments/rgee.RData")
+library(rgee)
+library(sf)
+library(tidyverse)
 ```
 
 This is the quick rundown on the `rgee` package that is pretty dope. The r-spatial folks have thrown down some sweet packages  `sf`, `stars`, `mapview` (just to name a few of many) and now `rgee`. This is some pretty slick stuff. If your versed in JavaScript (JS) and wonder 'should I waste my time with this API interface?', then don't worry I'm not going to try and convince you just showing some of the basics. Just do your JS thing on GEE and it's all good; however, there are some perks of doing it in R like using the tidyverse.
@@ -144,7 +147,7 @@ prism_processed <- prism_processed %>% mutate(decade = year - (year %% 10), lust
 prism_processed %>% ggplot(aes(month, precip)) + geom_line(aes(color = year, group = year)) + scale_color_distiller(palette = "Spectral")+ theme_classic()  + scale_x_continuous(breaks = seq(1,12,1)) + labs(x = "Months", y = "Total Monthly Precipitation (mm)", title = "Looking at monthly total precipitation per year per month.") + scale_y_continuous(labels = scales::comma_format())
 ```
 
-These plots are actually not that bad if you can make them interactive by using `plotly`. The graph below will let you hover over areas and get data depending on what your eye hones in on. 
+These plots are actually not that bad if you can make them interactive by using `plotly`. The graph below will let you hover over areas and get data depending on what your eye hones in on (upper right corner has different viewing options). 
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 p1 <- prism_processed %>% ggplot(aes(month_day, precip)) + geom_line(aes(color = decade, group = decade)) + scale_color_distiller(palette = "RdBu")+ theme_classic() + theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + labs(x = "Years-Months-Days within 10 year partitions, e.g. 1980-1989, etc.", y = "Total Precipitation (mm)", title = "Looking at decades of annual total precipitation.") + scale_y_continuous(labels = scales::comma_format())
@@ -152,13 +155,14 @@ p1 <- prism_processed %>% ggplot(aes(month_day, precip)) + geom_line(aes(color =
 plotly::ggplotly(p1)
 ```
 
+
 Wonder what it would look like if we compared the per year discharge with the per year precipitation. Is there a relationship between the previous months precipitation and discharge... Let's look.
 
-So a way to do this is to look at the graphs in a normalized way or to just plot them on top of each other. 
+Many ways to do this but we'll keep it simple and just take the scaled values of each variable.
 
 ```{r message=FALSE}
 
-river_total <- tobacco_river %>% filter(!year %in% c("1958", "1959", "2019" , "2020")) %>% group_by(year, month) %>% summarise(total_q = sum(Flow))
+river_total <- tobacco_river %>% filter(!year %in% c("1958", "1959", "2019" , "2020")) %>% group_by(year, month) %>% summarise(total_q = sum(Flow), max_q = max(Flow), sd_q = round(sd(Flow),2))
 
 all_tobacco <- left_join(prism_processed, river_total, by = c("year", "month"))
 ```
@@ -171,5 +175,17 @@ p2 <- all_tobacco %>% filter(decade == "2010" ) %>% mutate(across(matches(c("pre
 plotly::ggplotly(p2)
 ```
 
-This is pretty cool. There are some great eye-ball test relationships between the two. However, we are just exploring and this would need a proper time-series analysis to see what kind of suprise we could generate. For now though, let's just end there. We'll have some good data sets to continue on with the distribution exploration later. Have a good one!
+This is pretty cool. There are some great eye-ball test relationships between the two. However, we are just exploring and this would need a proper time-series analysis to see what kind of suprise we could generate. Too wrap it up let's create a table that we can filter and reference any time we want to look at certain values, month, years and so on. We can do this by using the `DT` package. Won't go into too many details but here's a quick view of our data.
+
+```{r}
+library(DT)
+all_tobacco_DT <- as_tibble(all_tobacco) %>% select(Drainage = "name", 'Precipitation (mm)' = "precip", Year = "year", Month = "month", Decade = "decade", 'Total Discharge (cfs)' = "total_q", 'Max Discharge (cfs)' = "max_q", 'SD Discharge (cfs)'  = "sd_q") %>% mutate(`Precipitation (mm)` = round(`Precipitation (mm)`,0))
+
+DT::datatable(all_tobacco_DT, filter = 'top', options = list(
+  pageLength = 10, autoWidth = TRUE
+))
+```
+
+
+For now though, let's just end there. We'll have some good data sets to continue on with for exploring data distributions. Have a good one!
 
