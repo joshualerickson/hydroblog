@@ -186,13 +186,14 @@ library(DT)
 library(tidyverse)
 
 d1 <- DT::datatable(all_tobacco_DT, filter = 'top', options = list(
-  pageLength = 10, autoWidth = TRUE
+  pageLength = 8, autoWidth = TRUE
 ))
 ```
 ```{r, echo=FALSE}
 widgetframe::frameWidget(d1)
 ```
 
+<br>
 
 For now though, let's just end there. We'll have some good data sets to continue on with for exploring data distributions. Have a good one!
 
