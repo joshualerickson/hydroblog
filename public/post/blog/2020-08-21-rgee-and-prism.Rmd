@@ -1,0 +1,70 @@
+---
+title: RGEE and PRISM
+author: ''
+date: '2020-08-21'
+slug: rgee-and-prism
+output:
+  html_document:
+    highlight: tango
+categories: []
+tags: [https://github.com/r-spatial/rgee]
+description: 'R-spatial is killing it!'
+---
+```{r setup, include=FALSE}
+load("D:/R_folder/hydrotalks/hblog/environments/rgee.RData")
+```
+
+This is the quick rundown on the `rgee` package that is pretty dope. The r-spatial folks have thrown down some sweet packages  `sf`, `stars`, `mapview` (just to name a few of many) and now `rgee`. This is some pretty slick stuff. If your versed in JavaScript (JS) and wonder 'should I waste my time with this API interface?', then don't worry I'm not going to try and convince you just showing some of the basics. Just do your JS thing on GEE and it's all good; however, there are some perks of doing it in R like using the tidyverse.
+
+But, most of the time I run GEE with JS to explore image collections and do some basic wrangling. The reason I like working with R is because of the feature collection aspect that I'm so familiar with, e.g. `sf`. I'm just more comfortable with `sf` and it's functionality right now, that's all. No reason we can't blend, i.e. GEE with R, Python, or JS. 
+
+So, this is going to be a basic rundown of how to get some precipitation data from the Parameter elevation Regression on Independent Slopes Model (PRISM) and attach it to the Tobacco River watershed. What we want to do is take discharge data from the Tobacco River gage in Eureka, Montana (previous post using USGS `dataRetrieval`) and couple it with the PRISM data we generate using `rgee`. From this, we'll have discharge and precipitation data. This will give us plenty of data to then explore some common distributions hydrology, e.g. normal, lognormal, pearson- or -log pearson and gumbel. 
+
+So, let's dive in. You'll need to follow the instructions on the [r-spatial/rgee](https://github.com/r-spatial/rgee) website to get the downlow on how to install the R-python-JS API. It's pretty easy (`ee_install()`) and only takes about 10 minutes or less (I just made that up but it's probably pretty close). One important thing is to load the library and then initialize `rgee`. Also, you'll need to have an account with GEE (it's free).
+
+```{r message=FALSE, eval=FALSE}
+#install just once
+
+###ee_install()
+
+library(rgee)
+
+ee_Initialize()
+
+```
+
+Now let's pull in some PRISM image collections. But first we need to bring in our 'geometry' so that we can clip the bounds of the colletions. 
+
+```{r, message = FALSE, warning=FALSE}
+
+library(sf)
+library(tidyverse)
+
+#bring in folders I use a lot.
+lands <- "D:/R_folder/Shapes/Lands"
+hydro <- "D:/R_folder/Shapes/Hydro"
+
+#grab the gaging station location
+tobacoo_river_gage <- data.frame(y = 48.87777778, x = -115.05444444) %>% st_as_sf(coords = c("x", "y")) %>% st_set_crs("EPSG:4326") %>%  st_transform("EPSG:4326")
+
+#bring in some HUC 10s
+huc10 <- read_sf(paste0(hydro, "/district_huc10.shp")) %>% st_transform("EPSG:4326")
+
+#plot
+ggplot(data = huc10) + geom_sf() + geom_sf_text(aes(label = word(Name,1)), size = 2) + geom_sf(data = tobacoo_river_gage, aes(color = "Gaging Station")) + theme_classic() + labs(color = "USGS Tobacco River")
+
+```
+
+Looks like we could get away with including 'Fortine' and 'Tobacco', but you could probably clean it up by creating a flow path grid and extract the necessary catchments. However, we'll just keep it simple and use the two HUC 10s as most (90%) drains into that gaging station (trust me...). To do that we need to combined those two polygons and then union so that we can then start using GEE.
+
+```{r, message = FALSE, warning=FALSE, error=FALSE}
+polygon <- huc10 %>% filter(str_detect(word(Name,1), "Fortine|Tobacco")) %>% st_union()
+```
+```{r, echo=FALSE, message = FALSE, warning=FALSE, error=FALSE}
+nhdflowline <- read_sf(paste0(hydro, "/district_nhdflowline.shp"))%>% st_transform("EPSG:4326") %>% st_intersection(st_as_sf(polygon))
+
+ggplot() + geom_sf(data = polygon)+ geom_sf(data = nhdflowline, color = "blue", alpha = 0.3) + geom_sf(data = tobacoo_river_gage, aes(color = "Gaging Station")) + theme_classic() + labs(color = "USGS Tobacco River") 
+```
+
+
+

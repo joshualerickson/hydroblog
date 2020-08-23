@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Josh Erickson</copyright>
-    <lastBuildDate>Thu, 20 Aug 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 21 Aug 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>RGEE and PRISM</title>
+      <link>/2020/08/21/2020-08-21-rgee-and-prism/</link>
+      <pubDate>Fri, 21 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/08/21/2020-08-21-rgee-and-prism/</guid>
+      <description>This is the quick rundown on the rgee package that is pretty dope. The r-spatial folks have thrown down some sweet packages sf, stars, mapview (just to name a few of many) and now rgee. This is some pretty slick stuff. If your versed in JavaScript (JS) and wonder ‘should I waste my time with this API interface?’, then don’t worry I’m not going to try and convince you just showing some of the basics.</description>
+    </item>
     
     <item>
       <title>Data Retrieval</title>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>RGEE and PRISM &middot; Josh Erickson</title>
+        <meta name="description" content="R-spatial is killing it!">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="generator" content="Hugo 0.68.3" />
+        <meta name="robots" content="index,follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="RGEE and PRISM">
+<meta property="og:description" content="R-spatial is killing it!">
+<meta property="og:type" content="article">
+<meta property="og:url" content="/2020/08/21/2020-08-21-rgee-and-prism/">
+        <link rel="stylesheet" href="/dist/site.css">
+        <link rel="stylesheet" href="/dist/syntax.css">
+        <link rel="stylesheet" href="/dist/atom-one-light.css">
+<script src="/js/highlight.pack.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        
+        
+        
+        
+    </head>
+    <body>
+        
+
+        <div id="wrapper">
+            <header class="site-header">
+                <div class="container">
+                    <div class="site-title-wrapper">
+                        
+                            <h1 class="site-title">
+                                <a title="Welcome" href="/">Welcome</a>
+                            </h1>
+                        
+
+
+<a class="top-link hide" href="" id="js-top">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6"><path d="M12 6H0l6-6z"/></svg>
+  <span class="screen-reader-text">Top</span>
+</a>
+                        
+                        <a class="button-square" href="/index.xml"><i class="fa fa-rss"></i></a>
+                        
+                        
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Github" title="Github" href="https://github.com/joshualerickson" rel="me">
+                                <i class="fa fa-github-alt"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Stack Overflow" title="Stack Overflow" href="https://stackoverflow.com/users/12771384/josh-erickson" rel="me">
+                                <i class="fa fa-stack-overflow"></i>
+                            </a>
+                        
+                        
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Email" title="Email" href="mailto:joshua.l.erickson@usda.gov">
+                                <i class="fa fa-envelope"></i>
+                            </a>
+                        
+                    </div>
+
+                    <ul class="site-nav">
+                        
+    <li class="site-nav-item">
+        <a title="Blog" href="/blog/">Blog</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="Projects" href="/project/">Projects</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="Contact" href="/page/contact/">Contact</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="About" href="/page/about/">About</a>
+    </li>
+
+                    </ul>
+                </div>
+            </header>
+
+            <div id="container">
+
+
+<div class="container">
+    <article class="post-container" itemscope="" itemtype="http://schema.org/BlogPosting">
+        <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">RGEE and PRISM</h1>
+    
+        <p class="post-description" itemprop="description">R-spatial is killing it!</p>
+    
+    <p class="post-date">
+        <span>Published <time datetime="2020-08-21" itemprop="datePublished">Fri, Aug 21, 2020</time></span>
+        <span>by</span>
+        <span itemscope="" itemprop="author" itemtype="https://schema.org/Person">
+            <span itemprop="name">
+                <a href="#" itemprop="url" rel="author">Josh Erickson</a>
+            </span>
+        </span>
+    </p>
+    
+        <p class="post-reading post-line">
+            <span>Estimated reading time: 3 min</span>
+        </p>
+    
+</header>
+
+        <div class="post-content clearfix" itemprop="articleBody">
+    
+
+    
+
+
+<p>This is the quick rundown on the <code>rgee</code> package that is pretty dope. The r-spatial folks have thrown down some sweet packages <code>sf</code>, <code>stars</code>, <code>mapview</code> (just to name a few of many) and now <code>rgee</code>. This is some pretty slick stuff. If your versed in JavaScript (JS) and wonder ‘should I waste my time with this API interface?’, then don’t worry I’m not going to try and convince you just showing some of the basics. Just do your JS thing on GEE and it’s all good; however, there are some perks of doing it in R like using the tidyverse.</p>
+<p>But, most of the time I run GEE with JS to explore image collections and do some basic wrangling. The reason I like working with R is because of the feature collection aspect that I’m so familiar with, e.g. <code>sf</code>. I’m just more comfortable with <code>sf</code> and it’s functionality right now, that’s all. No reason we can’t blend, i.e. GEE with R, Python, or JS.</p>
+<p>So, this is going to be a basic rundown of how to get some precipitation data from the Parameter elevation Regression on Independent Slopes Model (PRISM) and attach it to the Tobacco River watershed. What we want to do is take discharge data from the Tobacco River gage in Eureka, Montana (previous post using USGS <code>dataRetrieval</code>) and couple it with the PRISM data we generate using <code>rgee</code>. From this, we’ll have discharge and precipitation data. This will give us plenty of data to then explore some common distributions hydrology, e.g. normal, lognormal, pearson- or -log pearson and gumbel.</p>
+<p>So, let’s dive in. You’ll need to follow the instructions on the <a href="https://github.com/r-spatial/rgee">r-spatial/rgee</a> website to get the downlow on how to install the R-python-JS API. It’s pretty easy (<code>ee_install()</code>) and only takes about 10 minutes or less (I just made that up but it’s probably pretty close). One important thing is to load the library and then initialize <code>rgee</code>. Also, you’ll need to have an account with GEE (it’s free).</p>
+<pre class="r"><code>#install just once
+
+###ee_install()
+
+library(rgee)
+
+ee_Initialize()</code></pre>
+<p>Now let’s pull in some PRISM image collections. But first we need to bring in our ‘geometry’ so that we can clip the bounds of the colletions.</p>
+<pre class="r"><code>library(sf)
+library(tidyverse)
+
+#bring in folders I use a lot.
+lands &lt;- &quot;D:/R_folder/Shapes/Lands&quot;
+hydro &lt;- &quot;D:/R_folder/Shapes/Hydro&quot;
+
+#grab the gaging station location
+tobacoo_river_gage &lt;- data.frame(y = 48.87777778, x = -115.05444444) %&gt;% st_as_sf(coords = c(&quot;x&quot;, &quot;y&quot;)) %&gt;% st_set_crs(&quot;EPSG:4326&quot;) %&gt;%  st_transform(&quot;EPSG:4326&quot;)
+
+#bring in some HUC 10s
+huc10 &lt;- read_sf(paste0(hydro, &quot;/district_huc10.shp&quot;)) %&gt;% st_transform(&quot;EPSG:4326&quot;)
+
+#plot
+ggplot(data = huc10) + geom_sf() + geom_sf_text(aes(label = word(Name,1)), size = 2) + geom_sf(data = tobacoo_river_gage, aes(color = &quot;Gaging Station&quot;)) + theme_classic() + labs(color = &quot;USGS Tobacco River&quot;)</code></pre>
+<p><img src="/post/blog/2020-08-21-rgee-and-prism_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>Looks like we could get away with including ‘Fortine’ and ‘Tobacco’, but you could probably clean it up by creating a flow path grid and extract the necessary catchments. However, we’ll just keep it simple and use the two HUC 10s as most (90%) drains into that gaging station (trust me…). To do that we need to combined those two polygons and then union so that we can then start using GEE.</p>
+<pre class="r"><code>polygon &lt;- huc10 %&gt;% filter(str_detect(word(Name,1), &quot;Fortine|Tobacco&quot;)) %&gt;% st_union()</code></pre>
+<p><img src="/post/blog/2020-08-21-rgee-and-prism_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+
+</div>
+
+        <footer class="post-footer clearfix">
+    
+        <p class="post-tags">
+            <span>Tagged:</span>
+            
+            
+                <a href="/tags/https//github.com/r-spatial/rgee/">https://github.com/r-spatial/rgee</a>
+            
+        </p>
+    
+
+    <div class="share">
+        
+
+        
+
+        
+        
+    </div>
+</footer>
+
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://https-hydroblog-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </article>
+</div>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="site-title-wrapper">
+                    <h1 class="site-title">
+                        <a title="Welcome" href="/">Welcome</a>
+                    </h1>
+                    <a class="button-square button-jump-top js-jump-top" href="#">
+                        <i class="fa fa-angle-up"></i>
+                    </a>
+                </div>
+
+                <p class="footer-copyright">
+                    <span>&copy; 2020 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                </p>
+                <p class="footer-copyright">
+                    <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
+                    <span>/ <a href="https://github.com/jbub/ghostwriter">Ported</a> to Hugo By <a href="https://github.com/jbub">jbub</a></span>
+                </p>
+            </div>
+        </footer>
+
+        <script src="/js/jquery-1.11.3.min.js"></script>
+        <script src="/js/jquery.fitvids.js"></script>
+        <script src="/js/scripts.js"></script>
+    </body>
+</html>
+
