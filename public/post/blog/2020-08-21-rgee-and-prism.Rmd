@@ -177,9 +177,9 @@ plotly::ggplotly(p2)
 
 This is pretty cool. There are some great eye-ball test relationships between the two. However, we are just exploring and this would need a proper time-series analysis to see what kind of suprise we could generate. To wrap it up let's create a table that we can filter and reference any time we want to look at certain values, month, years and so on. We can do this by using the `DT` package. Won't go into too many details but here's a quick view of our data.
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 library(DT)
-all_tobacco_DT <- as_tibble(all_tobacco) %>% select(Drainage = "name", 'Precipitation (mm)' = "precip", Year = "year", Month = "month", Decade = "decade", 'Total Discharge (cfs)' = "total_q", 'Max Discharge (cfs)' = "max_q", 'SD Discharge (cfs)'  = "sd_q") %>% mutate(`Precipitation (mm)` = round(`Precipitation (mm)`,0))
+all_tobacco_DT <- as_tibble(all_tobacco) %>% select(Drainage = "name", 'Precipitation (mm)' = "precip", Year = "year", Month = "month", 'Total Discharge (cfs)' = "total_q", 'Max Discharge (cfs)' = "max_q", 'SD Discharge (cfs)'  = "sd_q") %>% mutate(`Precipitation (mm)` = round(`Precipitation (mm)`,0))
 ```
 ```{r, message=FALSE, warning=FALSE, include=FALSE}
 library(DT)
@@ -189,7 +189,7 @@ d1 <- DT::datatable(all_tobacco_DT, filter = 'top', options = list(
   pageLength = 10, autoWidth = TRUE
 ))
 ```
-```{r}
+```{r, echo=FALSE}
 widgetframe::frameWidget(d1)
 ```
 
