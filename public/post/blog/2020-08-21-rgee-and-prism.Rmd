@@ -110,28 +110,40 @@ filtered_prism <- filtered_prism$map(function(x) x$reproject("EPSG:4326")$select
 
 ```
 
-Now we can extract the **sum** of the watershed per month per year. The sum function is basically taking each pixel within this area per month per year and summing the 'ppt' values, which will be a lot of mm's gettin added together.
+Now we can extract the **sum** of the watershed per month per year. The sum function is basically taking each pixel within this area per month per year and summing the 'ppt' values, which will be a lot of mm's gettin added together so let's grab the mean as well.
 
 ```{r, eval=FALSE}
 prism_tabacco <- ee_extract(x = filtered_prism, y = tobacco_region, sf = FALSE, fun = ee$Reducer$sum())
+
+prism_tabacco_mean <- ee_extract(x = filtered_prism, y = tobacco_region, sf = FALSE, fun = ee$Reducer$mean())
 ```
 
 Now we need to wrangle the data because it is in a long format and the variable names are long.
 ```{r, eval=FALSE, message=FALSE}
 prism_tabacco$name <- "Tobacco"
-
+prism_tabacco_mean$name <- "Tobacco"
 library(lubridate)
-prism_processed <- prism_tabacco %>%
-  pivot_longer(-name, names_to = "Date", values_to = "precip") %>%
+library(tidyverse)
+
+prism_mean_processed <- prism_tabacco_mean %>%
+  pivot_longer(-name, names_to = "Date", values_to = "precip_mean") %>%
   mutate(Date = str_remove(Date, "X"), 
          Date = parse_date_time(Date, "ym"),
-         year = year(Date), month = month(Date), day = day(Date)) 
+         year = year(Date), month = month(Date), day = day(Date),wy = smwrBase::waterYear(Date, TRUE))
+
+prism_processed <- prism_tabacco %>%
+  pivot_longer(-name, names_to = "Date", values_to = "precip_total") %>%
+  mutate(Date = str_remove(Date, "X"), 
+         Date = parse_date_time(Date, "ym"),
+         year = year(Date), month = month(Date), day = day(Date), wy =  smwrBase::waterYear(Date, TRUE))
+
+prism_processed <- left_join(prism_processed, select(prism_mean_processed, wy, precip_mean, year, month ), by = c("year", "month", "wy"))
 ```
 
 Sweet, now we have a dataset of the same type to compare with the Tabacco River gaging data. Let's plot the PRISM data like we did with the river data.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-prism_processed %>%  ggplot(aes(month, precip)) + geom_boxplot(aes(group = month)) + 
+prism_processed %>%  ggplot(aes(month, precip_total)) + geom_boxplot(aes(group = month)) + 
 stat_summary(fun=median, geom="line", aes(group=1))  + 
 stat_summary(fun=median, geom="point", color = "red") + theme_classic()  + scale_x_continuous(breaks = seq(1,12,1)) + labs(x = "Months", y = "Total Precipitation (mm)", title = "Looking at monthly total precipitation per year per month.") + scale_y_continuous(labels = scales::comma_format())
 ```
@@ -144,13 +156,13 @@ prism_processed <- prism_processed %>% mutate(decade = year - (year %% 10), lust
 
 
 ```{r, echo=FALSE}
-prism_processed %>% ggplot(aes(month, precip)) + geom_line(aes(color = year, group = year)) + scale_color_distiller(palette = "Spectral")+ theme_classic()  + scale_x_continuous(breaks = seq(1,12,1)) + labs(x = "Months", y = "Total Monthly Precipitation (mm)", title = "Looking at monthly total precipitation per year per month.") + scale_y_continuous(labels = scales::comma_format())
+prism_processed %>% ggplot(aes(month, precip_total)) + geom_line(aes(color = year, group = year)) + scale_color_distiller(palette = "Spectral")+ theme_classic()  + scale_x_continuous(breaks = seq(1,12,1)) + labs(x = "Months", y = "Total Monthly Precipitation (mm)", title = "Looking at monthly total precipitation per year per month.") + scale_y_continuous(labels = scales::comma_format())
 ```
 
 These plots are actually not that bad if you can make them interactive by using `plotly`. The graph below will let you hover over areas and get data depending on what your eye hones in on (upper right corner has different viewing options). 
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
-p1 <- prism_processed %>% ggplot(aes(month_day, precip)) + geom_line(aes(color = decade, group = decade)) + scale_color_distiller(palette = "RdBu")+ theme_classic() + theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + labs(x = "Years-Months-Days within 10 year partitions, e.g. 1980-1989, etc.", y = "Total Precipitation (mm)", title = "Looking at decades of annual total precipitation.") + scale_y_continuous(labels = scales::comma_format())
+p1 <- prism_processed %>% ggplot(aes(month_day, precip_total)) + geom_line(aes(color = decade, group = decade)) + scale_color_distiller(palette = "RdBu")+ theme_classic() + theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + labs(x = "Years-Months-Days within 10 year partitions, e.g. 1980-1989, etc.", y = "Total Precipitation (mm)", title = "Looking at decades of annual total precipitation.") + scale_y_continuous(labels = scales::comma_format())
 
 plotly::ggplotly(p1)
 ```
@@ -161,16 +173,15 @@ Wonder what it would look like if we compared the per year discharge with the pe
 Many ways to do this but we'll keep it simple and just take the scaled values of each variable.
 
 ```{r message=FALSE}
+river_total <- tobacco_river %>% filter(!year %in% c("1958", "1959", "2019" , "2020"))%>% mutate(wy = smwrBase::waterYear(Date, TRUE)) %>% group_by(year, month) %>% summarise(total_q = sum(Flow), max_q = max(Flow), sd_q = round(sd(Flow),2), wy = wy)
 
-river_total <- tobacco_river %>% filter(!year %in% c("1958", "1959", "2019" , "2020")) %>% group_by(year, month) %>% summarise(total_q = sum(Flow), max_q = max(Flow), sd_q = round(sd(Flow),2))
-
-all_tobacco <- left_join(prism_processed, river_total, by = c("year", "month"))
+all_tobacco <- left_join(prism_processed, river_total, by = c("year", "month", "wy"))
 ```
 
 Alright, now we have a data set with both the precipitation totals and discharge totals. Lets just see if there is a trend between precipitation and discharge. We'll just take about 10 years of the most recent data.
 
 ```{r}
-p2 <- all_tobacco %>% filter(decade == "2010" ) %>% mutate(across(matches(c("precip", "total_q")), scale)) %>% pivot_longer(cols = c("precip", "total_q"), names_to = "water", values_to = "total_water") %>% ggplot(aes(month, total_water)) + geom_line(aes(color = water)) + facet_wrap(~year, scales = "free_y") + scale_x_continuous(breaks = seq(1,12, 1)) + theme_light()
+p2 <- all_tobacco %>% filter(decade == "2010" ) %>% mutate(across(matches(c("precip_total", "total_q")), scale)) %>% pivot_longer(cols = c("precip_total", "total_q"), names_to = "water", values_to = "total_water") %>% ggplot(aes(month, total_water)) + geom_line(aes(color = water)) + facet_wrap(~year, scales = "free_y") + scale_x_continuous(breaks = seq(1,12, 1)) + theme_light()
 
 plotly::ggplotly(p2)
 ```
@@ -179,17 +190,20 @@ This is pretty cool. There are some great eye-ball test relationships between th
 
 ```{r, eval=FALSE, echo=FALSE}
 library(DT)
-all_tobacco_DT <- as_tibble(all_tobacco) %>% select(Drainage = "name", 'Precipitation (mm)' = "precip", Year = "year", Month = "month", 'Total Discharge (cfs)' = "total_q", 'Max Discharge (cfs)' = "max_q", 'SD Discharge (cfs)'  = "sd_q") %>% mutate(`Precipitation (mm)` = round(`Precipitation (mm)`,0))
+all_tobacco_DT <- as_tibble(all_tobacco) %>% select(Drainage = "name", 'Precipitation (mm)' = "precip_total", 'Precipitation Mean (mm)' = precip_mean, Year = "year", Month = "month", 'Water Year' = "wy", 'Total Discharge (cfs)' = "total_q", 'Max Discharge (cfs)' = "max_q", 'SD Discharge (cfs)'  = "sd_q") %>% mutate(`Precipitation (mm)` = round(`Precipitation (mm)`,0), `Precipitation Mean (mm)` = round(`Precipitation Mean (mm)`,0)) %>% mutate(across(matches(c("Year", "Month", "Water Year")), as.integer))
 ```
 ```{r, message=FALSE, warning=FALSE, include=FALSE}
 library(DT)
 library(tidyverse)
 
-d1 <- DT::datatable(all_tobacco_DT, filter = 'top', options = list(
-  pageLength = 8, autoWidth = TRUE
+d1 <- DT::datatable(all_tobacco_DT,extensions = 'FixedColumns', filter = 'top', options = list(
+  pageLength = 8, 
+  dom = 't',
+  scrollX = TRUE,
+  scrollCollapse = TRUE
 ))
 ```
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 widgetframe::frameWidget(d1)
 ```
 
