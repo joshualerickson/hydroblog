@@ -28,7 +28,7 @@ Although these workflows have been used by the U.S. Forest Service (USFS), no wa
       <pubDate>Fri, 21 Aug 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/08/21/2020-08-21-rgee-and-prism/</guid>
-      <description>This is the quick rundown on the rgee package that is pretty dope. The r-spatial folks have thrown down some sweet packages sf, stars, mapview (just to name a few of many) and now rgee. This is some pretty slick stuff. If your versed in JavaScript (JS) and wonder ‘should I waste my time with this API interface?’, then don’t worry I’m not going to try and convince you just showing some of the basics.</description>
+      <description>This is the quick rundown on the rgee package that is pretty dope. The r-spatial folks have thrown down some sweet packages sf, stars, mapview (just to name a few) and now rgee. This is some pretty slick stuff. If your versed in JavaScript (JS) and wonder ‘should I waste my time with this API interface?’. Don’t worry. I’m not going to try and convince you to be a ‘R’ person just showing some of the basics and capabilities of using GEE R.</description>
     </item>
     
     <item>

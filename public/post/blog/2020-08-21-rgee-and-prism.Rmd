@@ -17,11 +17,11 @@ library(sf)
 library(tidyverse)
 ```
 
-This is the quick rundown on the `rgee` package that is pretty dope. The r-spatial folks have thrown down some sweet packages  `sf`, `stars`, `mapview` (just to name a few of many) and now `rgee`. This is some pretty slick stuff. If your versed in JavaScript (JS) and wonder 'should I waste my time with this API interface?', then don't worry I'm not going to try and convince you just showing some of the basics. Just do your JS thing on GEE and it's all good; however, there are some perks of doing it in R like using the tidyverse.
+This is the quick rundown on the `rgee` package that is pretty dope. The r-spatial folks have thrown down some sweet packages  `sf`, `stars`, `mapview` (just to name a few) and now `rgee`. This is some pretty slick stuff. If your versed in JavaScript (JS) and wonder 'should I waste my time with this API interface?'. Don't worry. I'm not going to try and convince you to be a 'R' person just showing some of the basics and capabilities of using GEE R. So, if you just want to do your JS thing on GEE, it's all good; however, there are some perks of doing it in R like using the tidyverse as you'll see.
 
-But, most of the time I run GEE with JS to explore image collections and do some basic wrangling. The reason I like working with R is because of the feature collection aspect that I'm so familiar with, e.g. `sf`. I'm just more comfortable with `sf` and it's functionality right now, that's all. No reason we can't blend, i.e. GEE with R, Python, or JS. 
+But, most of the time I run GEE with JS to explore image collections and do some basic wrangling. The main reason I like working with R is because of the feature collection aspect and wrangling that I'm so familiar with, e.g. `sf` and `tidyverse`. I'm just more comfortable, that's all. No reason we can't blend, i.e. GEE with R, Python, or JS. #StopThe-R-Python-Beef. 
 
-So, this is going to be a basic rundown of how to get some precipitation data from the Parameter elevation Regression on Independent Slopes Model (PRISM) and attach it to the Tobacco River watershed. What we want to do is take discharge data from the Tobacco River gage in Eureka, Montana (previous post using USGS `dataRetrieval`) and couple it with the PRISM data we generate using `rgee`. From this, we'll have discharge and precipitation data. This will give us plenty of data to then explore some common distributions hydrology, e.g. normal, lognormal, pearson- or -log pearson and gumbel. 
+So, this is going to be a basic rundown of how to get some precipitation data from the Parameter elevation Regression on Independent Slopes Model (PRISM) and attach it to the Tobacco River watershed. What we want to do is take discharge data from the Tobacco River gage in Eureka, Montana (previous post using USGS `dataRetrieval`) and couple it with the PRISM data we generate using `rgee`. From this, we'll have discharge and precipitation data. This will give us plenty of data to explore some common distributions in hydrology in later posts, e.g. normal, lognormal, pearson- or -log pearson and gumbel. 
 
 So, let's dive in. You'll need to follow the instructions on the [r-spatial/rgee](https://github.com/r-spatial/rgee) website to get the downlow on how to install the R-python-JS API. It's pretty easy (`ee_install()`) and only takes about 10 minutes or less (I just made that up but it's probably pretty close). One important thing is to load the library and then initialize `rgee`. Also, you'll need to have an account with GEE (it's free).
 
@@ -110,7 +110,7 @@ filtered_prism <- filtered_prism$map(function(x) x$reproject("EPSG:4326")$select
 
 ```
 
-Now we can extract the **sum** of the watershed per month per year. The sum function is basically taking each pixel within this area per month per year and summing the 'ppt' values, which will be a lot of mm's gettin added together so let's grab the mean as well.
+Now we can extract the **sum** of the watershed per month per year. The sum function is basically taking each pixel within this area per month per year and summing the 'ppt' values, which will be a lot of mm's gettin added together so let's grab the **mean** as well.
 
 ```{r, eval=FALSE}
 prism_tabacco <- ee_extract(x = filtered_prism, y = tobacco_region, sf = FALSE, fun = ee$Reducer$sum())
@@ -180,10 +180,15 @@ all_tobacco <- left_join(prism_processed, river_total, by = c("year", "month", "
 
 Alright, now we have a data set with both the precipitation totals and discharge totals. Lets just see if there is a trend between precipitation and discharge. We'll just take about 10 years of the most recent data.
 
-```{r}
-p2 <- all_tobacco %>% filter(decade == "2010" ) %>% mutate(across(matches(c("precip_total", "total_q")), scale)) %>% pivot_longer(cols = c("precip_total", "total_q"), names_to = "water", values_to = "total_water") %>% ggplot(aes(month, total_water)) + geom_line(aes(color = water)) + facet_wrap(~year, scales = "free_y") + scale_x_continuous(breaks = seq(1,12, 1)) + theme_light()
+```{r echo=FALSE}
+p2 <- all_tobacco %>% filter(decade == "2010" ) %>% mutate(across(matches(c("precip_total", "total_q")), scale)) %>% pivot_longer(cols = c("precip_total", "total_q"), names_to = "water", values_to = "total_water") %>% ggplot(aes(month, total_water)) + geom_line(aes(color = water)) + facet_wrap(~year) + scale_x_continuous(breaks = seq(1,12, 1)) + theme_light()
 
 plotly::ggplotly(p2)
+```
+
+```{r, message=FALSE, echo=FALSE}
+p3 <- all_tobacco %>% mutate(across(matches(c("precip_total", "total_q")), scale)) %>% pivot_longer(cols = c("precip_total", "total_q"), names_to = "water", values_to = "total_water") %>% group_by(year, month) %>% slice_head(n =2) %>%  ggplot(aes(month, total_water)) + geom_smooth(aes(color = lustrum, group = lustrum),se=F) + facet_wrap(~water) + scale_x_continuous(breaks = seq(1,12, 1)) + theme_light() 
+plotly::ggplotly(p3)
 ```
 
 This is pretty cool. There are some great eye-ball test relationships between the two. However, we are just exploring and this would need a proper time-series analysis to see what kind of suprise we could generate. To wrap it up let's create a table that we can filter and reference any time we want to look at certain values, month, years and so on. We can do this by using the `DT` package. Won't go into too many details but here's a quick view of our data.
