@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Josh Erickson</copyright>
-    <lastBuildDate>Fri, 21 Aug 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 23 Aug 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Disclaimer</title>
+      <link>/page/disclaimer/</link>
+      <pubDate>Sun, 23 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/page/disclaimer/</guid>
+      <description>This blog is in the public domain because it contains materials that originally came from the U.S. Forest Service, an agency of the United States Department of Agriculture. For more information, see the official USFS copyright policy.
+Although these workflows have been used by the U.S. Forest Service (USFS), no warranty, expressed or implied, is made by the USFS or the U.S. Government as to the accuracy and functioning of the workflow and related workflow material nor shall the fact of distribution constitute any such warranty, and no responsibility is assumed by the USFS in connection therewith.</description>
+    </item>
     
     <item>
       <title>RGEE and PRISM</title>
@@ -65,7 +75,7 @@ library(dataRetrieval)library(tidyverse)Now we can start bringing in some rive
       <pubDate>Fri, 03 Apr 2015 02:13:50 +0000</pubDate>
       
       <guid>/page/about/</guid>
-      <description>About My name is Josh Erickson and I live in Eureka, MT. I&amp;rsquo;m a hydrologist for the USDA Forest Service. I&amp;rsquo;m married to my lovely wife Mandy, who is the best! We have a 8 year old fur-baby named marley (see below). I like to nerd out on stats, math and environmental sciences but also get out in the woods and get lost.</description>
+      <description>About My name is Josh Erickson and I live in Eureka, MT. I&amp;rsquo;m a hydrologist and married to my lovely wife Mandy, who is the best! We have a 8 year old fur-baby named marley (see below). I like to nerd out on stats, math and environmental sciences but also get out in the woods and get lost.</description>
     </item>
     
     <item>
