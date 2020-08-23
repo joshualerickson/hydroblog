@@ -177,9 +177,10 @@ tobacco_river &lt;- tobacco_river %&gt;% group_by(decade,month)  %&gt;% mutate(m
 <p>Wow, still awful! What if we did boxplot per month? Maybe this would help see the dispersion.</p>
 <pre class="r"><code>tobacco_river %&gt;% filter(!decade %in% c(&quot;1950&quot;,&quot;2020&quot;)) %&gt;% group_by(year, month) %&gt;% slice_max(Flow) %&gt;%  ggplot(aes(month, Flow)) + geom_boxplot(aes(group = month)) + 
 stat_summary(fun=median, geom=&quot;line&quot;, aes(group=1))  + 
-stat_summary(fun=median, geom=&quot;point&quot;, color = &quot;red&quot;) + theme_classic()  + scale_x_continuous(breaks = seq(1,12,1)) + labs(x = &quot;Months&quot;, y = &quot;Maximum Monthly Discharge (cfs)&quot;, title = &quot;Looking at monthly max discharge per year.&quot;)</code></pre>
+stat_summary(fun=median, geom=&quot;point&quot;, color = &quot;red&quot;) + theme_classic()  + scale_x_continuous(breaks = seq(1,12,1)) + labs(x = &quot;Months&quot;, y = &quot;Maximum Monthly Discharge (cfs)&quot;, title = &quot;Looking at monthly max discharge per year.&quot;) + scale_y_continuous(labels = scales::comma_format())</code></pre>
 <p><img src="/post/blog/2020-08-20-data-retrieval_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
-<p>Much better! I like this as it gives more context into the extremes of the months (i.e. outliers) and you can see the median per month which is always nice. In the next blog we’ll take this data and compare it to some precipitation data from the RGEE package. We’ll see if there are any interesting trends with the two, i.e. gauging station and PRISM.</p>
+<p>Much better! I like this as it gives more context into the extremes of the months (i.e. outliers) and you can see the median per month which is always nice. In the next blog we’ll take this data and compare it to some precipitation data from the RGEE package. We’ll see if there are any interesting trends with the two, i.e. gauging station and PRISM. The PRISM data takes in <strong>total</strong> monthly precipitation as well so we can look at both the total discharge per month and total precipitation. The plot below show the <strong>total</strong> discharge per month per year.</p>
+<p><img src="/post/blog/2020-08-20-data-retrieval_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 
 </div>
 

@@ -105,7 +105,15 @@ Wow, still awful! What if we did boxplot per month? Maybe this would help see th
 ```{r}
 tobacco_river %>% filter(!decade %in% c("1950","2020")) %>% group_by(year, month) %>% slice_max(Flow) %>%  ggplot(aes(month, Flow)) + geom_boxplot(aes(group = month)) + 
 stat_summary(fun=median, geom="line", aes(group=1))  + 
-stat_summary(fun=median, geom="point", color = "red") + theme_classic()  + scale_x_continuous(breaks = seq(1,12,1)) + labs(x = "Months", y = "Maximum Monthly Discharge (cfs)", title = "Looking at monthly max discharge per year.")
+stat_summary(fun=median, geom="point", color = "red") + theme_classic()  + scale_x_continuous(breaks = seq(1,12,1)) + labs(x = "Months", y = "Maximum Monthly Discharge (cfs)", title = "Looking at monthly max discharge per year.") + scale_y_continuous(labels = scales::comma_format())
 ```
 
-Much better! I like this as it gives more context into the extremes of the months (i.e. outliers) and you can see the median per month which is always nice. In the next blog we'll take this data and compare it to some precipitation data from the RGEE package. We'll see if there are any interesting trends with the two, i.e. gauging station and PRISM. 
+Much better! I like this as it gives more context into the extremes of the months (i.e. outliers) and you can see the median per month which is always nice. In the next blog we'll take this data and compare it to some precipitation data from the RGEE package. We'll see if there are any interesting trends with the two, i.e. gauging station and PRISM. The PRISM data takes in **total** monthly precipitation as well so we can look at both the total discharge per month and total precipitation. The plot below show the **total** discharge per month per year.
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+tobacco_river %>% filter(!decade %in% c("1950","2020")) %>% group_by(year, month) %>% summarise(total_q = sum(Flow)) %>%  ggplot(aes(month, total_q)) + geom_boxplot(aes(group = month)) + 
+stat_summary(fun=median, geom="line", aes(group=1))  + 
+stat_summary(fun=median, geom="point", color = "red") + theme_classic()  + scale_x_continuous(breaks = seq(1,12,1)) + labs(x = "Months", y = "Total Discharge (cfs)", title = "Looking at monthly total discharge per year per month.") + scale_y_continuous(labels = scales::comma_format())
+```
+
