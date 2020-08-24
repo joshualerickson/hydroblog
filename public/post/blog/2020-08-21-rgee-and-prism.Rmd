@@ -181,13 +181,14 @@ all_tobacco <- left_join(prism_processed, river_total, by = c("year", "month", "
 Alright, now we have a data set with both the precipitation totals and discharge totals. Lets just see if there is a trend between precipitation and discharge. We'll just take about 10 years of the most recent data.
 
 ```{r echo=FALSE}
-p2 <- all_tobacco %>% filter(decade == "2010" ) %>% mutate(across(matches(c("precip_total", "total_q")), scale)) %>% pivot_longer(cols = c("precip_total", "total_q"), names_to = "water", values_to = "total_water") %>% ggplot(aes(month, total_water)) + geom_line(aes(color = water)) + facet_wrap(~year) + scale_x_continuous(breaks = seq(1,12, 1)) + theme_light()
+p2 <- all_tobacco %>% filter(decade == "2010" ) %>% mutate(across(matches(c("precip_total", "total_q")), scale)) %>% pivot_longer(cols = c("precip_total", "total_q"), names_to = "water", values_to = "total_water") %>% ggplot(aes(month, total_water)) + geom_line(aes(color = water)) + facet_wrap(~year) + scale_x_continuous(breaks = seq(1,12, 1)) + theme_light() + geom_hline(yintercept = 0, size = .5)
 
 plotly::ggplotly(p2)
 ```
 
 ```{r, message=FALSE, echo=FALSE}
-p3 <- all_tobacco %>% mutate(across(matches(c("precip_total", "total_q")), scale)) %>% pivot_longer(cols = c("precip_total", "total_q"), names_to = "water", values_to = "total_water") %>% group_by(year, month) %>% slice_head(n =2) %>%  ggplot(aes(month, total_water)) + geom_smooth(aes(color = lustrum, group = lustrum),se=F) + facet_wrap(~water) + scale_x_continuous(breaks = seq(1,12, 1)) + theme_light() 
+p3 <- all_tobacco %>% mutate(across(matches(c("precip_total", "total_q")), scale)) %>% pivot_longer(cols = c("precip_total", "total_q"), names_to = "water", values_to = "total_water") %>% group_by(year, month) %>% slice_head(n =2) %>%  ggplot(aes(month, total_water)) + geom_smooth(aes(color = lustrum, group = lustrum),se=F) + facet_wrap(~water) + scale_x_continuous(breaks = seq(1,12, 1)) + theme_light()  + geom_hline(yintercept = 0, size = .5)
+
 plotly::ggplotly(p3)
 ```
 
