@@ -184,19 +184,21 @@ Alright, now we have a data set with both the precipitation totals and discharge
 p2 <- all_tobacco %>% filter(decade == "2010" ) %>% mutate(across(matches(c("precip_total", "total_q")), scale)) %>% pivot_longer(cols = c("precip_total", "total_q"), names_to = "water", values_to = "total_water") %>% ggplot(aes(month, total_water)) + geom_line(aes(color = water)) + facet_wrap(~year) + scale_x_continuous(breaks = seq(1,12, 1)) + theme_light() + geom_hline(yintercept = 0, size = .5)
 
 plotly::ggplotly(p2)
+
 ```
 
 ```{r, message=FALSE, echo=FALSE}
-p3 <- all_tobacco %>% mutate(across(matches(c("precip_total", "total_q")), scale)) %>% pivot_longer(cols = c("precip_total", "total_q"), names_to = "water", values_to = "total_water") %>% group_by(year, month) %>% slice_head(n =2) %>%  ggplot(aes(month, total_water)) + geom_smooth(aes(color = lustrum, group = lustrum),se=F) + facet_wrap(~water) + scale_x_continuous(breaks = seq(1,12, 1)) + theme_light()  + geom_hline(yintercept = 0, size = .5)
+p3 <- all_tobacco %>% mutate(across(matches(c("precip_total", "total_q")), scale)) %>% pivot_longer(cols = c("precip_total", "total_q"), names_to = "water", values_to = "total_water") %>% group_by(year, month) %>% slice_head(n =2) %>%  ggplot(aes(month, total_water)) + geom_smooth(aes(color = lustrum, group = lustrum),se=F) + facet_wrap(~water) + scale_x_continuous(breaks = seq(1,12, 1)) + theme_light()  + geom_hline(yintercept = 0, size = .5)+labs(x="Month", y = "Scaled Values") 
 
-plotly::ggplotly(p3)
+plotly::ggplotly(p3) 
+
 ```
 
 This is pretty cool. There are some great eye-ball test relationships between the two. However, we are just exploring and this would need a proper time-series analysis to see what kind of suprise we could generate. To wrap it up let's create a table that we can filter and reference any time we want to look at certain values, month, years and so on. We can do this by using the `DT` package. Won't go into too many details but here's a quick view of our data.
 
 ```{r, eval=FALSE, echo=FALSE}
 library(DT)
-all_tobacco_DT <- as_tibble(all_tobacco) %>% select(Drainage = "name", 'Precipitation (mm)' = "precip_total", 'Precipitation Mean (mm)' = precip_mean, Year = "year", Month = "month", 'Water Year' = "wy", 'Total Discharge (cfs)' = "total_q", 'Max Discharge (cfs)' = "max_q", 'SD Discharge (cfs)'  = "sd_q") %>% mutate(`Precipitation (mm)` = round(`Precipitation (mm)`,0), `Precipitation Mean (mm)` = round(`Precipitation Mean (mm)`,0)) %>% mutate(across(matches(c("Year", "Month", "Water Year")), as.integer))
+all_tobacco_DT <- as_tibble(all_tobacco) %>% select(Drainage = "name", 'Precipitation (ft)' = "precip_total", 'Precipitation Mean (in)' = precip_mean, Year = "year", Month = "month", 'Water Year' = "wy", 'Total Discharge (cfs)' = "total_q", 'Max Discharge (cfs)' = "max_q", 'SD Discharge (cfs)'  = "sd_q")  %>% mutate(across(matches(c("Year", "Month", "Water Year")), as.integer)) %>% mutate(`Precipitation (ft)` = `Precipitation (ft)`*0.00328084, `Precipitation Mean (in)` = `Precipitation Mean (in)`*0.03937008)%>% mutate(`Precipitation (ft)` = round(`Precipitation (ft)`,0), `Precipitation Mean (in)` = round(`Precipitation Mean (in)`,0))
 ```
 ```{r, message=FALSE, warning=FALSE, include=FALSE}
 library(DT)
