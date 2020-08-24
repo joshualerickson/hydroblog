@@ -173,9 +173,9 @@ Wonder what it would look like if we compared the per year discharge with the pe
 Many ways to do this but we'll keep it simple and just take the scaled values of each variable.
 
 ```{r message=FALSE}
-river_total <- tobacco_river %>% filter(!year %in% c("1958", "1959", "2019" , "2020"))%>% mutate(wy = smwrBase::waterYear(Date, TRUE)) %>% group_by(year, month) %>% summarise(total_q = sum(Flow), max_q = max(Flow), sd_q = round(sd(Flow),2), wy = wy)
+river_total <- tobacco_river %>% filter(!year %in% c("1958", "1959", "2019" , "2020"))%>% mutate(wy = smwrBase::waterYear(Date, TRUE)) %>% group_by(year, month) %>% summarise(total_q = sum(Flow), max_q = max(Flow), sd_q = round(sd(Flow),2))
 
-all_tobacco <- left_join(prism_processed, river_total, by = c("year", "month", "wy"))
+all_tobacco <- left_join(prism_processed, river_total, by = c("year", "month"))
 ```
 
 Alright, now we have a data set with both the precipitation totals and discharge totals. Lets just see if there is a trend between precipitation and discharge. We'll just take about 10 years of the most recent data.
