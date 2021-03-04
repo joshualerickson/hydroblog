@@ -1,11 +1,8 @@
 ---
 title: Global Forest Change
-author: ''
+author: 'Josh Erickson'
 date: '2021-03-04'
-slug: []
-categories: []
-tags: []
-description: ''
+bibliography: cit.bib
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -16,7 +13,6 @@ library(stars)
 library(raster)
 library(tidyverse)
 library(AOI)
-library(prettydoc)
 library(patchwork)
 ```
 
