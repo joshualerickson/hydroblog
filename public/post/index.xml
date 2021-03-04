@@ -7,10 +7,59 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Josh Erickson</copyright>
-    <lastBuildDate>Fri, 21 Aug 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 04 Mar 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://hydroblog.netlify.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>asdfas</title>
+      <link>https://hydroblog.netlify.com/2021/03/04/2021-03-04-asdfas/</link>
+      <pubDate>Thu, 04 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/2021/03/04/2021-03-04-asdfas/</guid>
+      <description>Trygint to diagnose the</description>
+    </item>
+    
+    <item>
+      <title>gsutil workflow</title>
+      <link>https://hydroblog.netlify.com/2021/03/04/gsutil/</link>
+      <pubDate>Thu, 04 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/2021/03/04/gsutil/</guid>
+      <description>Working with gsutil Introduction This is a workflow on how to download multiple objects from a bucket on google cloud storage. Basically, so I stop forgetting how to do it.
+Moving objects Technically, you can create your own folders via some (above my head) method but I&amp;rsquo;ll just default to using the UI on GCS. From there, you can then start to move files that you&amp;rsquo;ve uploaded via desktop, R, earth engine, etc.</description>
+    </item>
+    
+    <item>
+      <title>gsutil workflow</title>
+      <link>https://hydroblog.netlify.com/2021/03/04/2021-03-04-gsutil-workflow/</link>
+      <pubDate>Thu, 04 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/2021/03/04/2021-03-04-gsutil-workflow/</guid>
+      <description>Working with gsutil Introduction This is a workflow on how to download multiple objects from a bucket on google cloud storage. Basically, so I stop forgetting how to do it.
+Moving objects Technically, you can create your own folders via some (above my head) method but I&amp;rsquo;ll just default to using the UI on GCS. From there, you can then start to move files that you&amp;rsquo;ve uploaded via desktop, R, earth engine, etc.</description>
+    </item>
+    
+    <item>
+      <title>Testing</title>
+      <link>https://hydroblog.netlify.com/2021/03/04/testing/</link>
+      <pubDate>Thu, 04 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/2021/03/04/testing/</guid>
+      <description>Working with gsutil Introduction This is a workflow on how to download multiple objects from a bucket on google cloud storage. Basically, so I stop forgetting how to do it.
+Moving objects Technically, you can create your own folders via some (above my head) method but I&amp;rsquo;ll just default to using the UI on GCS. From there, you can then start to move files that you&amp;rsquo;ve uploaded via desktop, R, earth engine, etc.</description>
+    </item>
+    
+    <item>
+      <title>testing</title>
+      <link>https://hydroblog.netlify.com/2021/01/01/2021-01-01-testing/</link>
+      <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/2021/01/01/2021-01-01-testing/</guid>
+      <description>Working with gsutil Introduction This is a workflow on how to download multiple objects from a bucket on google cloud storage. Basically, so I stop forgetting how to do it.
+Moving objects Technically, you can create your own folders via some (above my head) method but I&amp;rsquo;ll just default to using the UI on GCS. From there, you can then start to move files that you&amp;rsquo;ve uploaded via desktop, R, earth engine, etc.</description>
+    </item>
     
     <item>
       <title>RGEE and PRISM</title>

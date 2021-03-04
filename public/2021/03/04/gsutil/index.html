@@ -3,17 +3,19 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Welcome &middot; Josh Erickson</title>
-        <meta name="description" content="Think. Don&#39;t Think">
+        <title>gsutil workflow &middot; Josh Erickson</title>
+        <meta name="description" content="Working with gsutil Introduction This is a workflow on how to download multiple objects from a bucket on google cloud storage. Basically, so I stop forgetting how to do it.
+Moving objects Technically, you can create your own folders via some (above my head) method but I&rsquo;ll just default to using the UI on GCS. From there, you can then start to move files that you&rsquo;ve uploaded via desktop, R, earth engine, etc.">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
         <meta name="generator" content="Hugo 0.68.3" />
         <meta name="robots" content="index,follow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta property="og:title" content="Welcome">
-<meta property="og:description" content="Think. Don&#39;t Think">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://hydroblog.netlify.com/">
+        <meta property="og:title" content="gsutil workflow">
+<meta property="og:description" content="Working with gsutil Introduction This is a workflow on how to download multiple objects from a bucket on google cloud storage. Basically, so I stop forgetting how to do it.
+Moving objects Technically, you can create your own folders via some (above my head) method but I&rsquo;ll just default to using the UI on GCS. From there, you can then start to move files that you&rsquo;ve uploaded via desktop, R, earth engine, etc.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://hydroblog.netlify.com/2021/03/04/gsutil/">
         <link rel="stylesheet" href="https://hydroblog.netlify.com/dist/site.css">
         <link rel="stylesheet" href="https://hydroblog.netlify.com/dist/syntax.css">
         <link rel="stylesheet" href="https://hydroblog.netlify.com/dist/atom-one-light.css">
@@ -23,8 +25,6 @@
 </script>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-        
-            <link href="/index.xml" rel="alternate" type="application/rss+xml">
         
         
         
@@ -97,104 +97,74 @@
             <div id="container">
 
 
-<div id="post-index" class="container" itemscope="" itemtype="https://schema.org/Blog">
+<div class="container">
+    <article class="post-container" itemscope="" itemtype="http://schema.org/BlogPosting">
+        <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">gsutil workflow</h1>
     
-    <header class="post-header">
-        <h1 class="post-title" itemprop="name">Hydro Thoughts</h1>
-        <p>Think. Don&#39;t Think</p>
-    </header>
+    <p class="post-date">
+        <span>Published <time datetime="2021-03-04" itemprop="datePublished">Thu, Mar 4, 2021</time></span>
+        <span>by</span>
+        <span itemscope="" itemprop="author" itemtype="https://schema.org/Person">
+            <span itemprop="name">
+                <a href="#" itemprop="url" rel="author">Josh Erickson</a>
+            </span>
+        </span>
+    </p>
+    
+        <p class="post-reading post-line">
+            <span>Estimated reading time: 1 min</span>
+        </p>
+    
+</header>
 
+        <div class="post-content clearfix" itemprop="articleBody">
+    
 
+    <h1 id="working-with-gsutil">Working with gsutil</h1>
+<h2 id="introduction">Introduction</h2>
+<p>This is a workflow on how to download multiple objects from a bucket on google cloud storage. Basically, so I stop forgetting how to do it.</p>
+<h4 id="moving-objects">Moving objects</h4>
+<p>Technically, you can create your own folders via some (above my head) method but I&rsquo;ll just default to using the UI on GCS. From there, you can then start to move files that you&rsquo;ve uploaded via desktop, R, earth engine, etc. To do that use the code below in the <code>Google Cloud SDK Shell</code></p>
+<pre><code>gsutil mv gs://your-bucket/some_file.tif gs://your-bucket/some-other-folder
+</code></pre>
+<p>So, now that you have objects where you want them to be you can then start downloading. You could technically move <code>mv</code> objects to the desktop <strong>but</strong> they will then not be on the cloud anymore 😞.</p>
+<h4 id="downloading">Downloading</h4>
+<p>There are a couple ways to get objects from your GCS to your desktop via download: download one-by-one, download with wildcard *, or download in parallel. We&rsquo;ll go through one-by-one and parallel.</p>
+<p>one-by-one;</p>
+<pre><code>gsutil cp gs://your-bucket/some_file.tif D:/some-directory
+</code></pre>
+<p>parallel;</p>
+<pre><code>gsutil -m cp -r gs://jle_rasters/*.tif D:/R_folder/Rasters/cbi/R1_test/
+</code></pre>
+<p>And that&rsquo;s it! There&rsquo;s way way more you can do but this is really the majority of my workflow so we&rsquo;ll stop here.</p>
 
-    <ol class="post-list">
-        
-        
-            <li class="post-stub" itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting">
-    <a href="https://hydroblog.netlify.com/2021/03/04/2021-03-04-asdfas/" itemprop="url" title="Go to post detail">
-        <h4 class="post-stub-title" itemprop="name">asdfas</h4>
-        <time class="post-stub-date" datetime="2021-03-04">Published Thu, Mar 4, 2021</time>
-        
-    </a>
-</li>
-        
-            <li class="post-stub" itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting">
-    <a href="https://hydroblog.netlify.com/2021/03/04/gsutil/" itemprop="url" title="Go to post detail">
-        <h4 class="post-stub-title" itemprop="name">gsutil workflow</h4>
-        <time class="post-stub-date" datetime="2021-03-04">Published Thu, Mar 4, 2021</time>
-        
-    </a>
-</li>
-        
-            <li class="post-stub" itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting">
-    <a href="https://hydroblog.netlify.com/2021/03/04/2021-03-04-gsutil-workflow/" itemprop="url" title="Go to post detail">
-        <h4 class="post-stub-title" itemprop="name">gsutil workflow</h4>
-        <time class="post-stub-date" datetime="2021-03-04">Published Thu, Mar 4, 2021</time>
-        
-    </a>
-</li>
-        
-            <li class="post-stub" itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting">
-    <a href="https://hydroblog.netlify.com/2021/03/04/testing/" itemprop="url" title="Go to post detail">
-        <h4 class="post-stub-title" itemprop="name">Testing</h4>
-        <time class="post-stub-date" datetime="2021-03-04">Published Thu, Mar 4, 2021</time>
-        
-    </a>
-</li>
-        
-            <li class="post-stub" itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting">
-    <a href="https://hydroblog.netlify.com/2021/01/01/2021-01-01-testing/" itemprop="url" title="Go to post detail">
-        <h4 class="post-stub-title" itemprop="name">testing</h4>
-        <time class="post-stub-date" datetime="2021-01-01">Published Fri, Jan 1, 2021</time>
-        
-    </a>
-</li>
-        
-            <li class="post-stub" itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting">
-    <a href="https://hydroblog.netlify.com/2020/08/21/2020-08-21-rgee-and-prism/" itemprop="url" title="Go to post detail">
-        <h4 class="post-stub-title" itemprop="name">RGEE and PRISM</h4>
-        <time class="post-stub-date" datetime="2020-08-21">Published Fri, Aug 21, 2020</time>
-        
-    </a>
-</li>
-        
-            <li class="post-stub" itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting">
-    <a href="https://hydroblog.netlify.com/2020/08/20/2020-08-20-data-retrieval/" itemprop="url" title="Go to post detail">
-        <h4 class="post-stub-title" itemprop="name">Data Retrieval</h4>
-        <time class="post-stub-date" datetime="2020-08-20">Published Thu, Aug 20, 2020</time>
-        
-    </a>
-</li>
-        
-            <li class="post-stub" itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting">
-    <a href="https://hydroblog.netlify.com/2020/08/20/2020-08-20-usgs-rgee-and-r-what/" itemprop="url" title="Go to post detail">
-        <h4 class="post-stub-title" itemprop="name">USGS, GEE and R. What?!?</h4>
-        <time class="post-stub-date" datetime="2020-08-20">Published Thu, Aug 20, 2020</time>
-        
-    </a>
-</li>
-        
-            <li class="post-stub" itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting">
-    <a href="https://hydroblog.netlify.com/2020/06/09/2020-06-09-exploring-harvest-units/" itemprop="url" title="Go to post detail">
-        <h4 class="post-stub-title" itemprop="name">Exploring Catchments</h4>
-        <time class="post-stub-date" datetime="2020-06-09">Published Tue, Jun 9, 2020</time>
-        
-    </a>
-</li>
-        
-            <li class="post-stub" itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting">
-    <a href="https://hydroblog.netlify.com/2020/04/05/welcome/" itemprop="url" title="Go to post detail">
-        <h4 class="post-stub-title" itemprop="name">Welcome</h4>
-        <time class="post-stub-date" datetime="2020-04-05">Published Sun, Apr 5, 2020</time>
-        
-    </a>
-</li>
-        
-    </ol>
+</div>
 
-    <div class="post-navigation">
+        <footer class="post-footer clearfix">
+    
+
+    <div class="share">
         
 
+        
+
+        
+        
     </div>
+</footer>
+
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://https-hydroblog-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </article>
 </div>
 
             </div>

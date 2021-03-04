@@ -3,6 +3,41 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://hydroblog.netlify.com/2021/03/04/2021-03-04-asdfas/</loc>
+    <lastmod>2021-03-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://hydroblog.netlify.com/2021/03/04/gsutil/</loc>
+    <lastmod>2021-03-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://hydroblog.netlify.com/2021/03/04/2021-03-04-gsutil-workflow/</loc>
+    <lastmod>2021-03-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://hydroblog.netlify.com/post/</loc>
+    <lastmod>2021-03-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://hydroblog.netlify.com/2021/03/04/testing/</loc>
+    <lastmod>2021-03-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://hydroblog.netlify.com/</loc>
+    <lastmod>2021-03-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://hydroblog.netlify.com/2021/01/01/2021-01-01-testing/</loc>
+    <lastmod>2021-01-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://hydroblog.netlify.com/page/disclaimer/</loc>
     <lastmod>2020-08-23T00:00:00+00:00</lastmod>
   </url>
@@ -10,16 +45,6 @@
   <url>
     <loc>https://hydroblog.netlify.com/page/</loc>
     <lastmod>2020-08-23T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/</loc>
-    <lastmod>2020-08-23T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/post/</loc>
-    <lastmod>2020-08-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
