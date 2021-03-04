@@ -1,0 +1,17 @@
+---
+title: asdfas
+author: ''
+date: '2021-03-04'
+slug: []
+categories: []
+tags: []
+description: ''
+---
+
+Trygint to diagnose the 
+
+```{r}
+library(ggplot2)
+cars
+```
+
