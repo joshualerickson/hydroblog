@@ -18,7 +18,7 @@
       <pubDate>Thu, 04 Mar 2021 00:00:00 +0000</pubDate>
       
       <guid>https://hydroblog.netlify.com/2021/03/04/2021-03-04-global-forest-change/</guid>
-      <description>IntroductionBelow is a workflow used to create a forest change raster (2011-2019) for the Watershed Condition Class (WCC) analysis in USDA-USFS Region 1. The workflow leverages Google Earth Engine (GEE) [@gorelick2017google] to get large remote sensing products fast and easy. This allows for reproducibility in the future as well as quick return times for clients, i.e. making large requests managable.</description>
+      <description>IntroductionBelow is a workflow used to create a forest change raster (2011-2019) for the Watershed Condition Class (WCC) analysis in USDA-USFS Region 1. The workflow leverages Google Earth Engine (GEE) (Gorelick et al. 2017) to get large remote sensing products fast and easy. This allows for reproducibility in the future as well as quick return times for clients, i.</description>
     </item>
     
     <item>

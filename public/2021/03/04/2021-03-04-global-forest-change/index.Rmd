@@ -3,6 +3,7 @@ title: Global Forest Change
 author: 'Josh Erickson'
 date: '2021-03-04'
 bibliography: cit.bib
+output: html_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
