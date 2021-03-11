@@ -7,10 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Josh Erickson</copyright>
-    <lastBuildDate>Thu, 04 Mar 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 11 Mar 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://hydroblog.netlify.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Spatial Holdouts and Feature Selection</title>
+      <link>https://hydroblog.netlify.com/2021/03/11/2021-03-11-spatial-holdouts-and-feature-selection/</link>
+      <pubDate>Thu, 11 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/2021/03/11/2021-03-11-spatial-holdouts-and-feature-selection/</guid>
+      <description>Findings
+Both model types (gbm and random forest) are very sensitive when using all variables and no spatial hold-outs; however, when increasing the hold out size (iid becomes more appropriate) we see that random forest takes some time before it stabilizes unlike gbm which is able to control for that effect early on.
+FFS variable selection at cluster holdout 10 was 9 variables while the new variable selection (unnamed) used only 5 variables at a cluster holdout of 10 while keeping the same accuracy; making the model more parsimonious.</description>
+    </item>
     
     <item>
       <title>Global Forest Change</title>
