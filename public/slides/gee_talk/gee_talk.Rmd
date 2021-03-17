@@ -50,6 +50,31 @@ xaringanExtra::use_xaringan_extra(c("tile_view", "tachyons", "scribble", 'share_
 ---
 
 
+## Goals
+--
+
+- Leave having an idea of what GEE is and what it can do  
+
+<br>
+<img src="gee_talk_files/images/gee.png" height="50px" />
+<br>
+<br>
+- Most importantly, some applications in hydrology  
+
+.water-box[]
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+- What, how, apply. 
+
+---
+
 ## What is GEE?
 --
 
@@ -106,31 +131,6 @@ xaringanExtra::use_xaringan_extra(c("tile_view", "tachyons", "scribble", 'share_
 
 ---
 
-
-## Goals
---
-
-- Leave having an idea of what GEE is and what it can do  
-
-<br>
-<img src="gee_talk_files/images/gee.png" height="50px" />
-<br>
-<br>
-- Most importantly, some applications in hydrology  
-
-.water-box[]
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-- Start with how and then applications  
-
----
 
 ## Reduce Image (The how?)
 
@@ -342,9 +342,61 @@ What about the units we looked at?
 <img src="gee_talk_files/images/units.png" height="300px" />
 ]
 
--- 
+
+--
 
 .pull-right[
 <img src="gee_talk_files/images/future_temp_box.png" height="400px" />
 ]
+
+---
+# Wrapping Up
+
+--
+
+- GEE is a way to .blue[reduce] big image collections
+
+.pull-right[
+
+<center>
+
+<img src="gee_talk_files/images/prism.png" height="75px" />
+
+</center>
+]
+
+--
+
+- You can do it from local to regional .blue[scale]
+
+.pull-right[
+
+<center>
+
+<img src="gee_talk_files/images/units.png" height="75px" />
+
+</center>
+]
+
+--
+
+- Climate projections into the .blue[future]
+
+.pull-right[
+
+<center>
+
+<img src="gee_talk_files/images/climate.png" height="75px" />
+
+</center>
+]
+
+---
+
+# Wrapping Up
+
+- slides available at https://hydroblog.org/slides/gee_talk/gee_talk.html
+<center>
+.end-box[]
+</center>
 

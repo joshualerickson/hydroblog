@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Josh Erickson</copyright>
-    <lastBuildDate>Thu, 11 Mar 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 17 Mar 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://hydroblog.netlify.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Slides-GEE Talk</title>
+      <link>https://hydroblog.netlify.com/2021/03/17/2021-03-17-slides-gee-talk/</link>
+      <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/2021/03/17/2021-03-17-slides-gee-talk/</guid>
+      <description>Here is a link to the brief GEE talk I just did. Hope you enjoy!
+https://www.hydroblog.org/slides/gee_talk/gee_talk.html</description>
+    </item>
     
     <item>
       <title>Spatial Holdouts and Feature Selection</title>
