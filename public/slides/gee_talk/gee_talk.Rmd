@@ -1,0 +1,350 @@
+---
+title: "Google Earth Engine <br> <span style='font-size: 30px'>(GEE)</span> <br> <span style='font-size: 30px'>applications in hydrology</span>" 
+author: 
+  - "<span style='color: black; font-size: 25px'>Josh Erickson</span>"
+institute: "<span style='color: black; font-size: 25px'>USDA-Forest Service</span>"
+output:
+  xaringan::moon_reader:
+    css: ["xaringan-themer.css", "extra.css"]
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(
+  base_color = "#035AA6",
+  inverse_header_color = "#FFFFFF"
+)
+```
+
+```{r xaringanExtra, echo=FALSE}
+xaringanExtra::use_xaringan_extra(c("tile_view", "tachyons", "scribble", 'share_again'))
+```
+## About Me
+
+- Hydrologist (day job)
+- Remote Sensing Analyst (detail)
+- Geoscience and Math background
+- Focus is leveraging computing platforms (R, Python, GEE) for resource management work.
+
+.me-box[]
+---
+
+
+## What is GEE?
+--
+
+- free open source software .blue[(FOSS)]
+
+- Inherently parrallel; uses a .blue[petabyte] scale server ~ 1,000,000 GB
+
+- allows .blue[clients (users)] to ask for products (Image/ImageCollections)
+
+- And then will process those requests .blue[server-side]
+
+--
+
+<img src="gee_talk_files/images/client_server.png" height="325px" />
+
+---
+
+
+## Advantages
+--
+
+- Extensive collections (e.g. imagery, geophysical, weather/climate models, etc.)
+
+
+- Reducing big ImageCollections 
+
+- Fast, really really fast!
+
+- Lots of documentation
+
+- Research buzz...
+
+--
+
+.ferrari-box[
+
+]
+
+--
+
+## Disadvantages (IMO)
+
+--
+
+- Can be 'coding' barrier entry
+
+- Can be abstract-ish, i.e. remote sensing
+
+- Research buzz...
+
+.problems-box[]
+
+
+
+---
+
+
+## Goals
+--
+
+- Leave having an idea of what GEE is and what it can do  
+
+<br>
+<img src="gee_talk_files/images/gee.png" height="50px" />
+<br>
+<br>
+- Most importantly, some applications in hydrology  
+
+.water-box[]
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+- Start with how and then applications  
+
+---
+
+## Reduce Image (The how?)
+
+--
+
+A big advantage of earth engine is to reduce large image collections fast. 
+
+.bg-washed-green.b--dark-green.ba.bw2.br3.shadow-5.ph4.mt5[
+For example, let's say we want the median PRISM monthly precipitation from 2010-present]
+---
+
+
+## Reduce Image (The how?)
+
+<img src="gee_talk_files/images/client_server.png" height="100px" />
+
+.pull-left[
+<center>
+
+<img src="gee_talk_files/images/reducer.png" height="400px" />
+
+</center>
+]
+
+--
+
+.pull-right[
+
+<center>
+
+<img src="gee_talk_files/images/prism.png" height="200px" />
+
+</center>
+]
+
+---
+
+
+## Applying the Concept
+Reduce Regions is the key; points and polys. <br>
+Very similar to `extract` in ArcGIS
+.pull-left[
+
+<img src="gee_talk_files/images/prism_zoom2.png" height="250px" />
+
+]
+
+--
+
+.pull-right[
+.rrhucs-box[]
+]
+
+---
+
+## Applying the Concept
+Reduce Regions is the key; points and polys. <br>
+Very similar to `extract` in ArcGIS
+.pull-left[
+
+<img src="gee_talk_files/images/prism_pts.png" height="225px" />
+
+]
+
+--
+
+.pull-right[
+.rrPts-box[]
+]
+
+---
+
+## You can provide any geometry
+
+- For example, proposed land use activities.
+
+```{r, echo=FALSE,fig.align='center'}
+library(sf)
+library(tidyverse)
+pinkham <- read_sf('D:/R_folder/Shapes/Timber Sales_Units/Pinkham Meadow/PM_ProposedVegBurnUnits.shp') %>% st_transform(4326)
+
+terrain <- resourceviz::google_map(pinkham, zoom = 11)
+terrain + geom_sf(data = pinkham, inherit.aes = F, fill = 'black' ) + theme_bw()
+
+```
+
+
+---
+
+## Layer units by images
+
+.units-box[]
+
+---
+
+## Now we have zonal stats for each unit!
+
+.unitsrr-box[]
+
+---
+
+## What about time series?
+Not going to get too crazy but you can.
+
+--
+
+$\hat{Y}_t = a_0 + \sum_{n=1}^\infty (a_n\cos nx +b_n\sin nx)$
+
+.deep-box[]
+
+--
+
+Just keep it simple
+<br>
+
+```{r, echo=FALSE, fig.align='left', fig.pos='bottom', out.width='35%'}
+knitr::include_graphics("gee_talk_files/images/npp_ts.png")
+```
+
+---
+
+# Banding
+
+This is a way to keep a certain temporal feature, e.g. year, month, week, etc.
+
+.pull-left[
+
+<img src="gee_talk_files/images/band_ex.png" height="225px" />
+
+]
+
+--
+
+.pull-right[
+<img src="gee_talk_files/images/to_bands.png" height="300px" />
+]
+
+---
+# Example with previous points
+
+.pull-left[
+
+<img src="gee_talk_files/images/prism_pts.png" height="225px" />
+
+]
+
+--
+
+.pull-right[
+
+<img src="gee_talk_files/images/precip_time.png" height="450px" />
+
+]
+
+---
+# Example with previous points
+
+<center>
+<img src="gee_talk_files/images/precip_month.png" height="500px" />
+</center>
+
+---
+
+# Animation with time series
+
+<center>
+<img src="gee_talk_files/images/prism_18_19.gif" height="500px" />
+</center>
+
+---
+
+# Animation with time series
+
+<center>
+<img src="gee_talk_files/images/ndvi_18_19.gif" height="500px" />
+</center>
+
+---
+# Animation with time series
+
+<center>
+<img src="gee_talk_files/images/drought.gif" height="500px" />
+</center>
+
+---
+
+# Into the future?
+<center>
+<img src="https://media.giphy.com/media/ZZkCo8zKWtt2ZgozfX/giphy.gif" height="500px" />
+</center>
+
+---
+# Into the future?
+
+There are available climate models in GEE. NASA Earth Exchange.
+
+<center>
+<img src="gee_talk_files/images/climate.png" height="500px" />
+</center>
+
+---
+# Into the future?
+
+What about the units we looked at?
+
+--
+
+.pull-left[
+<img src="gee_talk_files/images/units.png" height="300px" />
+]
+
+-- 
+
+.pull-right[
+<img src="gee_talk_files/images/future_temp_box.png" height="400px" />
+]
+
