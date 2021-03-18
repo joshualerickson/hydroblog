@@ -56,7 +56,7 @@ xaringanExtra::use_xaringan_extra(c("tile_view", "tachyons", "scribble", 'share_
 - Leave having an idea of what GEE is and what it can do  
 
 <br>
-<img src="gee_talk_files/images/gee.png" height="50px" />
+<img src="gee_talk_files/images/gee.png" height="50px" right: 25%/>
 <br>
 <br>
 - Most importantly, some applications in hydrology  
@@ -103,9 +103,7 @@ xaringanExtra::use_xaringan_extra(c("tile_view", "tachyons", "scribble", 'share_
 
 - Fast, really really fast!
 
-- Lots of documentation
-
-- Research buzz...
+- Lots of documentation, apps, tutorials, research, etc.
 
 --
 
@@ -140,6 +138,12 @@ A big advantage of earth engine is to reduce large image collections fast.
 
 .bg-washed-green.b--dark-green.ba.bw2.br3.shadow-5.ph4.mt5[
 For example, let's say we want the median PRISM monthly precipitation from 2010-present]
+<br>
+<br>
+<center>
+<img src="gee_talk_files/images/precip_intro.png" height="200px" align="bottom" />
+</center>
+
 ---
 
 
@@ -258,7 +262,7 @@ This is a way to keep a certain temporal feature, e.g. year, month, week, etc.
 
 .pull-left[
 
-<img src="gee_talk_files/images/band_ex.png" height="225px" />
+<img src="gee_talk_files/images/reducer.png" height="425px" />
 
 ]
 
@@ -281,7 +285,10 @@ This is a way to keep a certain temporal feature, e.g. year, month, week, etc.
 
 .pull-right[
 
-<img src="gee_talk_files/images/precip_time.png" height="450px" />
+
+```{r, echo = FALSE}
+knitr::include_graphics("gee_talk_files/images/precip_time.png")
+```
 
 ]
 
@@ -313,6 +320,14 @@ This is a way to keep a certain temporal feature, e.g. year, month, week, etc.
 
 <center>
 <img src="gee_talk_files/images/drought.gif" height="500px" />
+</center>
+
+---
+
+# Animation with time series
+
+<center>
+<img src="gee_talk_files/images/jbratt.gif" height="500px" />
 </center>
 
 ---
@@ -396,6 +411,8 @@ What about the units we looked at?
 # Wrapping Up
 
 - slides available at https://hydroblog.org/slides/gee_talk/gee_talk.html
+
+- some apps from Justin Braaten; https://emaprlab.users.earthengine.app/view/lt-gee-time-series-animator, https://t.co/xqUN7W8KBa?amp=1, https://t.co/3fTl0wI8Gh?amp=1
 <center>
 .end-box[]
 </center>
