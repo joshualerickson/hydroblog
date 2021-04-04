@@ -7,10 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Josh Erickson</copyright>
-    <lastBuildDate>Wed, 17 Mar 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 04 Apr 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://hydroblog.netlify.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Ridges &amp; Wes Anderson</title>
+      <link>https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/</link>
+      <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/</guid>
+      <description>IntroI’ve been wanting to use the via the wesanderson package on some hydrological data using ridge plots (ggridges) and today I had the chance to play around and finally make some graphs. So, we’ll just make some basic graphs that hopefully will be aestetically pleasing and get the message across to stake holders, layperson, or others in your circle.
+First we’ll need a few packages.
+library(wildlandhydRo)library(ggridges)library(wesanderson)library(tidyverse)Now let’s get some USGS streamflow data!</description>
+    </item>
     
     <item>
       <title>Slides-GEE Talk</title>

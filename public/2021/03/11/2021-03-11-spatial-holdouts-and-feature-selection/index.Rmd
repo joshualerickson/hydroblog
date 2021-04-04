@@ -159,14 +159,26 @@ What's really nice about doing a bunch of cluster holdouts with feature selectio
 
 ```{r,  fig.align='center', echo = F}
 
-all_model_vars <- all_models %>% separate(char_vars, into = letters[1:15], sep = ',') %>% 
-  pivot_longer(cols = 44:54) %>% mutate(value = str_remove_all(value, ' '))
+all_model_vars <- all_models_gbm %>% separate(char_vars, into = letters[1:15], sep = ',') %>% 
+  pivot_longer(cols = 44:54) %>% mutate(value = str_remove_all(value, ' ') %>% factor(),
+                                        value = fct_recode(value, NPP = 'nppmmid30agg',
+                                                           UAA = 'accum30', TPI = 'tpi30agg',
+                                                           Deficit = 'deficitRS', Deciduous = 'decid30RS',
+                                                           CAD = 'cad30RS', TWI = 'twi30agg',
+                                                           NDVI = 'NDVI_med', NPOL = 'npol30agg',
+                                                           NIR = 'NIR_med', Green = 'Green_med',
+                                                           `VV sd` = 'vvsd30agg', VV = 'vv30agg',
+                                                           `CPG Precip` = 'cpg30precip'))
 all_model_vars %>% count(value,model, sort = T) %>% na.omit() %>% mutate(value = fct_reorder(value, n)) %>% 
-  ggplot(aes(value, n)) + geom_col(alpha = .25) + geom_point() + geom_text(aes(label = n), nudge_y = 8)+
-  labs(x = "variables", y = "count", title = "Variables used in each cluster model") +
-  coord_flip() + facet_wrap(~model) + theme(strip.text.x = element_text(size = 12, color = 'black')) +
+  ggplot(aes(value, n)) + geom_col(aes(fill = value), show.legend = F) + 
+  geom_point() + geom_text(aes(label = n), nudge_y = 8)+
+  labs(x = "Variables", y = "Count", title = "Variable Selection Counts for FFS Models") +
+  coord_flip() +
   theme(plot.title = element_text(hjust = 0.5))
-
+model_count <- all_model_vars %>% count(value,model, sort = T) %>% na.omit() 
+count_quant <- quantile(x = model_count$n, probs = seq(0,1, 0.05), na.rm = T)
+count_quant <- data.frame(value = count_quant, perc = seq(0,1,0.05))
+count_quant %>% ggplot(aes(perc, value)) + geom_line() + geom_vline(xintercept = 0.85)
 ```
 <br>
 If you want you can sort and play with the data below.
