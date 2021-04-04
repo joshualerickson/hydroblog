@@ -13,7 +13,7 @@ resourceviz::light_and_cairo()
 
 # Intro
 
-I've been wanting to use the via the [wesanderson](https://github.com/karthik/wesanderson) package on some hydrological data using ridge plots ([ggridges](https://github.com/wilkelab/ggridges)) and today I had the chance to play around and finally make some graphs. So, we'll just make some basic graphs that hopefully will be aestetically pleasing and get the message across to stake holders, layperson, or others in your circle. 
+I've been wanting to use the [wesanderson](https://github.com/karthik/wesanderson) package on some hydrological data using ridge plots ([ggridges](https://github.com/wilkelab/ggridges)) and today I had the chance to play around and finally make some graphs. So, we'll just make some basic graphs that hopefully will be aestetically pleasing and get the message across to stake holders, layperson, or others in your circle. 
 
 First we'll need a few packages.
 
@@ -117,12 +117,12 @@ yaak_dv %>% filter(month %in% c(4,5,6)) %>%
 Still not the best, so what if we faceted by month!? Let's try that and see if there are any patterns in streamflow distributions.
 
 ```{r, warning=F, message=F}
-yaak_dv %>%
+yaak_dv %>% filter(month %in% c(3,4,5,6,7,8)) %>%  
   ggplot(aes(Flow, wy, group = wy, fill = stat(x))) +
   geom_density_ridges_gradient(scale = 25,rel_min_height = 0.1)+ 
   scale_fill_gradientn(colors = wes_palette('Darjeeling2', type = 'continuous')) + 
 theme_ridges() + 
-  labs(title = 'Water Year Distribution of Daily Flow; \nYaak River near Troy, Montana', y = 'Water Year', fill = 'Mean Flow (cfs)', subtitle = 'broken into months') + facet_wrap(~month_abb, scales = 'free')
+  labs(title = 'Water Year Distribution of Daily Flow; \nYaak River near Troy, Montana', y = 'Water Year', fill = 'Mean Flow (cfs)', subtitle = 'broken into months') + facet_wrap(~month_abb, scales = 'free', ncol = 2)
 ```
 
 
