@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Josh Erickson</copyright>
-    <lastBuildDate>Wed, 17 Mar 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 27 May 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://hydroblog.netlify.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Slides-Rshiny Talk</title>
+      <link>https://hydroblog.netlify.com/2021/05/27/2021-05-27-slides-rshiny-talk/</link>
+      <pubDate>Thu, 27 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/2021/05/27/2021-05-27-slides-rshiny-talk/</guid>
+      <description>Here is a link to the brief Rshiny talk with applications in hydrology I just did. Hope you enjoy!
+https://www.hydroblog.org/slides/rshiny_talk/rshiny_talk.html</description>
+    </item>
     
     <item>
       <title>Slides-GEE Talk</title>
