@@ -123,8 +123,6 @@
 
     
 <script src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/header-attrs/header-attrs.js"></script>
-<link href="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
-<script src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/anchor-sections/anchor-sections.js"></script>
 
 
 <div id="intro" class="section level1">
@@ -144,14 +142,14 @@ yaak_my &lt;- yaak_dv %&gt;% wymUSGS()</code></pre>
 <pre class="r"><code>yaak_dv %&gt;% 
   ggplot(aes(Flow, month, group = month)) +
   geom_density_ridges() + theme_ridges() + labs(title = &#39;Monthly Distribution of Daily Flow; Yaak River near Troy, Montana&#39;)</code></pre>
-<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>As you can see, some of the data distributions (months April, May, June) have way different values. This might not be the most aestetically pleasing graph but it does tell us that these months are the high streamflow months on average! What if we just looked at them together? Here, we’ll start to add some color with the <code>wesanderson</code> palette.</p>
 <pre class="r"><code>yaak_dv %&gt;% filter(month %in% c(4,5,6)) %&gt;%
   ggplot(aes(Flow, month_abb,  fill = stat(x))) +
   geom_density_ridges_gradient()+ 
   scale_fill_gradientn(colors = wes_palette(&#39;Darjeeling2&#39;, type = &#39;continuous&#39;)) + theme_ridges()  +
   labs(title = &#39;Apr-Jun Distribution of Daily Flow; Yaak River near Troy, Montana&#39;, y = &#39;Month&#39;, fill = &#39;Mean Flow (cfs)&#39;)</code></pre>
-<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-4-1.png" width="672" />
 Or, what’s nice with <code>ggridges</code> is overlaying a cdf gradient and add a rug as well.</p>
 <pre class="r"><code>yaak_dv %&gt;% filter(month %in% c(4,5,6)) %&gt;%
   ggplot(aes(Flow, month_abb, fill = 0.5 - abs(0.5 - stat(ecdf)))) +
@@ -161,15 +159,15 @@ Or, what’s nice with <code>ggridges</code> is overlaying a cdf gradient and ad
     point_shape = &#39;|&#39;, point_size = 1, point_alpha = 1) +
   scale_fill_gradientn(colors = wes_palette(&#39;Chevalier1&#39;, type = &#39;continuous&#39;)) + theme_ridges()  +
   labs(title = &#39;Apr-Jun Distribution of Daily Flow; \nYaak River near Troy, Montana&#39;, y = &#39;Month&#39;, fill = &#39;Probability (CDF)&#39;)</code></pre>
-<pre><code>## Picking joint bandwidth of 259</code></pre>
-<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre><code>## Picking joint bandwidth of 258</code></pre>
+<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>Here we can start to see that May has the highest mean Flow and June/April are very similar. What would the other months look like if we left out Apr-Jun? We can do the same as above except leave those months out.</p>
 <pre class="r"><code>yaak_dv %&gt;% filter(!month %in% c(4,5,6)) %&gt;%
   ggplot(aes(Flow, month_abb, fill = stat(x))) +
   geom_density_ridges_gradient()+ 
   scale_fill_gradientn(colors = wes_palette(&#39;Chevalier1&#39;, type = &#39;continuous&#39;)) + theme_ridges()  +
   labs(title = &#39;July-March Distribution of Daily Flow; \nYaak River near Troy, Montana&#39;, y = &#39;Month&#39;, fill = &#39;Mean Flow (cfs)&#39;) + scale_x_continuous(limits = c(1,1500))</code></pre>
-<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>Probably not the best graph to do because we are leaving out a chunk of data, i.e. can be misleading… However, you can play with the <code>scale</code> and <code>rel_min_height</code> argument in <code>geom_density_ridges</code> which might make it possible to include all the months while keeping the balance of message and aesthetics. Let’s see.</p>
 <pre class="r"><code>yaak_dv %&gt;% 
   group_by(month) %&gt;% mutate(mean_flow = round(mean(Flow),0)) %&gt;% 
@@ -178,7 +176,7 @@ Or, what’s nice with <code>ggridges</code> is overlaying a cdf gradient and ad
   geom_density_ridges(aes(fill = mean_flow),scale = 15,rel_min_height = 0.01)+ 
   scale_fill_gradientn(colors = wes_palette(&#39;Zissou1&#39;, type = &#39;continuous&#39;)) + theme_ridges()  +
   labs(title = &#39;Monthly Distribution of Daily Flow; \nYaak River near Troy, Montana&#39;, y = &#39;Month&#39;, fill = &#39;Mean Flow (cfs)&#39;)+ scale_x_continuous(limits = c(-500,12000))</code></pre>
-<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p>Not the best but better than the first try. Play around with these arguments a try and strike a balance with the message and looks. Here, we are showing that May is the month with the highest mean flow and that you decrease mean flow the farther you move away.</p>
 <p>What about across years? Now that we know what month has the highest mean flow we can also use that to our advantage when plotting by year. But first, let’s see how the daily flow looks over the period of record for this gauging station.</p>
 <pre class="r"><code>yaak_dv %&gt;% 
@@ -188,7 +186,7 @@ Or, what’s nice with <code>ggridges</code> is overlaying a cdf gradient and ad
   geom_density_ridges(aes(fill = mean_flow),scale = 10,rel_min_height = 0.1)+ 
   scale_fill_gradientn(colors = wes_palette(&#39;Rushmore1&#39;, type = &#39;continuous&#39;)) + theme_ridges()  +
   labs(title = &#39;Water Year Distribution of Daily Flow; \nYaak River near Troy, Montana&#39;, y = &#39;Water Year&#39;, fill = &#39;Mean Flow (cfs)&#39;)+ scale_x_continuous(limits = c(1,500))</code></pre>
-<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p>This is cool to look at but probably not the most revealing or easy to dissecting anything meaningful. What if we only used Apr-Jun daily flow values and looked at the distributions, would that clear anything up?</p>
 <pre class="r"><code>yaak_dv %&gt;% filter(month %in% c(4,5,6)) %&gt;% 
   group_by(wy) %&gt;% mutate(mean_flow = round(mean(Flow),0)) %&gt;% 
@@ -197,7 +195,7 @@ Or, what’s nice with <code>ggridges</code> is overlaying a cdf gradient and ad
   geom_density_ridges(aes(fill = mean_flow),scale = 15,rel_min_height = 0.001)+ 
   scale_fill_gradientn(colors = wes_palette(&#39;Darjeeling2&#39;, type = &#39;continuous&#39;)) + theme_ridges()  +
   labs(title = &#39;Water Year Distribution of Daily Flow; \nYaak River near Troy, Montana&#39;,subtitle = &#39;Mean Flow for Apr-Jun&#39;, y = &#39;Water Year&#39;, fill = &#39;Mean Flow (cfs)&#39;)+ scale_x_continuous(limits = c(-500,10000))</code></pre>
-<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>Still not the best, so what if we faceted by month!? Let’s try that and see if there are any patterns in streamflow distributions.</p>
 <pre class="r"><code>yaak_dv %&gt;% filter(month %in% c(3,4,5,6,7,8)) %&gt;%  
   ggplot(aes(Flow, wy, group = wy, fill = stat(x))) +
@@ -205,7 +203,7 @@ Or, what’s nice with <code>ggridges</code> is overlaying a cdf gradient and ad
   scale_fill_gradientn(colors = wes_palette(&#39;Darjeeling2&#39;, type = &#39;continuous&#39;)) + 
 theme_ridges() + 
   labs(title = &#39;Water Year Distribution of Daily Flow; \nYaak River near Troy, Montana&#39;, y = &#39;Water Year&#39;, fill = &#39;Mean Flow (cfs)&#39;, subtitle = &#39;broken into months&#39;) + facet_wrap(~month_abb, scales = &#39;free&#39;, ncol = 2)</code></pre>
-<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>This is somewhat more revealing, especially the later summer distributions. It almost looks like July and August are lower than in the past. Let’s look at August.</p>
 <pre class="r"><code>yaak_dv %&gt;% filter(month %in% c(8)) %&gt;% 
   group_by(wy) %&gt;% mutate(mean_flow = round(mean(Flow),0)) %&gt;% 
@@ -214,7 +212,7 @@ theme_ridges() +
   geom_density_ridges(aes(fill = mean_flow))+ 
   scale_fill_gradientn(colors = wes_palette(&#39;Cavalcanti1&#39;, type = &#39;continuous&#39;)) + theme_ridges(grid = F)  +
   labs(title = &#39;Water Year Distribution of Daily Flow \nby in August; Yaak River near Troy, Montana&#39;, y = &#39;Water Year&#39;, fill = &#39;Mean Flow (cfs)&#39;)</code></pre>
-<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p>Ok, now let’s look at it with a scatterplot. We’ll use the <code>yaak_my</code> data we grabbed at the beginning. Be careful when applying smoothing parameters and always remember to be in ‘exploratory’ mode not ‘confirmatory’ mode.</p>
 <pre class="r"><code>yaak_my %&gt;% filter(month_abb == &#39;Aug&#39;) %&gt;% 
   pivot_longer(c(&#39;Maximum&#39;, &#39;Minimum&#39;, &#39;Median&#39;)) %&gt;% 
@@ -223,7 +221,7 @@ theme_ridges() +
   geom_smooth() + 
   facet_wrap(~name, scales = &#39;free&#39;) + 
   labs(color = &#39;Stats&#39;, title = &#39;Period of Record August Stats at \nYaak River near Troy, MT&#39;, y = &#39;Discharge (cfs)&#39;, x = &#39;Water Year&#39;)</code></pre>
-<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <pre class="r"><code>library(ggstream)
 
 yaak_my %&gt;% filter(month_abb == &#39;Aug&#39;) %&gt;% 
@@ -236,8 +234,8 @@ yaak_my %&gt;% filter(month_abb == &#39;Aug&#39;) %&gt;%
   scale_colour_manual(values = wes_palette(&#39;Chevalier1&#39;) %&gt;% colorspace::darken(.8)) +
   scale_fill_manual(values =  wes_palette(&#39;Chevalier1&#39;)  %&gt;% colorspace::lighten(.2))+
   labs(title = &#39;Period of Record August Stats at \nYaak River near Troy, MT&#39;, y = &#39;Discharge (cfs)&#39;, x = &#39;Water Year&#39;) </code></pre>
-<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-14-1.png" width="672" />
-<img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-13-1.png" width="672" />
+<img src="https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <p>So, this leads us to more exploration and doing more time series analysis but for now we’ll just end this dive into <code>ggridges</code> and the <code>wesanderson</code> packages. Have a good one!</p>
 </div>
 

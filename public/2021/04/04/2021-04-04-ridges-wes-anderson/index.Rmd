@@ -7,9 +7,6 @@ categories: []
 tags: []
 description: 'Operation Trendy'
 ---
-```{r, include=F, message=F, warning=F}
-resourceviz::light_and_cairo()
-```
 
 # Intro
 
