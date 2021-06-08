@@ -3,17 +3,17 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Welcome &middot; Josh Erickson</title>
-        <meta name="description" content="Think. Don&#39;t Think">
+        <title>Hydrology Distributions &middot; Josh Erickson</title>
+        <meta name="description" content="Demystifying? Wait, what?">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
         <meta name="generator" content="Hugo 0.68.3" />
         <meta name="robots" content="index,follow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta property="og:title" content="Welcome">
-<meta property="og:description" content="Think. Don&#39;t Think">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://hydroblog.netlify.com/">
+        <meta property="og:title" content="Hydrology Distributions">
+<meta property="og:description" content="Demystifying? Wait, what?">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://hydroblog.netlify.com/2021/06/07/2021-06-07-hydroclimatic-distributions/">
         <link rel="stylesheet" href="https://hydroblog.netlify.com/dist/site.css">
         <link rel="stylesheet" href="https://hydroblog.netlify.com/dist/syntax.css">
         <link rel="stylesheet" href="https://hydroblog.netlify.com/dist/atom-one-light.css">
@@ -23,8 +23,6 @@
 </script>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-        
-            <link href="/index.xml" rel="alternate" type="application/rss+xml">
         
         
         
@@ -97,48 +95,75 @@
             <div id="container">
 
 
-<div id="post-index" class="container" itemscope="" itemtype="https://schema.org/Blog">
+<div class="container">
+    <article class="post-container" itemscope="" itemtype="http://schema.org/BlogPosting">
+        <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Hydrology Distributions</h1>
     
-    <header class="post-header">
-        <h1 class="post-title" itemprop="name">Hydro Thoughts</h1>
-        <p>Think. Don&#39;t Think</p>
-    </header>
+        <p class="post-description" itemprop="description">Demystifying? Wait, what?</p>
+    
+    <p class="post-date">
+        <span>Published <time datetime="2021-06-07" itemprop="datePublished">Mon, Jun 7, 2021</time></span>
+        <span>by</span>
+        <span itemscope="" itemprop="author" itemtype="https://schema.org/Person">
+            <span itemprop="name">
+                <a href="#" itemprop="url" rel="author">Josh Erickson</a>
+            </span>
+        </span>
+    </p>
+    
+        <p class="post-reading post-line">
+            <span>Estimated reading time: 1 min</span>
+        </p>
+    
+</header>
+
+        <div class="post-content clearfix" itemprop="articleBody">
+    
+
+    
+<script src="https://hydroblog.netlify.com/2021/06/07/2021-06-07-hydroclimatic-distributions/index_files/header-attrs/header-attrs.js"></script>
 
 
+<pre class="r"><code>library(wildlandhydRo)
+library(evd)
+library(fitdistrplus)
+library(tidyverse)</code></pre>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This will be part one of a three part blog post where we’ll look at different distributions in R using the {wildlandhydRo} and {tidyverse} packages. A lot of times in hydrology you’ll end up collecting data (rainfall, snowdepth, runoff, etc) to try and fit to an theoretical distribution (univariate Cumulative Distribution Functions (CDF)) to then use for further analysis, e.g. frequency, probabilities, etc. These CDF’s come in all shapes and sizes (literally) and can be confusing at times but hopefully we can demystify them in this blog series without too much incredulity from those pesky statisticians. First, we’ll look at what a CDF is for some commonly used empirical distributions in hydrology, e.g. normal (N), lognormal (LN), log Pearson type III (LP3), Pearson (P), Gumbel (G), Weibull (W) and Generalized Extreme-value Distribution (GEV). Second, we’ll bring in some data and look at the distributions visually. Third, we’ll use a few goodness-of-fit tests to see which theoretical distribution best represents the underlying empirical distribution.</p>
+<div id="part-i" class="section level2">
+<h2>Part I</h2>
+<p>For part one we will get pretty ‘<em>mathy</em>’ with the distributions by looking at the derivations of the CDF’s. This will involve some calculus but is mostly just looking at where and why <span class="math inline">\(f(x)\)</span> goes where it goes.</p>
+</div>
+</div>
 
-    <ol class="post-list">
-        
-        
-            <li class="post-stub" itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting">
-    <a href="https://hydroblog.netlify.com/2020/06/09/2020-06-09-exploring-harvest-units/" itemprop="url" title="Go to post detail">
-        <h4 class="post-stub-title" itemprop="name">Exploring Catchments</h4>
-        <time class="post-stub-date" datetime="2020-06-09">Published Tue, Jun 9, 2020</time>
-        
-    </a>
-</li>
-        
-            <li class="post-stub" itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting">
-    <a href="https://hydroblog.netlify.com/2020/04/05/welcome/" itemprop="url" title="Go to post detail">
-        <h4 class="post-stub-title" itemprop="name">Welcome</h4>
-        <time class="post-stub-date" datetime="2020-04-05">Published Sun, Apr 5, 2020</time>
-        
-    </a>
-</li>
-        
-    </ol>
+</div>
 
-    <div class="post-navigation">
+        <footer class="post-footer clearfix">
+    
+
+    <div class="share">
         
 
-    <nav class="pagination" role="navigation">
-        <span class="page-number">Page 2 of 2</span>
         
-            <a class="newer-posts" href="/">&larr; Newer Posts</a>
-        
-        
-    </nav>
 
+        
+        
     </div>
+</footer>
+
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://https-hydroblog-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </article>
 </div>
 
             </div>

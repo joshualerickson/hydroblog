@@ -1,0 +1,19 @@
+---
+title: Hydrology Distributions
+author: Josh Erickson
+date: '2021-06-07'
+slug: []
+categories: []
+tags: []
+description: 'Demystifying? Wait, what?'
+---
+
+
+```{r, message=FALSE, warning=FALSE}
+library(wildlandhydRo)
+library(evd)
+library(fitdistrplus)
+library(tidyverse)
+```
+
+For this blog post we'll look at different distributions in R using the {wildlandhydRo} and {tidyverse} packages. A lot of times in hydrology you'll end up collecting data (rainfall, snowdepth, runoff, etc) to try and fit to an theoretical distribution (univariate continuous distribution functions (cdf)) to then use for further analysis, e.g. frequency. These cdf's come in all shapes and sizes (literally) and can be confusing at times but hopefully we can demystify them in this blog without too much incredulity from those statisticians. First, we'll look at what a cdf is for a few empirical distributions, e.g. normal (N), lognormal (LN), log Pearson type III (LP3) and Generalized Extreme-value Distribution (GEV). Second, we'll bring in some data and look at the distributions visually. Third, we'll use a few goodness-of-fit tests to see which theoretical distribution best represents the underlying empirical distribution.
