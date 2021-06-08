@@ -6,7 +6,6 @@ slug: []
 categories: []
 tags: []
 description: 'Demystifying? Wait, what?'
-self_contained: true
 ---
 
 
@@ -22,9 +21,16 @@ This will be part one of a three part blog post where we'll look at different di
 
 ## Part I
 
-For part one we will get pretty '_mathy_' with the distributions by looking at the derivations of the CDF's. This will involve some calculus but is mostly just looking at where and why $f(x)$ goes where it goes. 
+For part one we will get pretty '_mathy_' with the distributions by looking at the derivations of the CDF's. This will involve some calculus but is mostly just looking at where and why $$f(x)$$ goes where it goes. 
 
+ $$
+ \begin{aligned}
+ &E[X] = \int_{-\infty}^{\infty} xf(x) dx=\\ 
+ &\int_{0}^{1} x dx    = \frac12 x^2 |_0^1 = \frac12 
+ \end{aligned}
+ $$
 
+$f(x_{i},y_{i})$
 
 
 
