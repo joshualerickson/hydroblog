@@ -1,12 +1,26 @@
 ---
-title: Hydrology Distributions
+title: 'Hydrology Distributions: Part I'
 author: Josh Erickson
 date: '2021-06-07'
 slug: []
 categories: []
 tags: []
 description: 'Demystifying? Wait, what?'
+bibliography: cit.bib
+output:
+  blogdown::html_page:
+    toc: true
+    css: "style.css"
+
 ---
+```{r, echo=FALSE}
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+knitr::opts_chunk$set(echo = TRUE, fig.width = 10, fig.height = 5)
+
+```
 
 
 ```{r, message=FALSE, warning=FALSE}
@@ -14,23 +28,388 @@ library(wildlandhydRo)
 library(evd)
 library(fitdistrplus)
 library(tidyverse)
+library(patchwork)
+library(latex2exp)
+library(moments)
+theme_set(theme_bw())
 ```
 
 # Introduction
-This will be part one of a three part blog post where we'll look at different distributions in R using the {wildlandhydRo} and {tidyverse} packages. A lot of times in hydrology you'll end up collecting data (rainfall, snowdepth, runoff, etc) to try and fit to an theoretical distribution (univariate Cumulative Distribution Functions (CDF)) to then use for further analysis, e.g. frequency, probabilities, etc. These CDF's come in all shapes and sizes (literally) and can be confusing at times but hopefully we can demystify them in this blog series without too much incredulity from those pesky statisticians. First, we'll look at what a CDF is for some commonly used empirical distributions in hydrology, e.g. normal (N), lognormal (LN), log Pearson type III (LP3), Pearson (P), Gumbel (G), Weibull (W) and Generalized Extreme-value Distribution (GEV). Second, we'll bring in some data and look at the distributions visually. Third, we'll use a few goodness-of-fit tests to see which theoretical distribution best represents the underlying empirical distribution.
 
-## Part I
+This will be part one of a three part blog series *'Hydrology Distributions'* where we'll look at different distributions in R using a handful of packages. A lot of times in hydrology you'll end up collecting data (rainfall, snowdepth, runoff, etc) to try and fit a theoretical distribution for further analysis, e.g. frequency, probabilities, hypothesis testing etc. These probability distributions come in all shapes and sizes (literally) and can be confusing at times but hopefully we can break these concepts down without too much incredulity from those pesky/pedantic statisticians `r emo::ji('blush')`. First (part I), we'll look at descriptive statistics and probability distributions (pmf and pdf). Second (part II), we'll bring in some data and compare distributions visually for some commonly used theoretical distributions in hydrology, e.g. normal (N), lognormal (LN), log Pearson type III (LP3), Pearson (P), Gumbel (G), Weibull (W) and Generalized Extreme-value Distribution (GEV). Third (part III), we'll use a few goodness-of-fit tests to see which theoretical distribution best represents the underlying empirical distribution.
 
-For part one we will get pretty '_mathy_' with the distributions by looking at the derivations of the CDF's. This will involve some calculus but is mostly just looking at where and why $$f(x)$$ goes where it goes. 
+# Part I
 
- $$
- \begin{aligned}
- &E[X] = \int_{-\infty}^{\infty} xf(x) dx=\\ 
- &\int_{0}^{1} x dx    = \frac12 x^2 |_0^1 = \frac12 
- \end{aligned}
- $$
+For part one we will get pretty '*mathy*' by looking at descriptive stats and probability distributions and how they are derived. This is not meant to be a full blown course into statistics! Thus, I'm assuming the reader has some basic understanding of statistics and calculus but if you want more information please see this book from @maity2018statistical titled '*Statistical Methods in Hydrology and Hydroclimatology*'. This book does not have a free copy but is worth the buy if you can. Otherwise, here are some other sources that I think would be relevant to the series ([prob-distr](https://tinyheero.github.io/2016/03/17/prob-distr.html), [distributions](https://rafalab.github.io/dsbook/distributions.html)).
 
-$f(x_{i},y_{i})$
+So, what is a distribution? In a basic sense, a distribution is a set of observations (discrete or continuous) that shows how this set is distributed or how frequently values occur, e.g. $banfield = \{1,4,5,5.3,3.546,10, \dots, n\}$. This set of observations ($banfield$) can then be used graphically (plotting), descriptively (central tendency, dispersion, skewness and tailedness) or inferentially (theoretical distributions) to uncover more about the underlying data. So, let's bring in some daily SWE data from a Snow Telemetry (SNOTEL) site ($banfield$) and see what the data looks like graphically. We can do this by looking at a histogram (counting) or density plot. This gives us an idea of how the data is distributed and where values frequently occur. 
+
+## Plotting
+
+```{r, message=FALSE}
+banfield <- batch_SNOTELdv(sites = 311)
+hist <- ggplot(data = banfield, aes(snow_water_equivalent)) +
+  geom_histogram() + labs(title = 'Histogram', x = 'Snow Water Equivalent (SWE) inches')
+
+dens <- ggplot(data = banfield, aes(snow_water_equivalent)) +
+  geom_density() + labs(title = 'Density', x = 'Snow Water Equivalent (SWE) inches')
+
+both <- ggplot(data = banfield, aes(snow_water_equivalent, ..count..)) +  
+  geom_histogram() +
+  geom_density() +
+  labs(x = 'Snow Water Equivalent (SWE) inches')
+
+(hist | dens ) / both
+```
+
+This is fine but as you can see most of the readings are zero (no snow!) so let's just grab the month of April as this has some significance with runoff, i.e. high April SWE correlates with high runoff.
+
+```{r, echo=FALSE, message=FALSE}
+
+banfield_april <- banfield %>% filter(month == 4)
+
+hist <- ggplot(data = banfield_april, aes(snow_water_equivalent)) +
+  geom_histogram() + labs(title = 'Histogram', x = 'Snow Water Equivalent (SWE) inches')
+
+dens <- ggplot(data = banfield_april, aes(snow_water_equivalent)) +
+  geom_density() + labs(title = 'Density', x = 'Snow Water Equivalent (SWE) inches')
+
+both <- ggplot(data = banfield_april, aes(snow_water_equivalent, ..count..)) +  
+  geom_histogram() +
+  geom_density() + 
+  labs(x = 'Snow Water Equivalent (SWE) inches')
+
+(hist | dens ) / both 
+```
+
+Ahhh, much better! As you can see, we start to get a better idea of how the data is distributed but this is just visual. Sometimes this is all you need but for other times that's where descriptive statistics come in handy. Destriptive statistics will help us put a number to what we see!
+
+## Descriptive Stats
+
+Now we can look at some descriptive stats from these observations ($banfield$). But first, let's go over the common stats briefly, e.g. central tendency, dispersion, skewness and tailedness.  
+
+### Central Tendency
+
+Central tendency describes where the data is most occurring, e.g. mean, median, mode. This helps us understand it's '__central tendency__' `r emo::ji('laugh')`, which can be useful for inferring population parameters (theretical distributions) or just getting a quick idea of the average. Below are the equations for calculating the mean, median and mode;  
+
+<center><b>Mean</b></center>
+$$ \displaystyle \bar{x} = \frac{\sum_{i=1}^n x_{i}}{n}$$
+<center><b>Median</b></center>
+$$ \displaystyle \bar{x}_{md} = \frac{(n+1)}{2}$$
+<center><b>Mode</b></center>
+$$ \displaystyle \mu_{mo}=\arg \max\limits_{x_{i}}[p_{x}(x_{i})]$$
+
+Sometimes this is all you need for your analysis; however, this can be misleading (most of time) without knowing other information like dispersion (variance). 
+
+### Dispersion
+
+Dispersion is the measure of spread from the central tendency. This is really helpful in that it let's us know how clustered our data is or is not. For example, you can have the same mean but different dispersion as the figure below shows. This is a big difference, right? This is why providing the mean and standard deviation is so important when reporting data.
+
+```{r, echo=FALSE}
+tall <- rnorm(100, mean = 0, sd = .5)
+normal <- rnorm(100, mean = 0, sd = 1)
+wide <- rnorm(100, mean = 0, sd = 3)
+
+ggplot() + 
+  geom_density(aes(tall, color = 'Tall'), size = 1) +
+  geom_density(aes(normal, color = 'Normal'), size = 1) +
+  geom_density(aes(wide, color = 'Wide'), size = 1) +
+  geom_vline(linetype = 2, xintercept = 0, size = 1) + 
+  geom_text(aes(-1.65, .4, label = 'Mean'))+
+  annotate(x = -1, xend = -.1, y = 0.4, yend = 0.4, 'segment', arrow = arrow(length = unit(0.25, 'cm'))) +
+  labs(title = 'Distributions with the same mean but different dispersion',
+       subtitle = 'Mean = 0',
+       color = '',
+       x = 'value')
+```
+
+Below are the equations for calculating variance and standard deviation;
+
+<center><b>Variance</b></center>
+$$S^2=\frac{\sum_{i=1}^{n}(x_{i}-\bar{x})^2}{n-1} $$
+<center><b>Standard Deviation</b></center>
+$$S=\sqrt{\frac{\sum_{i=1}^{n}(x_{i}-\bar{x})^2}{n-1}} $$  
+
+As you can see, the standard deviation is just the square root of the variance. This is nice because it puts it __back__ into the original scale of the data!  
+
+### Skewness
+Skewness is the measure of symmetry. In other words, how does our data look on both sides of our central value (mean, median)? Is it symmetric? Is it longer on one side, etc? This is helpful because some data might be skewed right, left or barely at all and that can change how you infer meaning (we'll go over this later).  
+
+```{r,echo=F}
+
+normal <- rnorm(10000,mean = 4000, sd = 200)
+skewed_right <- smwrBase::rpearsonIII(10000,mean = 4000, sd = 200, skew = 1.25)
+skewed_left <- smwrBase::rpearsonIII(10000,mean = 4000, sd = 200, skew = -1.25)
+
+n <- ggplot() +
+  geom_density(aes(normal), size = 1) +
+  labs(x = 'symmetric', y = TeX('$f_{X}(x)'))
+
+right <- ggplot() +
+  geom_density(aes(skewed_right), size = 1)  +
+  labs(x = 'positively skewed', y = TeX('$f_{X}(x)'))
+
+left <- ggplot() +
+  geom_density(aes(skewed_left), size = 1)  +
+  labs(x = 'negatively skewed', y = TeX('$f_{X}(x)'))
+
+n + right + left & theme(axis.text.x = element_blank(),
+                         axis.text.y = element_blank(),
+                         axis.ticks = element_blank(),
+                         panel.grid.major = element_blank(), 
+                         panel.grid.minor = element_blank(), 
+                         panel.background = element_blank())
+```
 
 
 
+Here is the equation below to find coefficient of skewness;
+
+<center><b>Coefficient of Skewness</b></center>
+$$C_{s}=\frac{n\sum_{i=1}^{n}(x_{i}-\bar{x})^3}{(n-1)(n-2)S^3} $$
+Dividing by $S^3$ makes this equation dimensionless. As you can see, it's very similar to the variance.  
+
+### Tailedness/Kurtosis
+Tailedness aka Kurtosis is the measure of the '__tails__' of the distribution. This is really helpful with outliers in the distribution. Kurtosis gives you an idea of what's going on at the edges. There are three flavors of kurtosis: mesokurtic, leptokurtic and platykurtic. These are based on different kurtosis values (k=3 is mesokurtic, k > 3 is leptokurtic, k < 3 is platykurtic). When you start playing around with kurtosis you'll see that it really depends on __how heavy__ areas of the distribution are! See the figure below and notice how the distributions look,
+
+```{r, echo=F}
+
+meso <- rnorm(100000)
+lepto <- rlogis(100000)
+platy <- c(rnorm(10000, sd = 3), seq(3,5,0.01), seq(-3, -5, -0.01))
+meso_k <- e1071::kurtosis(meso)
+lepto_k <-  e1071::kurtosis(lepto)
+platy_k <- e1071::kurtosis(platy)
+ggplot() + 
+  geom_density(aes(meso), size = 1) +
+  geom_text(aes(4, 0.25, label = 'leptokurtic; k > 0')) +
+  annotate(x = 2.35, xend = 1.25, y = 0.24, yend = 0.21, 'segment', arrow = arrow(length = unit(0.25, 'cm'))) +
+  geom_density(aes(lepto), size = 1) +
+  geom_text(aes(3.5, 0.3, label = 'mesokurtic; k = 0')) +
+  annotate(x = 1.85, xend = .25, y = 0.29, yend = 0.25, 'segment', arrow = arrow(length = unit(0.25, 'cm'))) +
+  geom_density(aes(platy), size = 1) +
+  geom_text(aes(4.5, 0.2, label = 'platykurtic; k < 0'))+
+  annotate(x = 2.85, xend = 0, y = 0.19, yend = 0.13, 'segment', arrow = arrow(length = unit(0.25, 'cm'))) +
+  labs(x = TeX('$x$'), y = TeX('$f_{X}(x)$')) +
+  theme(axis.text.x = element_blank(),
+                         axis.text.y = element_blank(),
+                         axis.ticks = element_blank(),
+                         panel.grid.major = element_blank(), 
+                         panel.grid.minor = element_blank(), 
+                         panel.background = element_blank())
+
+```
+
+What you can't see is how heavy the tails are! I had to add more points to the platykurtic distribution near the edges to get a k < 0. Equation for type 3 coefficient of kurtosis.  
+
+<center><b>Coefficient of Kurtosis</b></center>
+$$k=\frac{n^2\sum_{i=1}^{n}(x_{i}-\bar{x})^4}{(n-1)(n-2)(n-3)S^4} $$  
+
+### Banfield Stats
+
+Now that we've covered descriptive statistics, we can move on and see what the Banfield site looks like.  
+
+
+| Mean                                          | Median | Mode | Variance | Standard Deviation | Skewness | Kurtosis |
+|-----------------------------------------------|--------|------|----------|--------------------|----------|----------|
+| `r paste(round(mean(banfield_april$snow_water_equivalent),2), ' in.')` |  `r paste(round(median(banfield_april$snow_water_equivalent),2), ' in.')`      |  `r paste(getmode(round(banfield_april$snow_water_equivalent,0)), ' in.')`    |   `r round(var(banfield_april$snow_water_equivalent),2)`       |   `r paste(round(sd(banfield_april$snow_water_equivalent),2), ' in.')`  |  `r round(skewness(banfield_april$snow_water_equivalent),2)`        |    `r round(kurtosis(banfield_april$snow_water_equivalent),2)`      |
+
+: April Daily Snow Water Equivalent (SWE) at Banfield Mountain
+
+From the table above we can see that the mean, median and mode (central tendancy) are pretty close. The standard deviation is about `r round(sd(banfield_april$snow_water_equivalent),2)` inches (dispersion) and the skewness (measure of symmetry) is positive (`r round(skewness(banfield_april$snow_water_equivalent),2)`) which means skewed to the right. The kurtosis is interesting as it's close to 3, which indicates that its _tails_ likely follow a normal distribution (__mesokurtic__).
+
+These handful of stats (table above) are very informative and give us a quick exploratory look into what's going on with this sample. This can help us understand what the underlying data looks like (without looking) and can give us insights relatively fast but what if we wanted to ask some questions like, 'what is the probability of seeing a SWE measurement in April above 25 inches?'. This is where we'll need to introduce the idea of probability distributions. 
+
+## Probability Distributions  
+
+For us hydrologists, a probability distribution is composed of randomly sampled data (discrete or continuous) from hydrologic events (rainfall, runoff, snow water equivalent (SWE), days of drought, etc) that we can then infer **probabilities** from an theoretical or empirical distribution. The main take-away is if we know what the distribution of the data is (empirical) or what it likely follows (theoretical) then we can do some powerful things with probabilities.
+
+Thus, a **probability** distribution is broken into two different flavors: probability mass function (pmf) and probability density function (pdf). A pmf is made up of randomly sampled discrete data (number of days, months, years, etc) and a pdf is made up of randomly sampled continuous data (rainfall depth, snow depth, runoff). That's it! Below we'll dive into the math behind a pmf and pdf and also introduce a Cumulative Distribution Function (CDF). 
+
+### pmf
+
+The pmf must satisfy, 
+
+$$(i)\ \ \ p_{x}(x_{i}) \geq 0 \ \ \ \forall \ x_{i} \in \theta$$
+$$(ii)\ \ \ \sum_{all \ i}p_{x}(x_{i})=1$$
+
+where $p_{x}(x_{i})$ must be greater than or equal to zero for all x in the set and the sum of $p_{x}(x_{i})$ must equal one for all x in the set. Basically, we can't have a set of values that when you add up them up they don't equal one. Which makes sense intuitively, we wouldn't want our sample to only go to 0.75. We can look at this with our ($banfield$) dataset but first we'll need to transfer into a discrete value to use as a pmf example (since it's continuous data right now...). 
+
+Let's see what the number/count of consecutive days of SWE per year is (blah, confusing). In other words, number of days in a row that SWE has increased day-to-day. For example, if you take `"2020-04-01 UTC" "2020-04-02 UTC" "2020-04-03 UTC" "2020-04-04 UTC"` and have SWE values `1,1,3,2` then this would have one consecutive day with a positive increase at days `"2020-04-02 UTC" "2020-04-03 UTC"` where SWE goes from `1 to 3` (notice that we're not counting decreasing days `3 to 2`). When doing this we can see that our data closely follows a Poisson Distribution ($P(x) = \frac{{e^{-\lambda} \lambda^x }}{{x!}}$). 
+
+```{r, echo=FALSE}
+
+c_days <- banfield_april %>% select(Date, snow_water_equivalent) %>% mutate(sc = ifelse(dplyr::lag(snow_water_equivalent, default = 0) >= snow_water_equivalent, 0, 1)) %>% .[-1,] %>% filter(sc != 0) 
+
+c_days <- sort(c_days$Date) %>% split(cumsum(c(TRUE, diff(c_days$Date) != 1))) %>% map_df(~length(.x)) %>% t() %>% as.data.frame() %>% rename(c_days = 'V1')
+
+rownames(c_days) <- NULL
+
+no_c_days <- banfield_april %>% select(Date, snow_water_equivalent) %>% mutate(c_days = ifelse(dplyr::lag(snow_water_equivalent, default = 0) >= snow_water_equivalent, 0, 1)) %>% .[-1,] %>% filter(c_days != 1) %>% select(c_days)
+
+c_days_final <- rbind(no_c_days, c_days)
+
+p1 <- c_days_final %>% 
+ggplot(aes(x=c_days, y=after_stat(count))) +
+  geom_bar() +
+  theme_bw() +
+  scale_x_continuous(breaks = seq(0,10,1)) +
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.x = element_blank(),
+                         panel.grid.major = element_blank(), 
+                         panel.grid.minor = element_blank(), 
+                         panel.background = element_blank()
+  )  +
+  labs(x = '# of Consecutive Days',
+       title = 'Histogram of increasing/positive consecutive days of  SWE in April',
+       subtitle = 'Period of Record: 1968-10-01 to 2020-11-22')
+c_days_final1 <- c_days_final %>% mutate(dist = 'Empirical')
+c_days_final2 <- data.frame(c_days = rpois(n = 1410, 0.2), dist = 'Poisson')
+
+p2 <- rbind(c_days_final1, c_days_final2)%>% ggplot() +
+    geom_density(aes(c_days, linetype = dist), size = 0.75, bw = 0.5)+
+  scale_x_continuous(breaks = seq(0,10,1)) + 
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.x = element_blank(),
+                         panel.grid.major = element_blank(), 
+                         panel.grid.minor = element_blank(), 
+                         panel.background = element_blank()
+    
+  ) + labs(y = '', x = 'Days', linetype = 'Distribution') 
+
+p1 + inset_element(p2, .3,.3,1,1)
+
+```
+
+As you can see in the figure above there are a lot of zero's! Which is what we would expect for the end of the season; also, consecutive days of precipitation are rare in this area as well. The inset figure show's how it roughly (really really close) follows a Poisson distribution. So how do we calculate the pmf?  
+
+That's easy (relative), we just substitute $p_{x}(x_{i})$ for whatever the new distribution is; in our case that's a Poisson distribution ($\frac{e^{-\lambda}\lambda^x }{x!}$ where $\lambda=0.2$). Replace. And voila $\sum_{all \ i}\frac{e^{-\lambda}\lambda^x }{x!}$ where $\lambda=0.2$. From here, we just have to ask a question like 'what is the probability that there will be 0 consecutive days in April?'. All we do is plug in 0 to the Poisson Distribution and magic happens. So,
+$$p_{x}(0) = \frac{e^{-0.2}0.2^0 }{0!} = 0.819$$
+We could do this for any of the days if we wanted to (see figure below). In the case of $p_{x}(0)$ the probability is equal to 81.9%. What this means is that on any given day we would have a 81.9% chance of not seeing a consecutive day of increased SWE at the $banfield$ site in April.
+
+```{r, echo = FALSE}
+c_days_final %>% 
+ggplot(aes(x=c_days, y=after_stat(count))) +
+  geom_bar() +
+  theme_bw() +
+  scale_x_continuous(breaks = seq(0,10,1)) +
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.x = element_blank(),
+                         panel.grid.major = element_blank(), 
+                         panel.grid.minor = element_blank(), 
+                         panel.background = element_blank()
+  )  +
+  annotate('label', x = 2, y=900, label = TeX(r'($p_{x}(0) = \frac{e^{-0.2}0.2^0 }{0!}= 0.819$)', output = 'character'), parse = TRUE)+
+  annotate('label', x = 3, y=700, label = TeX(r'($p_{x}(1) = \frac{e^{-0.2}0.2^1 }{1!}= 0.164$)', output = 'character'), parse = TRUE)+
+  annotate('label', x = 4, y=500, label = TeX(r'($p_{x}(2) = \frac{e^{-0.2}0.2^2 }{2!}=0.016$)', output = 'character'), parse = TRUE)+
+  annotate('label', x = 5, y=300, label = TeX(r'($p_{x}(3) = \frac{e^{-0.2}0.2^3 }{3!}=0.001$)', output = 'character'), parse = TRUE) +
+  annotate(x = 0.95, xend = 0.5, y = 825, yend = 650, 'segment', arrow = arrow(length = unit(0.25, 'cm'))) +
+  annotate(x = 1.95, xend = 1, y = 625, yend = 200, 'segment', arrow = arrow(length = unit(0.25, 'cm'))) +
+  annotate(x = 3, xend = 2, y = 425, yend = 100, 'segment', arrow = arrow(length = unit(0.25, 'cm'))) +
+  annotate(x = 4, xend = 3, y = 225, yend = 50, 'segment', arrow = arrow(length = unit(0.25, 'cm'))) +
+  labs(x = '# of Consecutive Days',
+       title = 'Histogram of increasing/positive consecutive days of  SWE in April',
+       subtitle = 'Period of Record: 1968-10-01 to 2020-11-22')
+```
+
+
+What about 10? Easy, just substitute x for 10
+
+$$p_{x}(10) = \frac{e^{-0.2}0.2^{10}}{10!} = 2.31\mathrm{e}{-14}$$
+Wow, that's really rare to get 10 consecutive days! But what if we want to know what the probability of getting 1 or more consecutive days is? Since there is only 30 days in April we'll cut it off at 30. Thus, we would just take the interval $P(1\leq X \leq 30)$ to find $p_{x}(x_{i})$. Using this equation below, 
+
+$$ p_{x}(x)=P(1\leq X \leq 30)= \sum_{all \ i}\frac{e^{-\lambda}\lambda^x_{i} }{x_{i}!} \ \mbox{where} \ \lambda = 0.2 \ \ \ \forall \ x_{i} \in \{1,2,3,4,\dots,30\}$$
+
+we can then sum up all the probabilities greater than and equal to one to find $p_{x}(x)$. We can do this real quick in R using the {purrr} package with the `map` function. The result is `r seq(1,30,1) %>% map(function(x)(exp(-0.2)*0.2^x)/factorial(x)) %>% unlist() %>% sum() %>% round(3)`.
+
+```{r, eval = F}
+seq(1,30,1) %>% map(function(x)(exp(-0.2)*0.2^x)/factorial(x)) %>% unlist() %>% sum()
+```
+
+Now if we add these together $p_{x}(0) + P(1\leq X \leq 30)$ we should get 1, right? (__remember it must follow the pmf rules__, see eq. ($ii$)). And, drumroll... we do (0.8187308 + 0.1812692 = 1)! We just used some hydrodrologic data (SWE) to find the probability of $P(1\leq X \leq 30)$ and $p_{x}(0)$, how cool is that? But what about that thing called the CDF? The methods above (finding probabilities at different values) calculates essentially what the Continuous Distribution Function (CDF) does; however, the CDF does it a different way by using $P(1\leq X \leq 30) = F_{X}(30) - F_{X}(1)$. This is very subtle ($p_{x}(x_{i}) \ \mbox{vs.} \ F_{X}(x)$) but very important. To calculate the CDF we need to follow this formula below,
+
+$$ \mbox{For} \ 0 < k \leq x \leq k+1 \\ F_{X}(x) = p_{x}(0) + p_{x}(1) + \dots + p_{x}(k) \\ P(X) =  F_{X}(x_{i}) - F_{X}(x_{i})$$  
+
+:::{.b--red .ba .bw2 .ma2 .pa4 .shadow-1}
+__Important note! Make sure to pay attention to $\leq$ and $\geq$ in the equation above. It is fine to add < or > instead of $\leq$ and $\geq$ for pmf's but not for pdf's! Be careful with pdf's...__
+:::
+
+Now if we want to find the $P(1\leq X \leq 30)$ using a CDF we can! Just input the values into the equation above and we'll get the same result as if summing up all the pmf's.
+
+$$
+ P(1 \leq x \leq 30) = F_{X}(30) - F_{X}(1) \\
+ F_{X}(30)= p_{x}(0)+p_{x}(1) + \dots +p_{x}(31) = 1\\
+ F_{X}(1)= p_{x}(0) = 0.819 \\
+ P(1 \leq x \leq 30) = 1-0.819=0.181
+$$
+
+They match! This is the nice thing about CDF's as we can use it for both discrete and continuous data. Finally, we can move onto continuous data and explore a pdf!  
+
+
+### pdf  
+
+With pdf's we can start working with contiuous data. This is nice since the $banfield$ data is continuous to start out. First we'll go over the pdf just like pmf and then apply with a cdf. There is an important distinction between the two (pmf and pdf) in that a pdf is not a point probability and a pmf is. That is to say, if we were to take a point estimate with a pdf then that value is a density and not a probability. Nevertheless.
+
+The pdf must satisfy, 
+
+$$(i)\ \ \ f(x) \geq 0 \ \ \ \forall \ x_{i} \in \theta$$
+$$(ii)\ \ \ \int_{-\infty}^{\infty}f(x)dx=1$$
+Going back to the distribution of SWE in April at $banfield$ we can see that the distribution closely follows a normal distribution (__assuming__, see below figure). 
+
+```{r, echo=FALSE, message = FALSE}
+
+ggplot(data = banfield_april) +  
+  geom_density(aes(snow_water_equivalent, linetype = 'emp')) +
+  geom_density(aes(rnorm(n=1590, mean = 18.09, 6.55), linetype = 'norm')) +
+  scale_linetype_manual(values = c(1,2), labels = c('Empirical', 'Normal')) +
+  labs(x = 'Snow Water Equivalent (SWE) inches', linetype = 'Distributions',
+       title = "Comparing Empirical Distribution with Normal Distribution",
+       subtitle = 'Mean = 18.09 and Standard Deviation = 6.55')
+```
+Just like the pmf we can take a probability _density_ function $f(x)$ and use it to figure out probabilities for different ranges. In our case, ${\displaystyle f(x)={\frac {1}{\sqrt {2\pi }}}\;e^{-x^{2}/2}}$, (aka the normal distribution) and it can be used to answer questions like 'what is the probability that we have a SWE value $\geq$ 20?'. Instead of summing up the point probabilities like a pmf we'll integrate from 20 to $\infty$. In short, find the area under the curve from 20 to $\infty$.
+
+$$
+{\displaystyle P(X\geq 20)=\int_{20}^{\infty}{\frac {1}{\sqrt {2\pi }}}\;e^{-x^{2}/2}} = \ ?
+$$
+To do this in R we'll need to use the `integrate()` but first we'll need to find the Z value at 20. The Z-value is equal to $Z=\frac{(value - \overline{x})}{s^2}$, so mean = `r round(mean(banfield_april$snow_water_equivalent),2)` and standard deviation = `r round(sd(banfield_april$snow_water_equivalent),2)` then $Z=\frac{(20-18.09)}{6.545}=0.29$. Now we can calculate the $P(X\geq 20)$. 
+
+```{r}
+integrate(dnorm, 0.29, Inf)
+# or use
+##  dnorm(.29)
+
+### or take the area of each sliver of density*width and sum,
+### you'll notice it's different and that's because we are using
+### the mean = 18.09 and sd = 6.545. 
+### Another topic, but they're different. Think about it....
+
+### sum(dnorm(seq(20,30,0.00001), mean = 18.09, sd = 6.545)*0.00001)
+```
+
+We ended up getting a probability of 0.386 or 38.6%. This makes sense though if we look at the curve and eyeball as seen in the graph below. 
+
+```{r, echo=FALSE, message = FALSE}
+
+ggplot(data = banfield_april,aes(snow_water_equivalent, ..count..)) +  
+  geom_histogram() +
+  geom_density() +
+  geom_vline(xintercept = 20, linetype = 2, size = 1) +
+  labs(x = 'Snow Water Equivalent (SWE) inches')
+```
+
+If we want to find it using a CDF we still use the same equation as the pmf __except__ we don't use $\geq \ or \leq$, e.g. $P(20< X < \infty) = F_{X}(\infty) - F_{X}(20)$. The $\infty$ just transfers to 1 and now we need to integrate from 0 to 20.
+$$
+{\displaystyle P(20< X < \infty)=\int_{0}^{\infty}{\frac {1}{\sqrt {2\pi }}}\;e^{-x^{2}/2}-\int_{0}^{20}{\frac {1}{\sqrt {2\pi }}}\;e^{-x^{2}/2}} \\ {\displaystyle P(20< X < \infty)=1-\int_{0}^{20}{\frac {1}{\sqrt {2\pi }}}\;e^{-x^{2}/2}} \\
+{\displaystyle \int_{0}^{20}{\frac {1}{\sqrt {2\pi }}}\;e^{-x^{2}/2}} = 0.614 \\
+P(20< X < \infty)=1-0.614=0.386
+$$  
+
+Woohoo! Same as the pdf before when we just used the integration function in R with a pdf. Hopefully this will help you understand hydrologic data better in the context of pmf, pdf and CDF. This will also help for upcoming flood frequency and goodness of fit blogs in the future. Thanks and hope you enjoyed!  
+
+# References
