@@ -287,8 +287,8 @@ p1 + inset_element(p2, .3,.3,1,1)
 
 As you can see in the figure above there are a lot of zero's! Which is what we would expect for the end of the season; also, consecutive days of precipitation are rare in this area as well. The inset figure show's how it roughly (really really close) follows a Poisson distribution. So how do we calculate the pmf?  
 
-That's easy (relative), we just substitute $p_{x}(x_{i})$ for whatever the new distribution is; in our case that's a Poisson distribution ($\frac{e^{-\lambda}\lambda^x }{x!}$ where $\lambda=0.2$). Replace. And voila $\sum_{all \ i}\frac{e^{-\lambda}\lambda^x }{x!}$ where $\lambda=0.2$. From here, we just have to ask a question like 'what is the probability that there will be 0 consecutive days in April?'. All we do is plug in 0 to the Poisson Distribution and magic happens. So,
-$$p_{x}(0) = \frac{e^{-0.2}0.2^0 }{0!} = 0.819$$
+That's easy (relative), we just substitute $p_{x}(x_{i})$ for whatever the new distribution is; in our case that's a Poisson distribution ($\frac{e^{-\lambda}\lambda^x }{x!}$ where $\lambda=0.2$). Replace. And voila $\sum_{all \ i}\frac{e^{-\lambda}\lambda^x }{x!}$ where $\lambda=0.2$. From here, we just have to ask a question like 'what is the probability that there will be 0 consecutive days in April?'. All we do is plug in 0 to the Poisson Distribution and magic happens (wait no, no magic __just a function__ being calculated). So,
+$$P(X=0)=p_{x}(0) = \frac{e^{-0.2}0.2^0 }{0!} = 0.819$$
 We could do this for any of the days if we wanted to (see figure below). In the case of $p_{x}(0)$ the probability is equal to 81.9%. What this means is that on any given day we would have a 81.9% chance of not seeing a consecutive day of increased SWE at the $banfield$ site in April.
 
 ```{r, echo = FALSE}
@@ -322,17 +322,17 @@ ggplot(aes(x=c_days, y=after_stat(count))) +
 What about 10? Easy, just substitute x for 10
 
 $$p_{x}(10) = \frac{e^{-0.2}0.2^{10}}{10!} = 2.31\mathrm{e}{-14}$$
-Wow, that's really rare to get 10 consecutive days! But what if we want to know what the probability of getting 1 or more consecutive days is? Since there is only 30 days in April we'll cut it off at 30. Thus, we would just take the interval $P(1\leq X \leq 30)$ to find $p_{x}(x_{i})$. Using this equation below, 
+Wow, that's really rare to get 10 consecutive days! But what if we want to know what the probability of getting 1 or more consecutive days is? Since there is only 30 days in April we'll cut it off at 30. Thus, we would just take the interval $P(1\leq X \leq 30)$ to find $\sum_{all \ i}p_{x}(x_{i})$. Using this equation below, 
 
-$$ p_{x}(x)=P(1\leq X \leq 30)= \sum_{all \ i}\frac{e^{-\lambda}\lambda^x_{i} }{x_{i}!} \ \mbox{where} \ \lambda = 0.2 \ \ \ \forall \ x_{i} \in \{1,2,3,4,\dots,30\}$$
+$$ P(1\leq X \leq 30)= \sum_{all \ i}\frac{e^{-\lambda}\lambda^x_{i} }{x_{i}!} \ \mbox{where} \ \lambda = 0.2 \ \ \ \forall \ x_{i} \in \{1,2,3,4,\dots,30\}$$
 
-we can then sum up all the probabilities greater than and equal to one to find $p_{x}(x)$. We can do this real quick in R using the {purrr} package with the `map` function. The result is `r seq(1,30,1) %>% map(function(x)(exp(-0.2)*0.2^x)/factorial(x)) %>% unlist() %>% sum() %>% round(3)`.
+we can then sum up all the probabilities greater than and equal to one to find $P(1\leq X \leq 30)$. We can do this real quick in R using the {purrr} package with the `map` function. The result is `r seq(1,30,1) %>% map(function(x)(exp(-0.2)*0.2^x)/factorial(x)) %>% unlist() %>% sum() %>% round(3)`.
 
 ```{r, eval = F}
 seq(1,30,1) %>% map(function(x)(exp(-0.2)*0.2^x)/factorial(x)) %>% unlist() %>% sum()
 ```
 
-Now if we add these together $p_{x}(0) + P(1\leq X \leq 30)$ we should get 1, right? (__remember it must follow the pmf rules__, see eq. ($ii$)). And, drumroll... we do (0.8187308 + 0.1812692 = 1)! We just used some hydrodrologic data (SWE) to find the probability of $P(1\leq X \leq 30)$ and $p_{x}(0)$, how cool is that? But what about that thing called the CDF? The methods above (finding probabilities at different values) calculates essentially what the Continuous Distribution Function (CDF) does; however, the CDF does it a different way by using $P(1\leq X \leq 30) = F_{X}(30) - F_{X}(1)$. This is very subtle ($p_{x}(x_{i}) \ \mbox{vs.} \ F_{X}(x)$) but very important. To calculate the CDF we need to follow this formula below,
+Now if we add these together $P(X=0) + P(1\leq X \leq 30)$ we should get 1, right? (__remember it must follow the pmf rules__, see eq. ($ii$)). And, drumroll... we do (0.8187308 + 0.1812692 = 1)! We just used some hydrodrologic data (SWE) to find the probability of $P(1\leq X \leq 30)$ and $P(X=0)$, how cool is that? But what about that thing called the CDF? The methods above (finding probabilities at different values) calculates essentially what the Continuous Distribution Function (CDF) does; however, the CDF does it a different way by using $P(1\leq X \leq 30) = F_{X}(30) - F_{X}(1)$. This is very subtle ($p_{x}(x_{i}) \ \mbox{vs.} \ F_{X}(x)$) but very important. To calculate the CDF we need to follow this formula below,
 
 $$ \mbox{For} \ 0 < k \leq x \leq k+1 \\ F_{X}(x) = p_{x}(0) + p_{x}(1) + \dots + p_{x}(k) \\ P(X) =  F_{X}(x_{i}) - F_{X}(x_{i})$$  
 
