@@ -220,11 +220,11 @@ From the table above we can see that the mean, median and mode (central tendancy
 
 These handful of stats (table above) are very informative and give us a quick exploratory look into what's going on with this sample. This can help us understand what the underlying data looks like (without looking) and can give us insights relatively fast but what if we wanted to ask some questions like, 'what is the probability of seeing a SWE measurement in April above 25 inches?'. This is where we'll need to introduce the idea of probability distributions. 
 
-## Probability Distributions  
+## Probability Distributions (univariate)
 
-For us hydrologists, a probability distribution is composed of randomly sampled data (discrete or continuous) from hydrologic events (rainfall, runoff, snow water equivalent (SWE), days of drought, etc) that we can then infer **probabilities** from an theoretical or empirical distribution. The main take-away is if we know what the distribution of the data is (empirical) or what it likely follows (theoretical) then we can do some powerful things with probabilities.
+For us hydrologists, a univariate probability distribution is composed of randomly sampled data (discrete or continuous) from hydrologic events (rainfall, runoff, snow water equivalent (SWE), days of drought, etc) that we can then infer **probabilities** from an theoretical or empirical distribution. The main take-away is if we know what the distribution of the data is (empirical) or what it likely follows (theoretical) then we can do some powerful things with probabilities.
 
-Thus, a **probability** distribution is broken into two different flavors: probability mass function (pmf) and probability density function (pdf). A pmf is made up of randomly sampled discrete data (number of days, months, years, etc) and a pdf is made up of randomly sampled continuous data (rainfall depth, snow depth, runoff). That's it! Below we'll dive into the math behind a pmf and pdf and also introduce a Cumulative Distribution Function (CDF). 
+Thus, a **probability** distribution is broken into two different flavors: probability mass function (pmf) and probability density function (pdf). A pmf is made up of randomly sampled discrete data (number of days, months, years, etc) and a pdf is made up of randomly sampled continuous data (rainfall depth, snow depth, runoff). That's it! Below we'll dive into the math behind a pmf and pdf and also introduce a Cumulative Distribution Function (CDF), which calculates/cumulates the probabilities. 
 
 ### pmf
 
@@ -285,7 +285,7 @@ p1 + inset_element(p2, .3,.3,1,1)
 
 ```
 
-As you can see in the figure above there are a lot of zero's! Which is what we would expect for the end of the season; also, consecutive days of precipitation are rare in this area as well. The inset figure show's how it roughly (really really close) follows a Poisson distribution. So how do we calculate the pmf?  
+In the figure above there are a lot of zero's! This is what we would expect for the end of the season around here (more losing water than gaining). The inset figure show's how it roughly (really really close) follows a Poisson distribution. So what do we do with the pmf?  
 
 That's easy (relative), we just substitute $p_{x}(x_{i})$ for whatever the new distribution is; in our case that's a Poisson distribution ($\frac{e^{-\lambda}\lambda^x }{x!}$ where $\lambda=0.2$). Replace. And voila $\sum_{all \ i}\frac{e^{-\lambda}\lambda^x }{x!}$ where $\lambda=0.2$. From here, we just have to ask a question like 'what is the probability that there will be 0 consecutive days in April?'. All we do is plug in 0 to the Poisson Distribution and magic happens (wait no, no magic __just a function__ being calculated). So,
 $$P(X=0)=p_{x}(0) = \frac{e^{-0.2}0.2^0 }{0!} = 0.819$$
@@ -322,7 +322,7 @@ ggplot(aes(x=c_days, y=after_stat(count))) +
 What about 10? Easy, just substitute x for 10
 
 $$p_{x}(10) = \frac{e^{-0.2}0.2^{10}}{10!} = 2.31\mathrm{e}{-14}$$
-Wow, that's really rare to get 10 consecutive days! But what if we want to know what the probability of getting 1 or more consecutive days is? Since there is only 30 days in April we'll cut it off at 30. Thus, we would just take the interval $P(1\leq X \leq 30)$ to find $\sum_{all \ i}p_{x}(x_{i})$. Using this equation below, 
+Wow, that's really rare to get 10 consecutive days! But what if we want to know what the probability of getting 1 or more consecutive days is? Since there is only 30 days in April we'll cut it off at 30 (-sidebar, technically we could just do $P(X\geq 1)$ but for example sake we'll look at it as an interval). Thus, we would just take the interval $P(1\leq X \leq 30)$ to find $\sum_{all \ i}p_{x}(x_{i})$. Using this equation below, 
 
 $$ P(1\leq X \leq 30)= \sum_{all \ i}\frac{e^{-\lambda}\lambda^x_{i} }{x_{i}!} \ \mbox{where} \ \lambda = 0.2 \ \ \ \forall \ x_{i} \in \{1,2,3,4,\dots,30\}$$
 
@@ -332,33 +332,38 @@ we can then sum up all the probabilities greater than and equal to one to find $
 seq(1,30,1) %>% map(function(x)(exp(-0.2)*0.2^x)/factorial(x)) %>% unlist() %>% sum()
 ```
 
-Now if we add these together $P(X=0) + P(1\leq X \leq 30)$ we should get 1, right? (__remember it must follow the pmf rules__, see eq. ($ii$)). And, drumroll... we do (0.8187308 + 0.1812692 = 1)! We just used some hydrodrologic data (SWE) to find the probability of $P(1\leq X \leq 30)$ and $P(X=0)$, how cool is that? But what about that thing called the CDF? The methods above (finding probabilities at different values) calculates essentially what the Continuous Distribution Function (CDF) does; however, the CDF does it a different way by using $P(1\leq X \leq 30) = F_{X}(30) - F_{X}(1)$. This is very subtle ($p_{x}(x_{i}) \ \mbox{vs.} \ F_{X}(x)$) but very important. To calculate the CDF we need to follow this formula below,
+Now if we add these together $P(X=0) + P(1\leq X \leq 30)$ we should get 1, right? (__remember it must follow the pmf rules__, see eq. ($ii$)). And, drumroll... we do (0.8187308 + 0.1812692 = 1)! We just used some hydrodrologic data (SWE) to find the probability of $P(1\leq X \leq 30)$ and $P(X=0)$, how cool is that? But what about that thing called the CDF? The methods above (finding probabilities at different values and summing) are technically a CDF!
 
-$$ \mbox{For} \ 0 < k \leq x \leq k+1 \\ F_{X}(x) = p_{x}(0) + p_{x}(1) + \dots + p_{x}(k) \\ P(X) =  F_{X}(x_{i}) - F_{X}(x_{i})$$  
+<center><b>pmf Cumulative Distribution Function (CDF)</b></center>
+$$F_{x}(x_{i})=P(X\leq x_{i})=\sum_{j=i}^{i}P(X=x_{j}) \ \ \ \ \ \forall x \in \{x_{1},x_{2},x_{3},\dots,x_{n}\}$$  
 
-:::{.b--red .ba .bw2 .ma2 .pa4 .shadow-1}
-__Important note! Make sure to pay attention to $\leq$ and $\geq$ in the equation above. It is fine to add < or > instead of $\leq$ and $\geq$ for pmf's but not for pdf's! Be careful with pdf's...__
-:::
+However, the CDF does it a different way with intervals than the way we did it by using $P(1\leq X \leq 30) = F_{x}(30) - F_{x}(1)$. This is very subtle ($p_{x}(x_{i}) \ \mbox{vs.} \ F_{X}(x)$) but very important. To calculate the interval CDF we need to follow this formula below,
 
-Now if we want to find the $P(1\leq X \leq 30)$ using a CDF we can! Just input the values into the equation above and we'll get the same result as if summing up all the pmf's.
+$$ \mbox{For} \ 0 < k \leq x \leq k \\ F_{x}(x) = p_{x}(0) + p_{x}(1) + \dots + p_{x}(k) \\ P(X) =  F_{x}(x_{i}) - F_{x}(x_{i})$$  
+
+Now if we want to find the $P(1\leq X \leq 30)$ using CDF we can! Just input the values into the equation above and we'll get the same result as if summing up the interval.
 
 $$
- P(1 \leq x \leq 30) = F_{X}(30) - F_{X}(1) \\
- F_{X}(30)= p_{x}(0)+p_{x}(1) + \dots +p_{x}(31) = 1\\
- F_{X}(1)= p_{x}(0) = 0.819 \\
+ P(1 \leq x \leq 30) = F_{x}(30) - F_{x}(1) \\
+ F_{x}(30)= p_{x}(0)+p_{x}(1) + \dots +p_{x}(30) = 1\\
+ F_{x}(1)= p_{x}(0) = 0.819 \\
  P(1 \leq x \leq 30) = 1-0.819=0.181
 $$
 
-They match! This is the nice thing about CDF's as we can use it for both discrete and continuous data. Finally, we can move onto continuous data and explore a pdf!  
+They match! Let's move onto continuous data and explore a pdf!  
+
+:::{.b--green .ba .bw2 .ma2 .pa4 .shadow-1}
+__Make sure to pay attention to $\leq$ and $\geq$ and < or > when using CDF's with pmf's. It is fine to add $\leq$, $\geq$, < or > when using CDF's but the signs matter for pmf's! This is not the case with pdf's as we'll see in a little bit.__
+::: 
 
 
 ### pdf  
 
-With pdf's we can start working with contiuous data. This is nice since the $banfield$ data is continuous to start out. First we'll go over the pdf just like pmf and then apply with a cdf. There is an important distinction between the two (pmf and pdf) in that a pdf is not a point probability and a pmf is. That is to say, if we were to take a point estimate with a pdf then that value is a density and not a probability. Nevertheless.
+With pdf's we can start working with contiuous data. This is nice since the $banfield$ data is continuous to start out. First we'll go over the pdf just like pmf and then apply with a cdf. There is an important distinction between the two (pmf and pdf) in that a pdf is not a point probability and a pmf is. That is to say, if we were to take a point estimate with a pdf then that value is a probability _density_ and not a probability _value_. Nevertheless.
 
 The pdf must satisfy, 
 
-$$(i)\ \ \ f(x) \geq 0 \ \ \ \forall \ x_{i} \in \theta$$
+$$(i)\ \ \ f(x) \geq 0 \ \ \ \mbox{for all} \ x $$
 $$(ii)\ \ \ \int_{-\infty}^{\infty}f(x)dx=1$$
 Going back to the distribution of SWE in April at $banfield$ we can see that the distribution closely follows a normal distribution (__assuming__, see below figure). 
 
@@ -372,15 +377,17 @@ ggplot(data = banfield_april) +
        title = "Comparing Empirical Distribution with Normal Distribution",
        subtitle = 'Mean = 18.09 and Standard Deviation = 6.55')
 ```
-Just like the pmf we can take a probability _density_ function $f(x)$ and use it to figure out probabilities for different ranges. In our case, ${\displaystyle f(x)={\frac {1}{\sqrt {2\pi }}}\;e^{-x^{2}/2}}$, (aka the normal distribution) and it can be used to answer questions like 'what is the probability that we have a SWE value $\geq$ 20?'. Instead of summing up the point probabilities like a pmf we'll integrate from 20 to $\infty$. In short, find the area under the curve from 20 to $\infty$.
+Just like the pmf we can take a probability _density_ function $f(x)$ and use it to figure out probabilities for different ranges. In our case, ${\displaystyle f(x)={\frac {1}{\sqrt {2\pi \sigma^2 }}}\;e^{-(x-\mu)^{2}/2\sigma^2}}$, (aka the pdf of the normal distribution) and it can be used to answer questions like 'what is the probability that we have a SWE value $\geq$ 20?'. Instead of summing up the point probabilities like a pmf we'll integrate from 20 to $\infty$. Just like the CDF for a pmf but now we will use integration to find the probability.  
 
+<center><b>pdf Cumulative Distribution Function (CDF)</b></center>
 $$
-{\displaystyle P(X\geq 20)=\int_{20}^{\infty}{\frac {1}{\sqrt {2\pi }}}\;e^{-x^{2}/2}} = \ ?
+{\displaystyle F_{x}(x)=P(X\geq 20)=\int_{20}^{\infty}{\frac {1}{\sqrt {2\pi \sigma^2 }}}\;e^{-(x-\mu)^{2}/2\sigma^2}} = \ ?
 $$
-To do this in R we'll need to use the `integrate()` but first we'll need to find the Z value at 20. The Z-value is equal to $Z=\frac{(value - \overline{x})}{s^2}$, so mean = `r round(mean(banfield_april$snow_water_equivalent),2)` and standard deviation = `r round(sd(banfield_april$snow_water_equivalent),2)` then $Z=\frac{(20-18.09)}{6.545}=0.29$. Now we can calculate the $P(X\geq 20)$. 
+To do this in R we'll need to use the `integrate()` but first we'll need to find the Z value at 20. The Z-value is equal to $Z=\frac{(value - \overline{x})}{s^2}$, so mean = `r round(mean(banfield_april$snow_water_equivalent),2)` and standard deviation = `r round(sd(banfield_april$snow_water_equivalent),2)` then $Z=\frac{(20-18.09)}{6.545}=0.29$. Now we can calculate the $P(X\geq 20)$. Below we'll show using the `dnorm()` function which is the _standard normal_ distribution ($f(x)=f{\frac {1}{\sqrt {2\pi }}}\;e^{-x^{2}/2}$) and then manually showing the normal distribution pdf with our data stats (mean and sd). They are a little different but not by much... This has to do with the mean and standard deviation of the two and as a side note this is why it is important to match the __best__ fitting distribution!
 
 ```{r}
 integrate(dnorm, 0.29, Inf)
+integrate(function(x)1/(6.545*sqrt(2*pi))*exp(-((x-18.09)^2/(2*6.545^2))), 20, Inf)
 # or use
 ##  dnorm(.29)
 
@@ -403,13 +410,38 @@ ggplot(data = banfield_april,aes(snow_water_equivalent, ..count..)) +
   labs(x = 'Snow Water Equivalent (SWE) inches')
 ```
 
-If we want to find it using a CDF we still use the same equation as the pmf __except__ we don't use $\geq \ or \leq$, e.g. $P(20< X < \infty) = F_{X}(\infty) - F_{X}(20)$. The $\infty$ just transfers to 1 and now we need to integrate from 0 to 20.
-$$
-{\displaystyle P(20< X < \infty)=\int_{0}^{\infty}{\frac {1}{\sqrt {2\pi }}}\;e^{-x^{2}/2}-\int_{0}^{20}{\frac {1}{\sqrt {2\pi }}}\;e^{-x^{2}/2}} \\ {\displaystyle P(20< X < \infty)=1-\int_{0}^{20}{\frac {1}{\sqrt {2\pi }}}\;e^{-x^{2}/2}} \\
-{\displaystyle \int_{0}^{20}{\frac {1}{\sqrt {2\pi }}}\;e^{-x^{2}/2}} = 0.614 \\
-P(20< X < \infty)=1-0.614=0.386
-$$  
+If we want to find it using a interval CDF we still use the same equation as the pmf, e.g. $P(20< X < 25) = F_{X}(25) - F_{X}(20)$.  Now we need to integrate from 0 to 20 and 0 to 25.  
 
-Woohoo! Same as the pdf before when we just used the integration function in R with a pdf. Hopefully this will help you understand hydrologic data better in the context of pmf, pdf and CDF. This will also help for upcoming flood frequency and goodness of fit blogs in the future. Thanks and hope you enjoyed!  
+:::{.b--red .ba .bw2 .ma2 .pa4 .shadow-1}
+__Important note! Make sure to pay attention to $\leq$ and $\geq$ when using CDF's with pdf's. It is fine to add $\leq$ and $\geq$ instead of < or > for pdf's but technically it's not a point probability, e.g. $P(X=d)=\int_{d}^{d}f(x)dx=0$! In other words, don't assume $P(X = 20)$ to give you a point probability when working with pdf's (only special cases like zero-inflated daily rainfall, etc)...__
+:::  
+
+$$
+{\displaystyle P(20< X < 25)=\int_{0}^{25}{\frac {1}{\sqrt {2\pi \sigma^2 }}}\;e^{-(x-\mu)^{2}/2\sigma^2}-\int_{0}^{20}{\frac {1}{\sqrt {2\pi \sigma^2 }}}\;e^{-(x-\mu)^{2}/2\sigma^2}} \\ 
+{\displaystyle \int_{0}^{25}{\frac {1}{\sqrt {2\pi \sigma^2 }}}\;e^{-(x-\mu)^{2}/2\sigma^2}} = 0.854  \\
+{\displaystyle \int_{0}^{20}{\frac {1}{\sqrt {2\pi \sigma^2 }}}\;e^{-(x-\mu)^{2}/2\sigma^2}} = 0.614 \\
+P(20< X < 25)=0.854-0.614=0.24
+$$  
+We can see the chunk of the normal distribution that we took out. We take the 20 and 25 and convert to Z values and then integrate using the normal distribution. This is why it is nice to fit to a theoretical distribution, i.e. don't have to reinvent the wheel. The result is the area under the curve and the associated CDF aka probability of 20 to 25 inches of SWE in April!  
+```{r echo=F, message = FALSE, warning=F}
+
+sigma <- 1
+mean <- 0
+
+data <- data.frame(x = seq(-10,10,.001))
+
+data <- data %>%
+  mutate(y = 1/(sigma*sqrt(2*pi))*exp(-((x-mean)^2/(2*sigma^2))))
+
+ggplot(data) +
+  geom_line(aes(x=x, y=y)) +
+  geom_ribbon(data=filter(data,x > 0.29, x <  1.055768), aes(x=x, ymin=0, ymax=y), fill = "blue", alpha = .3)+
+  xlim(-5,5)+
+  annotate('label', x = 2.5, y=.3, label = TeX(r"($P(20< X < 25) = F_{X}(25) - F_{X}(20)$)", output = 'character'), parse = TRUE) +
+  annotate(x = 1.5, xend = .75, y = .275, yend = .2, 'segment', arrow = arrow(length = unit(0.25, 'cm'))) 
+
+```
+
+Hopefully this will help you understand hydrologic data better in the context of pmf, pdf and CDF. This will also help for upcoming flood frequency and goodness of fit blogs in the future. Thanks and hope you enjoyed!  
 
 # References

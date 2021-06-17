@@ -18,7 +18,7 @@
       <pubDate>Mon, 07 Jun 2021 00:00:00 +0000</pubDate>
       
       <guid>https://hydroblog.netlify.com/2021/06/07/2021-06-07-hydroclimatic-distributions/</guid>
-      <description>IntroductionPart IPlottingDescriptive StatsCentral TendencyDispersionSkewnessTailedness/KurtosisBanfield StatsProbability DistributionspmfpdfReferenceslibrary(wildlandhydRo)library(evd)library(fitdistrplus)library(tidyverse)library(patchwork)library(latex2exp)library(moments)theme_set(theme_bw())IntroductionThis will be part one of a three part blog series ‘Hydrology Distributions’ where we’ll look at different distributions in R using a handful of packages. A lot of times in hydrology you’ll end up collecting data (rainfall, snowdepth, runoff, etc) to try and fit a theoretical distribution for further analysis, e.</description>
+      <description>IntroductionPart IPlottingDescriptive StatsCentral TendencyDispersionSkewnessTailedness/KurtosisBanfield StatsProbability Distributions (univariate)pmfpdfReferenceslibrary(wildlandhydRo)library(evd)library(fitdistrplus)library(tidyverse)library(patchwork)library(latex2exp)library(moments)theme_set(theme_bw())IntroductionThis will be part one of a three part blog series ‘Hydrology Distributions’ where we’ll look at different distributions in R using a handful of packages. A lot of times in hydrology you’ll end up collecting data (rainfall, snowdepth, runoff, etc) to try and fit a theoretical distribution for further analysis, e.</description>
     </item>
     
     <item>

@@ -18,6 +18,9 @@ td{
 .b--red { 
   border-color: red;
 }
+.b--green { 
+  border-color: green;
+}
 .ba {
   border-style: solid;
 }
