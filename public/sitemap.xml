@@ -3,17 +3,27 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/</loc>
+    <lastmod>2021-07-31T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://hydroblog.netlify.com/post/</loc>
+    <lastmod>2021-07-31T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://hydroblog.netlify.com/</loc>
+    <lastmod>2021-07-31T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://hydroblog.netlify.com/2021/06/07/2021-06-07-hydroclimatic-distributions/</loc>
     <lastmod>2021-06-07T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://hydroblog.netlify.com/post/</loc>
-    <lastmod>2021-06-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/</loc>
+    <loc>https://hydroblog.netlify.com/2021/06/07/2021-07-11-hydrology-distributions-part-ii/</loc>
     <lastmod>2021-06-07T00:00:00+00:00</lastmod>
   </url>
   

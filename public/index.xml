@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Josh Erickson</copyright>
-    <lastBuildDate>Mon, 07 Jun 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 31 Jul 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://hydroblog.netlify.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Baseflow Index (BFI)</title>
+      <link>https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/</link>
+      <pubDate>Sat, 31 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/</guid>
+      <description>IntroCalculating BFIIntroBaseflow Index (BFI) is an index that uses the total flow (or quick flow) of a stream and the theoretical baseflow (depending on methodology). The methods we’ll be using in this post are from the {lfstat} package (Koffler, D., and G. Laaha. 2012) and allow the user different filtering windows and a turning point factors. Below is a great description of BFI,</description>
+    </item>
     
     <item>
       <title>Hydrology Distributions: Part I</title>
@@ -19,6 +28,15 @@
       
       <guid>https://hydroblog.netlify.com/2021/06/07/2021-06-07-hydroclimatic-distributions/</guid>
       <description>IntroductionPart IPlottingDescriptive StatsCentral TendencyDispersionSkewnessTailedness/KurtosisBanfield StatsProbability Distributions (univariate)pmfpdfReferenceslibrary(wildlandhydRo)library(evd)library(fitdistrplus)library(tidyverse)library(patchwork)library(latex2exp)library(moments)theme_set(theme_bw())IntroductionThis will be part one of a three part blog series ‘Hydrology Distributions’ where we’ll look at different distributions in R using a handful of packages. A lot of times in hydrology you’ll end up collecting data (rainfall, snowdepth, runoff, etc) to try and fit a theoretical distribution for further analysis, e.</description>
+    </item>
+    
+    <item>
+      <title>Hydrology Distributions: Part II</title>
+      <link>https://hydroblog.netlify.com/2021/06/07/2021-07-11-hydrology-distributions-part-ii/</link>
+      <pubDate>Mon, 07 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/2021/06/07/2021-07-11-hydrology-distributions-part-ii/</guid>
+      <description>IntroductionPart IITheoretical PDF’slibrary(wildlandhydRo)library(evd)library(fitdistrplus)library(tidyverse)library(patchwork)library(latex2exp)library(moments)theme_set(theme_bw())IntroductionThis will be part two of a three part blog series ‘Hydrology Distributions’ where we’ll look at different distributions in R using a handful of packages. A lot of times in hydrology you’ll end up collecting data (rainfall, snowdepth, runoff, etc) to try and fit a theoretical distribution for further analysis, e.</description>
     </item>
     
     <item>

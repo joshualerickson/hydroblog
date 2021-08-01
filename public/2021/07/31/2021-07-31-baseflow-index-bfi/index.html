@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Baseflow Index (BFI) &middot; Josh Erickson</title>
+        <meta name="description" content="IntroCalculating BFIIntroBaseflow Index (BFI) is an index that uses the total flow (or quick flow) of a stream and the theoretical baseflow (depending on methodology). The methods we’ll be using in this post are from the {lfstat} package (Koffler, D., and G. Laaha. 2012) and allow the user different filtering windows and a turning point factors. Below is a great description of BFI,">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="generator" content="Hugo 0.68.3" />
+        <meta name="robots" content="index,follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Baseflow Index (BFI)">
+<meta property="og:description" content="IntroCalculating BFIIntroBaseflow Index (BFI) is an index that uses the total flow (or quick flow) of a stream and the theoretical baseflow (depending on methodology). The methods we’ll be using in this post are from the {lfstat} package (Koffler, D., and G. Laaha. 2012) and allow the user different filtering windows and a turning point factors. Below is a great description of BFI,">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/">
+        <link rel="stylesheet" href="https://hydroblog.netlify.com/dist/site.css">
+        <link rel="stylesheet" href="https://hydroblog.netlify.com/dist/syntax.css">
+        <link rel="stylesheet" href="https://hydroblog.netlify.com/dist/atom-one-light.css">
+<script src="https://hydroblog.netlify.com/js/highlight.pack.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        
+        
+        
+        
+    </head>
+    <body>
+        
+
+        <div id="wrapper">
+            <header class="site-header">
+                <div class="container">
+                    <div class="site-title-wrapper">
+                        
+                            <h1 class="site-title">
+                                <a title="Welcome" href="https://hydroblog.netlify.com/">Welcome</a>
+                            </h1>
+                        
+
+
+<a class="top-link hide" href="" id="js-top">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6"><path d="M12 6H0l6-6z"/></svg>
+  <span class="screen-reader-text">Top</span>
+</a>
+                        
+                        <a class="button-square" href="https://hydroblog.netlify.com/index.xml"><i class="fa fa-rss"></i></a>
+                        
+                        
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Github" title="Github" href="https://github.com/joshualerickson" rel="me">
+                                <i class="fa fa-github-alt"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Stack Overflow" title="Stack Overflow" href="https://stackoverflow.com/users/12771384/josh-erickson" rel="me">
+                                <i class="fa fa-stack-overflow"></i>
+                            </a>
+                        
+                        
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Email" title="Email" href="mailto:joshua.l.erickson@usda.gov">
+                                <i class="fa fa-envelope"></i>
+                            </a>
+                        
+                    </div>
+
+                    <ul class="site-nav">
+                        
+    <li class="site-nav-item">
+        <a title="Projects" href="/project/">Projects</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="Contact" href="/page/contact/">Contact</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="About" href="/page/about/">About</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="Disclaimer" href="/page/disclaimer/">Disclaimer</a>
+    </li>
+
+                    </ul>
+                </div>
+            </header>
+
+            <div id="container">
+
+
+<div class="container">
+    <article class="post-container" itemscope="" itemtype="http://schema.org/BlogPosting">
+        <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Baseflow Index (BFI)</h1>
+    
+    <p class="post-date">
+        <span>Published <time datetime="2021-07-31" itemprop="datePublished">Sat, Jul 31, 2021</time></span>
+        <span>by</span>
+        <span itemscope="" itemprop="author" itemtype="https://schema.org/Person">
+            <span itemprop="name">
+                <a href="#" itemprop="url" rel="author">Josh Erickson</a>
+            </span>
+        </span>
+    </p>
+    
+        <p class="post-reading post-line">
+            <span>Estimated reading time: 7 min</span>
+        </p>
+    
+</header>
+
+        <div class="post-content clearfix" itemprop="articleBody">
+    
+
+    
+<script src="https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/index_files/header-attrs/header-attrs.js"></script>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+
+<div id="TOC">
+<ul>
+<li><a href="#intro">Intro</a></li>
+<li><a href="#calculating-bfi">Calculating BFI</a></li>
+</ul>
+</div>
+
+<div id="intro" class="section level3">
+<h3>Intro</h3>
+<p>Baseflow Index (BFI) is an index that uses the total flow (or quick flow) of a stream and the theoretical baseflow (depending on methodology). The methods we’ll be using in this post are from the {lfstat} package (Koffler, D., and G. Laaha. 2012) and allow the user different filtering windows and a turning point factors. Below is a great description of BFI,</p>
+<div class="b--gray ba bw2 ma2 pa4 shadow-1">
+<p><strong>“Streamflow is typically divided into two components for hydrograph separation, quickflow and baseflow. Baseflow is the portion of streamflow that contains groundwater flow and flow from other delayed sources and is of key importance for river basin ecology and water resources planning and management. The BaseFlow Index (BFI) is defined as the ratio of long-term mean baseflow to total streamflow.”</strong></p>
+<p>– Singh, Shailesh Kumar, et al (2019).</p>
+</div>
+<p>In a basic sense it’s a ratio. The ratio of long-term mean baseflow to total streamflow can be expressed simply by the equation below.</p>
+<p><span class="math display">\[
+Q_t = \sum_{i = 1}^{n}x_i \ ; \  \text{where} \ x_i \in \{x_1, x_2, x_3, \dots, x_n\} \\
+Q_b = \sum_{i = 1}^{n}x_i \ ; \  \text{where} \ x_i \in \{x_1, x_2, x_3, \dots, x_n\} \\
+BFI = \frac{Q_t}{Q_b}
+\]</span></p>
+<p>However, what the heck is <span class="math inline">\(Q_b \ \text{and} \ Q_t\)</span> and how do we derive them? This is what that blog post will dive into, i.e. the nitty gritty of the two. We’ll start by looking at it visually and then move into the calculations to get there.</p>
+</div>
+<div id="calculating-bfi" class="section level3">
+<h3>Calculating BFI</h3>
+<p>Starting off with the numerator of BFI <span class="math inline">\(Q_t\)</span> is relatively straight forward; it’s the daily flow values of the gauging station. Below we’ll look at one year of daily values from the USGS Yaak River gauging station in Northwest Montana. You can use the {dataRetrieval} package to do this or {wildlandhydRo}. I’m partial to the {wildlandhyRo} package so we’ll be using it 😄.</p>
+<pre class="r"><code>#libraries
+library(wildlandhydRo)
+library(tidyverse)
+
+#read in data
+yaak_dv &lt;- wildlandhydRo::batch_USGSdv(sites = &#39;12304500&#39;, 
+                                       parameterCd = &#39;00060&#39;,
+                                       start_date = &#39;2019-01-01&#39;, 
+                                       end_date = &#39;2019-12-31&#39;)</code></pre>
+<p>Now that we have the daily values from the station we can look at the hydrograph. As you can see, <span class="math inline">\(Q_t\)</span> is the hydrograph! How simple was that?! Now that we ‘derived’ the numerator in the equation we can move onto the denominator.</p>
+<p><img src="https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/index_files/figure-html/unnamed-chunk-3-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>Deriving the values of <span class="math inline">\(Q_b\)</span> are not as easy as <span class="math inline">\(Q_t\)</span> and involve some filtering techniques. Below we’ll start at the begining and work through the calculation that {lfstat} package uses. So let’s load the library and get started. But first, I think it’s important to start with the final product and see what it is we’ll be solving for. Let’s get the baseflow using the {lfstat} package.</p>
+<pre class="r"><code>library(lfstat)
+
+yaak_bf &lt;- baseflow(yaak_dv$Flow, tp.factor = 0.9, block.len = 5) %&gt;% data.frame(bfi = .)</code></pre>
+<p>From here, we just need to add a Date and then plot.</p>
+<p><img src="https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/index_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
+<p>It looks pretty much like the previous hydrograph except now the values are a lot lower in certain times of quick flow, e.g. spring runoff, rain storms, etc. What if we just add <span class="math inline">\(Q_t\)</span> to this graph? We’ll start to see that separation from quick flow to baseflow.</p>
+<p><img src="https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/index_files/figure-html/unnamed-chunk-6-1.png" width="960" /></p>
+<p>Let’s zoom into an area say <code>'2019-06-01' to '2019-07-05'</code>and look closely at what’s going on.</p>
+<p><img src="https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/index_files/figure-html/unnamed-chunk-7-1.png" width="960" /></p>
+<p>So it looks like quick flow and baseflow are seperated and then become the same and then seperate again. So what’s going on? How did the filtering process get to that interpolation? This is where we will start to dive into the derivation of the baseflow and look <em>how</em> it got what it got!</p>
+<p>First we’ll need to filter the data to that time frame and then start with the process that {lfstat} package uses.</p>
+<pre class="r"><code>yaak_dv_filtered &lt;- yaak_dv %&gt;% 
+  filter(Date &gt;= &#39;2019-05-01&#39;, Date &lt;= &#39;2019-07-24&#39;)</code></pre>
+<p>For now we’ll just use a block length of 5 and a turning point factor at 0.9. In a little bit we’ll look more deeply into those parameters as well. First, the calculation breaks the data into groups of 5. If there is missing values in a group than <code>NA</code> will be added. For example, the dates we chose equals 35 which is a nice clean complete <span class="math inline">\(5\times17\)</span> matrix but if it were one more day (36) then it would be <span class="math inline">\(5\times18\)</span> matrix but with 4 <code>NA's</code> in the last column. See below for the matrix output,</p>
+<pre class="r"><code>block.len &lt;- 5
+x &lt;- yaak_dv_filtered$Flow
+y &lt;- matrix(c(x, rep(NA, -length(x) %% block.len)), nrow = block.len)
+y</code></pre>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14]
+## [1,] 1130 1320 2160 2970 1610 1740 1620 1110  724   540   390   487   399   337
+## [2,] 1040 1460 2680 3030 1470 1630 1640 1030  673   492   420   431   358   327
+## [3,]  982 1640 3080 2600 1420 1580 1620  957  638   466   431   461   330   314
+## [4,]  992 1730 3030 2210 1470 1660 1500  852  604   444   466   532   340   285
+## [5,] 1150 1820 2900 1870 1580 1730 1310  798  575   414   520   465   343   270
+##      [,15] [,16] [,17]
+## [1,]   260   207   245
+## [2,]   254   207   228
+## [3,]   242   215   209
+## [4,]   230   226   198
+## [5,]   217   263   202</code></pre>
+<p>Now that we have our flows constructed into a matrix we’ll take the offset of the flow dates. All this does is take a sequence of the amount of columns in the above matrix minus 1 from 0, (e.g. 0,1,2,3,4,5,6) and multiply by the block length (5). This will help us index the minimum within that offset.</p>
+<pre class="r"><code>offset &lt;- seq.int(0, ncol(y) - 1) * block.len
+offset</code></pre>
+<pre><code>##  [1]  0  5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80</code></pre>
+<p>Now we need to use a function to find the minimum within our matrix. We’ll use the <code>which.min.na()</code> from the {lfstat} package to make sure we account for any NULL columns. This just takes each column of th matrix and finds the minimum values and return the index (location) within that column. From there we add the offset, which will give us the position in the initial vector.</p>
+<pre class="r"><code>which.min.na &lt;- function(x) {
+  idx &lt;- which.min(x)
+  if(!length(idx)) idx &lt;- NA
+  
+  return(idx)
+}
+idx.min &lt;- apply(y, 2, which.min.na) + offset</code></pre>
+<p>Now we can see where those 5 day minimum days are within the initial vector and plot against the original.</p>
+<p><img src="https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/index_files/figure-html/unnamed-chunk-12-1.png" width="960" /></p>
+<p>As you can see, the five day minimum is the same as the five day splits (aka 5 filter window) until it bottoms out and then starts climbing again (quick flow). This is important because this is how the function will interpolate between these points (the black ones in graph above). For instance, let’s just add the baseflow back to this graph again and you’ll see that it intersects the min points but interpolates in-between.</p>
+<p><img src="https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/index_files/figure-html/unnamed-chunk-13-1.png" width="960" /></p>
+<p>But wait, they don’t intersect them all! This is because we are not finished. What ends up happening is we didn’t account for small flux’s in the data, e.g. the missing intersection points. We can adjust the turning points (black points) by a factor. Below we’ll use the default but be aware this can be changed for your liking. What this ultimately does is generates an interpolated line between the adjusted points and the reason our interpolated baseflow line skipped a few points.</p>
+<pre class="r"><code>tp.factor &lt;- 0.9
+cv.mod &lt;- tp.factor * tail(head(block.min, -1), -1)
+vc &lt;- 1 * tail(head(block.min, -1), -1)
+
+# check if value is a turning point, shift by +/- 1
+# first value is never a turning point because there is no observation before
+is.tp &lt;- cv.mod &lt;= tail(block.min, -2) &amp; cv.mod &lt;= head(block.min, -2)
+is.tp &lt;- c(F, is.tp)
+
+# interpolate base flow only between turning points
+# values outside enclosing turning points become NA, because approx(rule = 1)
+bf &lt;- approx(x = idx.min[is.tp], y = block.min[is.tp], xout = seq_along(x))$y</code></pre>
+<p>Now we can observe the line using the equation above. Notice how it’s very similar to the one we did at the beginning. We can also show what would happen if we used 0.5 as the turning point factor. We end up connecting the points! So, if you want a more responsive baseflow then you’ll need to adjust your turning point factor lower.</p>
+<p><img src="https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/index_files/figure-html/unnamed-chunk-15-1.png" width="960" /></p>
+<p>That’s it! We find a minimum within a filtering window (5 days in this example) and then interpolate between the turning points after adjusting for a factor. To do this correctly you’ll need to do it on a full year of data for many years to reap the benefits of BFI. Hope this helps!
+## References</p>
+<p>Koffler, D., and G. Laaha. “LFSTAT-an R-package for low-flow analysis.” EGU General Assembly Conference Abstracts. 2012.</p>
+<p>Singh, Shailesh Kumar, et al. “Towards baseflow index characterisation at national scale in New Zealand.” Journal of Hydrology 568 (2019): 646-657.</p>
+</div>
+
+</div>
+
+        <footer class="post-footer clearfix">
+    
+
+    <div class="share">
+        
+
+        
+
+        
+        
+    </div>
+</footer>
+
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://https-hydroblog-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </article>
+</div>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="site-title-wrapper">
+                    <h1 class="site-title">
+                        <a title="Welcome" href="https://hydroblog.netlify.com/">Welcome</a>
+                    </h1>
+                    <a class="button-square button-jump-top js-jump-top" href="#">
+                        <i class="fa fa-angle-up"></i>
+                    </a>
+                </div>
+
+                <p class="footer-copyright">
+                    <span>&copy; 2021 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                </p>
+                <p class="footer-copyright">
+                    <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
+                    <span>/ <a href="https://github.com/jbub/ghostwriter">Ported</a> to Hugo By <a href="https://github.com/jbub">jbub</a></span>
+                </p>
+            </div>
+        </footer>
+
+        <script src="https://hydroblog.netlify.com/js/jquery-1.11.3.min.js"></script>
+        <script src="https://hydroblog.netlify.com/js/jquery.fitvids.js"></script>
+        <script src="https://hydroblog.netlify.com/js/scripts.js"></script>
+    </body>
+</html>
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
