@@ -29,19 +29,19 @@ __"Streamflow is typically divided into two components for hydrograph separation
 -- Singh, Shailesh Kumar, et al (2019).
 ::: 
 
-In a basic sense it's a ratio. The ratio of long-term mean baseflow to total streamflow can be expressed simply by the equation below.
+In a basic sense it's a ratio. The ratio of total streamflow to total baseflow can be expressed simply by the equation below.
 
 $$
-Q_t = \sum_{i = 1}^{n}x_i \ ; \  \text{where} \ x_i \in \{x_1, x_2, x_3, \dots, x_n\} \\
 Q_b = \sum_{i = 1}^{n}x_i \ ; \  \text{where} \ x_i \in \{x_1, x_2, x_3, \dots, x_n\} \\
-BFI = \frac{Q_t}{Q_b}
+Q_t = \sum_{i = 1}^{n}x_i \ ; \  \text{where} \ x_i \in \{x_1, x_2, x_3, \dots, x_n\} \\
+BFI = \frac{Q_b}{Q_t}
 $$
 
 However, what the heck is $Q_b \ \text{and} \ Q_t$ and how do we derive them? This is what that blog post will dive into, i.e. the nitty gritty of the two. We'll start by looking at it visually and then move into the calculations to get there.  
 
 ### Calculating BFI
 
-Starting off with the numerator of BFI $Q_t$ is relatively straight forward; it's the daily flow values of the gauging station. Below we'll look at one year of daily values from the USGS Yaak River gauging station in Northwest Montana. You can use the {dataRetrieval} package to do this or {wildlandhydRo}. I'm partial to the {wildlandhyRo} package so we'll be using it `r emo::ji('smile')`.
+Starting off with the denominator of BFI $Q_t$ is relatively straight forward; it's the daily flow values of the gauging station. Below we'll look at one year of daily values from the USGS Yaak River gauging station in Northwest Montana. You can use the {dataRetrieval} package to do this or {wildlandhydRo}. I'm partial to the {wildlandhyRo} package so we'll be using it `r emo::ji('smile')`.
 
 ```{r, warning=F, error=F, message=F}
 #libraries
@@ -56,7 +56,7 @@ yaak_dv <- wildlandhydRo::batch_USGSdv(sites = '12304500',
 ```
 
 
-Now that we have the daily values from the station we can look at the hydrograph. As you can see, $Q_t$ is the hydrograph! How simple was that?! Now that we 'derived' the numerator in the equation we can move onto the denominator. 
+Now that we have the daily values from the station we can look at the hydrograph. As you can see, $Q_t$ is the hydrograph! How simple was that?! Now that we 'derived' the denominator in the equation we can move onto the numerator.
 
 ```{r, fig.align='center', echo=F}
 yaak_dv %>% ggplot(aes(Date, Flow)) +
@@ -65,7 +65,7 @@ yaak_dv %>% ggplot(aes(Date, Flow)) +
 ```
 
 
-Deriving the values of $Q_b$ are not as easy as $Q_t$ and involve some filtering techniques. Below we'll start at the begining and work through the calculation that {lfstat} package uses. So let's load the library and get started. But first, I think it's important to start with the final product and see what it is we'll be solving for. Let's get the baseflow using the {lfstat} package.
+Deriving the values of $Q_b$ are not as easy as $Q_t$ and involve some filtering techniques. Below we'll start at the beginning and work through the calculation that {lfstat} package uses. So let's load the library and get started. But first, I think it's important to start with the final product and see what it is we'll be solving for. Let's get the baseflow using the {lfstat} package.
 ```{r}
 library(lfstat)
 
