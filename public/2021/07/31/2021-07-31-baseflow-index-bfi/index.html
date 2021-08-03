@@ -137,17 +137,17 @@
 <p><strong>“Streamflow is typically divided into two components for hydrograph separation, quickflow and baseflow. Baseflow is the portion of streamflow that contains groundwater flow and flow from other delayed sources and is of key importance for river basin ecology and water resources planning and management. The BaseFlow Index (BFI) is defined as the ratio of long-term mean baseflow to total streamflow.”</strong></p>
 <p>– Singh, Shailesh Kumar, et al (2019).</p>
 </div>
-<p>In a basic sense it’s a ratio. The ratio of long-term mean baseflow to total streamflow can be expressed simply by the equation below.</p>
+<p>In a basic sense it’s a ratio. The ratio of total streamflow to total baseflow can be expressed simply by the equation below.</p>
 <p><span class="math display">\[
-Q_t = \sum_{i = 1}^{n}x_i \ ; \  \text{where} \ x_i \in \{x_1, x_2, x_3, \dots, x_n\} \\
 Q_b = \sum_{i = 1}^{n}x_i \ ; \  \text{where} \ x_i \in \{x_1, x_2, x_3, \dots, x_n\} \\
-BFI = \frac{Q_t}{Q_b}
+Q_t = \sum_{i = 1}^{n}x_i \ ; \  \text{where} \ x_i \in \{x_1, x_2, x_3, \dots, x_n\} \\
+BFI = \frac{Q_b}{Q_t}
 \]</span></p>
 <p>However, what the heck is <span class="math inline">\(Q_b \ \text{and} \ Q_t\)</span> and how do we derive them? This is what that blog post will dive into, i.e. the nitty gritty of the two. We’ll start by looking at it visually and then move into the calculations to get there.</p>
 </div>
 <div id="calculating-bfi" class="section level3">
 <h3>Calculating BFI</h3>
-<p>Starting off with the numerator of BFI <span class="math inline">\(Q_t\)</span> is relatively straight forward; it’s the daily flow values of the gauging station. Below we’ll look at one year of daily values from the USGS Yaak River gauging station in Northwest Montana. You can use the {dataRetrieval} package to do this or {wildlandhydRo}. I’m partial to the {wildlandhyRo} package so we’ll be using it 😄.</p>
+<p>Starting off with the denominator of BFI <span class="math inline">\(Q_t\)</span> is relatively straight forward; it’s the daily flow values of the gauging station. Below we’ll look at one year of daily values from the USGS Yaak River gauging station in Northwest Montana. You can use the {dataRetrieval} package to do this or {wildlandhydRo}. I’m partial to the {wildlandhyRo} package so we’ll be using it 😄.</p>
 <pre class="r"><code>#libraries
 library(wildlandhydRo)
 library(tidyverse)
@@ -157,9 +157,9 @@ yaak_dv &lt;- wildlandhydRo::batch_USGSdv(sites = &#39;12304500&#39;,
                                        parameterCd = &#39;00060&#39;,
                                        start_date = &#39;2019-01-01&#39;, 
                                        end_date = &#39;2019-12-31&#39;)</code></pre>
-<p>Now that we have the daily values from the station we can look at the hydrograph. As you can see, <span class="math inline">\(Q_t\)</span> is the hydrograph! How simple was that?! Now that we ‘derived’ the numerator in the equation we can move onto the denominator.</p>
+<p>Now that we have the daily values from the station we can look at the hydrograph. As you can see, <span class="math inline">\(Q_t\)</span> is the hydrograph! How simple was that?! Now that we ‘derived’ the denominator in the equation we can move onto the numerator.</p>
 <p><img src="https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/index_files/figure-html/unnamed-chunk-3-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>Deriving the values of <span class="math inline">\(Q_b\)</span> are not as easy as <span class="math inline">\(Q_t\)</span> and involve some filtering techniques. Below we’ll start at the begining and work through the calculation that {lfstat} package uses. So let’s load the library and get started. But first, I think it’s important to start with the final product and see what it is we’ll be solving for. Let’s get the baseflow using the {lfstat} package.</p>
+<p>Deriving the values of <span class="math inline">\(Q_b\)</span> are not as easy as <span class="math inline">\(Q_t\)</span> and involve some filtering techniques. Below we’ll start at the beginning and work through the calculation that {lfstat} package uses. So let’s load the library and get started. But first, I think it’s important to start with the final product and see what it is we’ll be solving for. Let’s get the baseflow using the {lfstat} package.</p>
 <pre class="r"><code>library(lfstat)
 
 yaak_bf &lt;- baseflow(yaak_dv$Flow, tp.factor = 0.9, block.len = 5) %&gt;% data.frame(bfi = .)</code></pre>
@@ -204,9 +204,9 @@ offset</code></pre>
 idx.min &lt;- apply(y, 2, which.min.na) + offset</code></pre>
 <p>Now we can see where those 5 day minimum days are within the initial vector and plot against the original.</p>
 <p><img src="https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/index_files/figure-html/unnamed-chunk-12-1.png" width="960" /></p>
-<p>As you can see, the five day minimum is the same as the five day splits (aka 5 filter window) until it bottoms out and then starts climbing again (quick flow). This is important because this is how the function will interpolate between these points (the black ones in graph above). For instance, let’s just add the baseflow back to this graph again and you’ll see that it intersects the min points but interpolates in-between.</p>
+<p>As you can see, the five day minimum is the same as the five day splits (aka 5 filter window) until it bottoms out and then starts climbing again (quick flow). This is important because this is how the function will interpolate between these points (the black ones in graph above) along with the turning point factor. For instance, let’s just add the baseflow back to this graph again and you’ll see that it intersects the min points but interpolates in-between.</p>
 <p><img src="https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/index_files/figure-html/unnamed-chunk-13-1.png" width="960" /></p>
-<p>But wait, they don’t intersect them all! This is because we are not finished. What ends up happening is we didn’t account for small flux’s in the data, e.g. the missing intersection points. We can adjust the turning points (black points) by a factor. Below we’ll use the default but be aware this can be changed for your liking. What this ultimately does is generates an interpolated line between the adjusted points and the reason our interpolated baseflow line skipped a few points.</p>
+<p>But wait, they don’t intersect them all! This is because we are not finished. What ends up happening is we didn’t account for small flux’s in the data, e.g. the missing intersection points. We can adjust the turning points (black points) by a factor. Above we used the default of 0.9 but be aware this can be changed for your liking, i.e. if you want it to be more responsive. What this ultimately does is generates an interpolated line between the adjusted points and the reason our interpolated baseflow line skipped a few points is because of the higher turning point factor.</p>
 <pre class="r"><code>tp.factor &lt;- 0.9
 cv.mod &lt;- tp.factor * tail(head(block.min, -1), -1)
 vc &lt;- 1 * tail(head(block.min, -1), -1)
@@ -219,7 +219,7 @@ is.tp &lt;- c(F, is.tp)
 # interpolate base flow only between turning points
 # values outside enclosing turning points become NA, because approx(rule = 1)
 bf &lt;- approx(x = idx.min[is.tp], y = block.min[is.tp], xout = seq_along(x))$y</code></pre>
-<p>Now we can observe the line using the equation above. Notice how it’s very similar to the one we did at the beginning. We can also show what would happen if we used 0.5 as the turning point factor. We end up connecting the points! So, if you want a more responsive baseflow then you’ll need to adjust your turning point factor lower.</p>
+<p>We can also show what would happen if we used 0.5 as the turning point factor. We end up connecting the points! So, if you want a more responsive baseflow then you’ll need to adjust your turning point factor lower.</p>
 <p><img src="https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/index_files/figure-html/unnamed-chunk-15-1.png" width="960" /></p>
 <p>That’s it! We find a minimum within a filtering window (5 days in this example) and then interpolate between the turning points after adjusting for a factor. To do this correctly you’ll need to do it on a full year of data for many years to reap the benefits of BFI. Hope this helps!
 ## References</p>
