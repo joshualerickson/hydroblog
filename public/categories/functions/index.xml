@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>functions on hydroblog</title>
+    <link>https://hydroblog.netlify.com/categories/functions/</link>
+    <description>Recent content in functions on hydroblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language><atom:link href="https://hydroblog.netlify.com/categories/functions/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Baseflow Index (BFI)</title>
+      <link>https://hydroblog.netlify.com/blog/2021-07-31-baseflow-index-bfi/</link>
+      <pubDate>Sat, 31 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2021-07-31-baseflow-index-bfi/</guid>
+      <description>** No content below YAML for the series _index. This file is a leaf bundle, and provides settings for the listing page layout and sidebar content.**</description>
+    </item>
+    
+    <item>
+      <title>Hydrology Distributions Part I</title>
+      <link>https://hydroblog.netlify.com/blog/2021-06-07-hydroclimatic-distributions/</link>
+      <pubDate>Mon, 07 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2021-06-07-hydroclimatic-distributions/</guid>
+      <description>** No content below YAML for the series _index. This file is a leaf bundle, and provides settings for the listing page layout and sidebar content.**</description>
+    </item>
+    
+    <item>
+      <title>Wes Anderson and Ridges</title>
+      <link>https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/</link>
+      <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/</guid>
+      <description>** No content below YAML for the series _index. This file is a leaf bundle, and provides settings for the listing page layout and sidebar content.**</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,151 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Posts on Welcome</title>
-    <link>https://hydroblog.netlify.com/post/</link>
-    <description>Recent content in Posts on Welcome</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <copyright>Josh Erickson</copyright>
-    <lastBuildDate>Sat, 31 Jul 2021 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://hydroblog.netlify.com/post/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-    <item>
-      <title>Baseflow Index (BFI)</title>
-      <link>https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/</link>
-      <pubDate>Sat, 31 Jul 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/</guid>
-      <description>IntroCalculating BFIIntroBaseflow Index (BFI) is an index that uses the total flow (or quick flow) of a stream and the theoretical baseflow (depending on methodology). The methods we’ll be using in this post are from the {lfstat} package (Koffler, D., and G. Laaha. 2012) and allow the user different filtering windows and a turning point factors. Below is a great description of BFI,</description>
-    </item>
-    
-    <item>
-      <title>Hydrology Distributions: Part I</title>
-      <link>https://hydroblog.netlify.com/2021/06/07/2021-06-07-hydroclimatic-distributions/</link>
-      <pubDate>Mon, 07 Jun 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/2021/06/07/2021-06-07-hydroclimatic-distributions/</guid>
-      <description>IntroductionPart IPlottingDescriptive StatsCentral TendencyDispersionSkewnessTailedness/KurtosisBanfield StatsProbability Distributions (univariate)pmfpdfReferenceslibrary(wildlandhydRo)library(evd)library(fitdistrplus)library(tidyverse)library(patchwork)library(latex2exp)library(moments)theme_set(theme_bw())IntroductionThis will be part one of a three part blog series ‘Hydrology Distributions’ where we’ll look at different distributions in R using a handful of packages. A lot of times in hydrology you’ll end up collecting data (rainfall, snowdepth, runoff, etc) to try and fit a theoretical distribution for further analysis, e.</description>
-    </item>
-    
-    <item>
-      <title>Hydrology Distributions: Part II</title>
-      <link>https://hydroblog.netlify.com/2021/06/07/2021-07-11-hydrology-distributions-part-ii/</link>
-      <pubDate>Mon, 07 Jun 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/2021/06/07/2021-07-11-hydrology-distributions-part-ii/</guid>
-      <description>IntroductionPart IITheoretical PDF’slibrary(wildlandhydRo)library(evd)library(fitdistrplus)library(tidyverse)library(patchwork)library(latex2exp)library(moments)theme_set(theme_bw())IntroductionThis will be part two of a three part blog series ‘Hydrology Distributions’ where we’ll look at different distributions in R using a handful of packages. A lot of times in hydrology you’ll end up collecting data (rainfall, snowdepth, runoff, etc) to try and fit a theoretical distribution for further analysis, e.</description>
-    </item>
-    
-    <item>
-      <title>Slides-Rshiny Talk</title>
-      <link>https://hydroblog.netlify.com/2021/05/27/2021-05-27-slides-rshiny-talk/</link>
-      <pubDate>Thu, 27 May 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/2021/05/27/2021-05-27-slides-rshiny-talk/</guid>
-      <description>Here is a link to the brief Rshiny talk with applications in hydrology I just did. Hope you enjoy!
-https://www.hydroblog.org/slides/rshiny_talk/rshiny_talk.html</description>
-    </item>
-    
-    <item>
-      <title>Ridges &amp; Wes Anderson</title>
-      <link>https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/</link>
-      <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/</guid>
-      <description>IntroI’ve been wanting to use the wesanderson package on some hydrological data using ridge plots (ggridges) and today I had the chance to play around and finally make some graphs. So, we’ll just make some basic graphs that hopefully will be aestetically pleasing and get the message across to stake holders, layperson, or others in your circle.
-First we’ll need a few packages.
-library(wildlandhydRo)library(ggridges)library(wesanderson)library(tidyverse)Now let’s get some USGS streamflow data!</description>
-    </item>
-    
-    <item>
-      <title>Slides-GEE Talk</title>
-      <link>https://hydroblog.netlify.com/2021/03/17/2021-03-17-slides-gee-talk/</link>
-      <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/2021/03/17/2021-03-17-slides-gee-talk/</guid>
-      <description>Here is a link to the brief GEE talk I just did. Hope you enjoy!
-https://www.hydroblog.org/slides/gee_talk/gee_talk.html</description>
-    </item>
-    
-    <item>
-      <title>Spatial Holdouts and Feature Selection</title>
-      <link>https://hydroblog.netlify.com/2021/03/11/2021-03-11-spatial-holdouts-and-feature-selection/</link>
-      <pubDate>Thu, 11 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/2021/03/11/2021-03-11-spatial-holdouts-and-feature-selection/</guid>
-      <description>Findings
-Both model types (gbm and random forest) are very sensitive when using all variables and no spatial hold-outs; however, when increasing the hold out size (iid becomes more appropriate) we see that random forest takes some time before it stabilizes unlike gbm which is able to control for that effect early on.
-FFS variable selection at cluster holdout 10 was 9 variables while the new variable selection (unnamed) used only 5 variables at a cluster holdout of 10 while keeping the same accuracy; making the model more parsimonious.</description>
-    </item>
-    
-    <item>
-      <title>Global Forest Change</title>
-      <link>https://hydroblog.netlify.com/2021/03/04/2021-03-04-global-forest-change/</link>
-      <pubDate>Thu, 04 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/2021/03/04/2021-03-04-global-forest-change/</guid>
-      <description>IntroductionBelow is a workflow used to create a forest change raster (2011-2019) for the Watershed Condition Class (WCC) analysis in USDA-USFS Region 1. The workflow leverages Google Earth Engine (GEE) (Gorelick et al. 2017) to get large remote sensing products fast and easy. This allows for reproducibility in the future as well as quick return times for clients, i.</description>
-    </item>
-    
-    <item>
-      <title>gsutil workflow</title>
-      <link>https://hydroblog.netlify.com/2021/03/04/2021-03-04-gsutil-workflow/</link>
-      <pubDate>Thu, 04 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/2021/03/04/2021-03-04-gsutil-workflow/</guid>
-      <description>Working with gsutil Introduction This is a workflow on how to download multiple objects from a bucket on google cloud storage. Basically, so I stop forgetting how to do it.
-Moving objects Technically, you can create your own folders via some (above my head) method but I&amp;rsquo;ll just default to using the UI on GCS. From there, you can then start to move files that you&amp;rsquo;ve uploaded via desktop, R, earth engine, etc.</description>
-    </item>
-    
-    <item>
-      <title>RGEE and PRISM</title>
-      <link>https://hydroblog.netlify.com/2020/08/21/2020-08-21-rgee-and-prism/</link>
-      <pubDate>Fri, 21 Aug 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/2020/08/21/2020-08-21-rgee-and-prism/</guid>
-      <description>This is the quick rundown on the rgee package that is pretty dope. The r-spatial folks have thrown down some sweet packages sf, stars, mapview (just to name a few) and now rgee. This is some pretty slick stuff. If your versed in JavaScript (JS) and wonder ‘should I waste my time with this API interface?’. Don’t worry. I’m not going to try and convince you to be a ‘R’ person just showing some of the basics and capabilities of using GEE R.</description>
-    </item>
-    
-    <item>
-      <title>Data Retrieval</title>
-      <link>https://hydroblog.netlify.com/2020/08/20/2020-08-20-data-retrieval/</link>
-      <pubDate>Thu, 20 Aug 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/2020/08/20/2020-08-20-data-retrieval/</guid>
-      <description>This is a quick peek into the perks of using R and USGS package dataRetrieval. This package is pretty slick and has a lot of functions associated with it. We will just look into some basic functions like readNWISdv to get some USGS gauging data and then do some quick exploratory data analysis to using the tidyverse.
-First, load the packages (or install) from the library().
-library(dataRetrieval)library(tidyverse)Now we can start bringing in some river data.</description>
-    </item>
-    
-    <item>
-      <title>USGS, GEE and R. What?!?</title>
-      <link>https://hydroblog.netlify.com/2020/08/20/2020-08-20-usgs-rgee-and-r-what/</link>
-      <pubDate>Thu, 20 Aug 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/2020/08/20/2020-08-20-usgs-rgee-and-r-what/</guid>
-      <description>Over the next month I’m going to be posting some quick examples from a few R packages that I’ve stumbled into. One is the dataRetrieval package by USGS. In short, it let’s you download any gauging station data across the country right into R and in a tidy format. How sweet is that? USGS also has other packages like the suite of smwr packages. These packages provide the user with some commonly used (but often tedious) functions used in hydrology, e.</description>
-    </item>
-    
-    <item>
-      <title>Exploring Catchments</title>
-      <link>https://hydroblog.netlify.com/2020/06/09/2020-06-09-exploring-harvest-units/</link>
-      <pubDate>Tue, 09 Jun 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/2020/06/09/2020-06-09-exploring-harvest-units/</guid>
-      <description>Zonal StatisticsThis is a quick workflow using some rasters, polygons, and a few packages in R that i’ve used for a couple analysis recently. The main purpose of this workflow is to show the code used and how to get some simple zonal statistics in R and explore them relatively easy. Thus, there will be a lot of code! If you take anything out of this I hope it would be that zonal statistics in R are pretty awesome right now.</description>
-    </item>
-    
-    <item>
-      <title>Welcome</title>
-      <link>https://hydroblog.netlify.com/2020/04/05/welcome/</link>
-      <pubDate>Sun, 05 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/2020/04/05/welcome/</guid>
-      <description>This is an attempt to make hydrology topics and workflows available to whomever. There will be a couple different resources you can look at: blog and projects. Blog is a brief rant, discussion, or workflow that will be relatively short. As you can imagine, projects resource it will be the very tedious, dense, copious, and downright exaustive workflows. Please keep an open mind as this might get very pedantic at times while also being very domain adjacent!</description>
-    </item>
-    
-  </channel>
-</rss>

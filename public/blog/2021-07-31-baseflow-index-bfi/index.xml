@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Baseflow Index (BFI) on hydroblog</title>
+    <link>https://hydroblog.netlify.com/blog/2021-07-31-baseflow-index-bfi/</link>
+    <description>Recent content in Baseflow Index (BFI) on hydroblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 31 Jul 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/blog/2021-07-31-baseflow-index-bfi/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Baseflow Index (BFI)</title>
+      <link>https://hydroblog.netlify.com/blog/2021-07-31-baseflow-index-bfi/2021-07-31-baseflow-index-bfi/baseflow/</link>
+      <pubDate>Sat, 31 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2021-07-31-baseflow-index-bfi/2021-07-31-baseflow-index-bfi/baseflow/</guid>
+      <description>A quick tutorial on the {lfstat} baseflow().</description>
+    </item>
+    
+  </channel>
+</rss>
