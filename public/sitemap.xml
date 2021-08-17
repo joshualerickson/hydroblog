@@ -1,133 +1,191 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  
   <url>
-    <loc>https://hydroblog.netlify.com/2021/07/31/2021-07-31-baseflow-index-bfi/</loc>
+    <loc>https://hydroblog.netlify.com/collection/day02/01-netlify/</loc>
+    <lastmod>2021-01-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/spoonful-series/01-spoonful/</loc>
+    <lastmod>2021-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/collection/day01/01-github/</loc>
+    <lastmod>2021-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/collection/prework/</loc>
+    <lastmod>2021-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/collection/day01/</loc>
+    <lastmod>2021-01-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/collection/day01/02-postcards/</loc>
+    <lastmod>2021-01-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/spoonful-series/02-spoonful/</loc>
+    <lastmod>2021-01-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/collection/day02/02-blogdown/</loc>
+    <lastmod>2021-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/collection/day02/</loc>
+    <lastmod>2021-01-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/spoonful-series/03-spoonful/</loc>
+    <lastmod>2021-01-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/collection/day01/03-distill/</loc>
+    <lastmod>2021-01-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/collection/day02/03-blogdown/</loc>
+    <lastmod>2021-01-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/2021-07-31-baseflow-index-bfi/</loc>
     <lastmod>2021-07-31T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/post/</loc>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/2021-07-31-baseflow-index-bfi/2021-07-31-baseflow-index-bfi/baseflow/</loc>
     <lastmod>2021-07-31T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/</loc>
+    <lastmod>2021-07-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/categories/</loc>
+    <lastmod>2021-07-31T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://hydroblog.netlify.com/</loc>
     <lastmod>2021-07-31T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/2021/06/07/2021-06-07-hydroclimatic-distributions/</loc>
-    <lastmod>2021-06-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/2021/06/07/2021-07-11-hydrology-distributions-part-ii/</loc>
-    <lastmod>2021-06-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/2021/05/27/2021-05-27-slides-rshiny-talk/</loc>
-    <lastmod>2021-05-27T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/2021/04/04/2021-04-04-ridges-wes-anderson/</loc>
-    <lastmod>2021-04-04T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/2021/03/17/2021-03-17-slides-gee-talk/</loc>
-    <lastmod>2021-03-17T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/2021/03/11/2021-03-11-spatial-holdouts-and-feature-selection/</loc>
-    <lastmod>2021-03-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/2021/03/04/2021-03-04-global-forest-change/</loc>
-    <lastmod>2021-03-04T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/2021/03/04/2021-03-04-gsutil-workflow/</loc>
-    <lastmod>2021-03-04T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/page/disclaimer/</loc>
-    <lastmod>2020-08-23T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/page/</loc>
-    <lastmod>2020-08-23T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/2020/08/21/2020-08-21-rgee-and-prism/</loc>
-    <lastmod>2020-08-21T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/2020/08/20/2020-08-20-data-retrieval/</loc>
-    <lastmod>2020-08-20T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/2020/08/20/2020-08-20-usgs-rgee-and-r-what/</loc>
-    <lastmod>2020-08-20T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/2020/06/09/2020-06-09-exploring-harvest-units/</loc>
-    <lastmod>2020-06-09T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/2020/04/05/welcome/</loc>
-    <lastmod>2020-04-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/page/about/</loc>
-    <lastmod>2015-04-03T02:13:50+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/page/contact/</loc>
-    <lastmod>2015-04-03T02:13:50+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/tags/https/github.com/isciences/exactextractr/</loc>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/tags/https/github.com/r-spatial/</loc>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/tags/https/github.com/r-spatial/rgee/</loc>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/tags/https/github.com/usgs-r/dataretrieval/</loc>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/project/</loc>
-  </url>
-  
-  <url>
-    <loc>https://hydroblog.netlify.com/project/walkinglongformat/</loc>
-  </url>
-  
-  <url>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/tags/hydrology/</loc>
+    <lastmod>2021-07-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/categories/hydrology/</loc>
+    <lastmod>2021-07-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/tags/r/</loc>
+    <lastmod>2021-07-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/categories/r/</loc>
+    <lastmod>2021-07-31T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://hydroblog.netlify.com/tags/</loc>
+    <lastmod>2021-07-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/2021-06-07-hydroclimatic-distributions/</loc>
+    <lastmod>2021-06-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/2021-06-07-hydroclimatic-distributions/2021-06-07-hydroclimatic-distributions/hydro_dist_1/</loc>
+    <lastmod>2021-06-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/2021-05-27-slides-rshiny-talk/</loc>
+    <lastmod>2021-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/</loc>
+    <lastmod>2021-04-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/</loc>
+    <lastmod>2021-04-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/2021-03-17-slides-gee-talk/</loc>
+    <lastmod>2021-03-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/2021-03-11-spatial-holdouts-and-feature-selection/</loc>
+    <lastmod>2021-03-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/2021-03-04-global-forest-change/</loc>
+    <lastmod>2021-03-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/2021-03-04-gsutil-workflow/</loc>
+    <lastmod>2021-03-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/collection/</loc>
+    <lastmod>2021-01-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/talk/campfire/</loc>
+    <lastmod>2021-01-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/talk/</loc>
+    <lastmod>2021-01-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/categories/workshop/</loc>
+    <lastmod>2021-01-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/series/a-spoonful-of-hugo/</loc>
+    <lastmod>2021-01-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/spoonful-series/</loc>
+    <lastmod>2021-01-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/tags/hugo-site/</loc>
+    <lastmod>2021-01-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/series/</loc>
+    <lastmod>2021-01-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/categories/theme-features/</loc>
+    <lastmod>2021-01-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/talk/second-seedling/</loc>
+    <lastmod>2021-01-01T14:15:59-06:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/categories/meetup/</loc>
+    <lastmod>2021-01-01T14:15:59-06:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/rmarkdown/</loc>
+    <lastmod>2020-12-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/rgee-and-prism/</loc>
+    <lastmod>2020-08-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/data-retrieval/</loc>
+    <lastmod>2020-08-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/usgs-rgee-and-r-what/</loc>
+    <lastmod>2020-08-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/blog/exploring-catchments/</loc>
+    <lastmod>2020-06-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/talk/seedling/</loc>
+    <lastmod>2020-01-13T14:15:59-06:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/categories/package/</loc>
+    <lastmod>2019-07-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/project/</loc>
+    <lastmod>2019-07-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/project/giraffes/</loc>
+    <lastmod>2019-07-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/project/penguins/</loc>
+    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/project/bakeoff/</loc>
+    <lastmod>2019-07-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/contact/</loc>
+    <lastmod>2019-02-25T13:38:41-06:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/form/</loc>
+    <lastmod>2019-02-25T13:38:41-06:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/elements/</loc>
+    <lastmod>2019-02-18T12:27:33-06:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/about/</loc>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/contributors/</loc>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/categories/functions/</loc>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/tags/https/github.com/isciences/exactextractr/</loc>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/tags/https/github.com/r-spatial/</loc>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/tags/https/github.com/r-spatial/rgee/</loc>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/tags/https/github.com/usgs-r/dataretrieval/</loc>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/license/</loc>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/categories/packages/</loc>
   </url>
-  
 </urlset>
