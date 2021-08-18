@@ -6,7 +6,16 @@
     <description>Recent content in Hydrology on hydroblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 31 Jul 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/categories/hydrology/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 17 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/categories/hydrology/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ANOVA</title>
+      <link>https://hydroblog.netlify.com/blog/anova/anova/2021-08-17/</link>
+      <pubDate>Tue, 17 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/anova/anova/2021-08-17/</guid>
+      <description>A look into ANOVA. The long way.</description>
+    </item>
+    
     <item>
       <title>Baseflow Index (BFI)</title>
       <link>https://hydroblog.netlify.com/blog/2021-07-31-baseflow-index-bfi/2021-07-31-baseflow-index-bfi/baseflow/</link>
