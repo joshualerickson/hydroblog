@@ -6,11 +6,20 @@
     <description>Recent content in Tags on hydroblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 17 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 19 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>dataRetrieval</title>
+      <link>https://hydroblog.netlify.com/tags/dataretrieval/</link>
+      <pubDate>Thu, 19 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/tags/dataretrieval/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>R</title>
       <link>https://hydroblog.netlify.com/tags/r/</link>
-      <pubDate>Tue, 17 Aug 2021 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 19 Aug 2021 00:00:00 +0000</pubDate>
       
       <guid>https://hydroblog.netlify.com/tags/r/</guid>
       <description></description>
@@ -22,15 +31,6 @@
       <pubDate>Sat, 31 Jul 2021 00:00:00 +0000</pubDate>
       
       <guid>https://hydroblog.netlify.com/tags/hydrology/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>hugo-site</title>
-      <link>https://hydroblog.netlify.com/tags/hugo-site/</link>
-      <pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/tags/hugo-site/</guid>
       <description></description>
     </item>
     

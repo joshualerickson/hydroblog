@@ -6,7 +6,28 @@
     <description>Recent content in R on hydroblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 17 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/tags/r/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 19 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/tags/r/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>wildlandhydRo is a package that leverages USGS and SNOTEL APIs.</title>
+      <link>https://hydroblog.netlify.com/project/wildlandhydro/</link>
+      <pubDate>Thu, 19 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/project/wildlandhydro/</guid>
+      <description>IntroThe goal of wildlandhydRo is to create wrapper functions around commonly used packages like streamstats, snotelr and dataRetrieval and prepare them for chunk-based parallelism, data munging and reporting. Basically, a package for me but worth sharing with others.
+InstallationYou can install the development version from GitHub with:
+# install.packages(&amp;quot;devtools&amp;quot;)devtools::install_github(&amp;quot;joshualerickson/wildlandhydRo&amp;quot;)ExamplesBelow are some common examples that I routinely use with the package.
+ParallelWith {wildlandhydRo} it is really easy to get station data in parallel.</description>
+    </item>
+    
+    <item>
+      <title>exploreRGEE</title>
+      <link>https://hydroblog.netlify.com/project/explorergee/</link>
+      <pubDate>Wed, 18 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/project/explorergee/</guid>
+      <description>exploreRGEEThe goal of exploreRGEE is to explore Google Earth Engine (GEE) in the Rstudio IDE. This package uses bindings and functions from rgee and other spatial packages (sf, leaflet) to explore Google Earth Engine collections relatively quickly while using R. This package is meant to be exploratory and experimental but also provides the user quick functions to reproducible tasks, e.g. repetitive workflows. The reason for doing this inR is that some people are not familiar with JavaScript or Python but versed in R and this provides easy access to use GEE with commonly used methods for exploratory data analysis (tidyverse).</description>
+    </item>
+    
     <item>
       <title>ANOVA</title>
       <link>https://hydroblog.netlify.com/blog/anova/anova/2021-08-17/</link>

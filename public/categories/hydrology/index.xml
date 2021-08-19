@@ -6,7 +6,19 @@
     <description>Recent content in Hydrology on hydroblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 17 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/categories/hydrology/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 19 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/categories/hydrology/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>wildlandhydRo is a package that leverages USGS and SNOTEL APIs.</title>
+      <link>https://hydroblog.netlify.com/project/wildlandhydro/</link>
+      <pubDate>Thu, 19 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/project/wildlandhydro/</guid>
+      <description>IntroThe goal of wildlandhydRo is to create wrapper functions around commonly used packages like streamstats, snotelr and dataRetrieval and prepare them for chunk-based parallelism, data munging and reporting. Basically, a package for me but worth sharing with others.
+InstallationYou can install the development version from GitHub with:
+# install.packages(&amp;quot;devtools&amp;quot;)devtools::install_github(&amp;quot;joshualerickson/wildlandhydRo&amp;quot;)ExamplesBelow are some common examples that I routinely use with the package.
+ParallelWith {wildlandhydRo} it is really easy to get station data in parallel.</description>
+    </item>
+    
     <item>
       <title>ANOVA</title>
       <link>https://hydroblog.netlify.com/blog/anova/anova/2021-08-17/</link>

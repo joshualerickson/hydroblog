@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Remote Sensing on hydroblog</title>
+    <link>https://hydroblog.netlify.com/categories/remote-sensing/</link>
+    <description>Recent content in Remote Sensing on hydroblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 18 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/categories/remote-sensing/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>exploreRGEE</title>
+      <link>https://hydroblog.netlify.com/project/explorergee/</link>
+      <pubDate>Wed, 18 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/project/explorergee/</guid>
+      <description>exploreRGEEThe goal of exploreRGEE is to explore Google Earth Engine (GEE) in the Rstudio IDE. This package uses bindings and functions from rgee and other spatial packages (sf, leaflet) to explore Google Earth Engine collections relatively quickly while using R. This package is meant to be exploratory and experimental but also provides the user quick functions to reproducible tasks, e.g. repetitive workflows. The reason for doing this inR is that some people are not familiar with JavaScript or Python but versed in R and this provides easy access to use GEE with commonly used methods for exploratory data analysis (tidyverse).</description>
+    </item>
+    
+  </channel>
+</rss>
