@@ -35,6 +35,9 @@
     <loc>https://hydroblog.netlify.com/tags/dataretrieval/</loc>
     <lastmod>2021-08-19T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://hydroblog.netlify.com/project/hydroapps/</loc>
+    <lastmod>2021-08-19T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://hydroblog.netlify.com/</loc>
     <lastmod>2021-08-19T00:00:00+00:00</lastmod>
   </url><url>
@@ -48,6 +51,9 @@
     <lastmod>2021-08-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://hydroblog.netlify.com/categories/r/</loc>
+    <lastmod>2021-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/tags/streamstats/</loc>
     <lastmod>2021-08-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://hydroblog.netlify.com/tags/</loc>
@@ -89,7 +95,10 @@
     <loc>https://hydroblog.netlify.com/blog/2021-06-07-hydroclimatic-distributions/2021-06-07-hydroclimatic-distributions/hydro_dist_1/</loc>
     <lastmod>2021-06-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://hydroblog.netlify.com/blog/2021-05-27-slides-rshiny-talk/</loc>
+    <loc>https://hydroblog.netlify.com/talk/2021-05-27-slides-rshiny-talk/</loc>
+    <lastmod>2021-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://hydroblog.netlify.com/talk/</loc>
     <lastmod>2021-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/</loc>
@@ -98,7 +107,7 @@
     <loc>https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/</loc>
     <lastmod>2021-04-04T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://hydroblog.netlify.com/blog/2021-03-17-slides-gee-talk/</loc>
+    <loc>https://hydroblog.netlify.com/talk/2021-03-17-slides-gee-talk/</loc>
     <lastmod>2021-03-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://hydroblog.netlify.com/blog/2021-03-11-spatial-holdouts-and-feature-selection/</loc>
@@ -112,21 +121,6 @@
   </url><url>
     <loc>https://hydroblog.netlify.com/collection/</loc>
     <lastmod>2021-01-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://hydroblog.netlify.com/talk/campfire/</loc>
-    <lastmod>2021-01-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://hydroblog.netlify.com/talk/</loc>
-    <lastmod>2021-01-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://hydroblog.netlify.com/categories/workshop/</loc>
-    <lastmod>2021-01-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://hydroblog.netlify.com/talk/second-seedling/</loc>
-    <lastmod>2021-01-01T14:15:59-06:00</lastmod>
-  </url><url>
-    <loc>https://hydroblog.netlify.com/categories/meetup/</loc>
-    <lastmod>2021-01-01T14:15:59-06:00</lastmod>
   </url><url>
     <loc>https://hydroblog.netlify.com/blog/rmarkdown/</loc>
     <lastmod>2020-12-30T00:00:00+00:00</lastmod>
@@ -142,9 +136,6 @@
   </url><url>
     <loc>https://hydroblog.netlify.com/blog/exploring-catchments/</loc>
     <lastmod>2020-06-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://hydroblog.netlify.com/talk/seedling/</loc>
-    <lastmod>2020-01-13T14:15:59-06:00</lastmod>
   </url><url>
     <loc>https://hydroblog.netlify.com/contact/</loc>
     <lastmod>2019-02-25T13:38:41-06:00</lastmod>

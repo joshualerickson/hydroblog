@@ -1,37 +1,30 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Talks that Last on hydroblog</title>
+    <title>Talks on hydroblog</title>
     <link>https://hydroblog.netlify.com/talk/</link>
-    <description>Recent content in Talks that Last on hydroblog</description>
+    <description>Recent content in Talks on hydroblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 12 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/talk/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 27 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/talk/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>A campfire</title>
-      <link>https://hydroblog.netlify.com/talk/campfire/</link>
-      <pubDate>Tue, 12 Jan 2021 00:00:00 +0000</pubDate>
+      <title>Slides-Rshiny Talk</title>
+      <link>https://hydroblog.netlify.com/talk/2021-05-27-slides-rshiny-talk/</link>
+      <pubDate>Thu, 27 May 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://hydroblog.netlify.com/talk/campfire/</guid>
-      <description>I&amp;rsquo;m really excited to give this talk! Stay tuned for video and slides.</description>
+      <guid>https://hydroblog.netlify.com/talk/2021-05-27-slides-rshiny-talk/</guid>
+      <description>Here is a link to the brief Rshiny talk with applications in hydrology I just did. Hope you enjoy!
+ https://www.hydroblog.org/slides/rshiny_talk/rshiny_talk.html</description>
     </item>
     
     <item>
-      <title>A seedling</title>
-      <link>https://hydroblog.netlify.com/talk/second-seedling/</link>
-      <pubDate>Fri, 01 Jan 2021 14:15:59 -0600</pubDate>
+      <title>Slides-GEE Talk</title>
+      <link>https://hydroblog.netlify.com/talk/2021-03-17-slides-gee-talk/</link>
+      <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://hydroblog.netlify.com/talk/second-seedling/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A seedling</title>
-      <link>https://hydroblog.netlify.com/talk/seedling/</link>
-      <pubDate>Mon, 13 Jan 2020 14:15:59 -0600</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/talk/seedling/</guid>
-      <description></description>
+      <guid>https://hydroblog.netlify.com/talk/2021-03-17-slides-gee-talk/</guid>
+      <description>Here is a link to the brief GEE talk I just did. Hope you enjoy!
+ https://www.hydroblog.org/slides/gee_talk/gee_talk.html</description>
     </item>
     
   </channel>

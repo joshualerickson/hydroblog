@@ -8,6 +8,16 @@
     <language>en</language>
     <lastBuildDate>Thu, 19 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/tags/dataretrieval/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>hydroapps is a package that runs hydrological shiny apps</title>
+      <link>https://hydroblog.netlify.com/project/hydroapps/</link>
+      <pubDate>Thu, 19 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/project/hydroapps/</guid>
+      <description>hydroappsThe goal of {hydroapps} is to to create apps for resource management in the context of hydrology monitoring and reporting. This package relies heavily on USGS API and wouldn’t be possible with out it (much thanks). However, this package is highly experimental and is used mostly by myself but I think it’s worth sharing! Please enjoy and contributions are welcome!
+GoalsAs of 08/07/2021 the app is functional.</description>
+    </item>
+    
+    <item>
       <title>wildlandhydRo is a package that leverages USGS and SNOTEL APIs.</title>
       <link>https://hydroblog.netlify.com/project/wildlandhydro/</link>
       <pubDate>Thu, 19 Aug 2021 00:00:00 +0000</pubDate>

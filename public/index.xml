@@ -84,6 +84,16 @@ My content section is: collection  My layout is: single-series   part 2!     doe
     </item>
     
     <item>
+      <title>hydroapps is a package that runs hydrological shiny apps</title>
+      <link>https://hydroblog.netlify.com/project/hydroapps/</link>
+      <pubDate>Thu, 19 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/project/hydroapps/</guid>
+      <description>hydroappsThe goal of {hydroapps} is to to create apps for resource management in the context of hydrology monitoring and reporting. This package relies heavily on USGS API and wouldn’t be possible with out it (much thanks). However, this package is highly experimental and is used mostly by myself but I think it’s worth sharing! Please enjoy and contributions are welcome!
+GoalsAs of 08/07/2021 the app is functional.</description>
+    </item>
+    
+    <item>
       <title>wildlandhydRo is a package that leverages USGS and SNOTEL APIs.</title>
       <link>https://hydroblog.netlify.com/project/wildlandhydro/</link>
       <pubDate>Thu, 19 Aug 2021 00:00:00 +0000</pubDate>
@@ -133,10 +143,10 @@ ParallelWith {wildlandhydRo} it is really easy to get station data in parallel.
     
     <item>
       <title>Slides-Rshiny Talk</title>
-      <link>https://hydroblog.netlify.com/blog/2021-05-27-slides-rshiny-talk/</link>
+      <link>https://hydroblog.netlify.com/talk/2021-05-27-slides-rshiny-talk/</link>
       <pubDate>Thu, 27 May 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://hydroblog.netlify.com/blog/2021-05-27-slides-rshiny-talk/</guid>
+      <guid>https://hydroblog.netlify.com/talk/2021-05-27-slides-rshiny-talk/</guid>
       <description>Here is a link to the brief Rshiny talk with applications in hydrology I just did. Hope you enjoy!
  https://www.hydroblog.org/slides/rshiny_talk/rshiny_talk.html</description>
     </item>
@@ -152,10 +162,10 @@ ParallelWith {wildlandhydRo} it is really easy to get station data in parallel.
     
     <item>
       <title>Slides-GEE Talk</title>
-      <link>https://hydroblog.netlify.com/blog/2021-03-17-slides-gee-talk/</link>
+      <link>https://hydroblog.netlify.com/talk/2021-03-17-slides-gee-talk/</link>
       <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://hydroblog.netlify.com/blog/2021-03-17-slides-gee-talk/</guid>
+      <guid>https://hydroblog.netlify.com/talk/2021-03-17-slides-gee-talk/</guid>
       <description>Here is a link to the brief GEE talk I just did. Hope you enjoy!
  https://www.hydroblog.org/slides/gee_talk/gee_talk.html</description>
     </item>
@@ -188,24 +198,6 @@ ParallelWith {wildlandhydRo} it is really easy to get station data in parallel.
       <guid>https://hydroblog.netlify.com/blog/2021-03-04-gsutil-workflow/</guid>
       <description>Working with gsutil   Introduction     This is a workflow on how to download multiple objects from a bucket on google cloud storage. Basically, so I stop forgetting how to do it.
 Moving objects   Technically, you can create your own folders via some (above my head) method but I&amp;rsquo;ll just default to using the UI on GCS. From there, you can then start to move files that you&amp;rsquo;ve uploaded via desktop, R, earth engine, etc.</description>
-    </item>
-    
-    <item>
-      <title>A campfire</title>
-      <link>https://hydroblog.netlify.com/talk/campfire/</link>
-      <pubDate>Tue, 12 Jan 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/talk/campfire/</guid>
-      <description>I&amp;rsquo;m really excited to give this talk! Stay tuned for video and slides.</description>
-    </item>
-    
-    <item>
-      <title>A seedling</title>
-      <link>https://hydroblog.netlify.com/talk/second-seedling/</link>
-      <pubDate>Fri, 01 Jan 2021 14:15:59 -0600</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/talk/second-seedling/</guid>
-      <description></description>
     </item>
     
     <item>
@@ -253,15 +245,6 @@ library(dataRetrieval)library(tidyverse)Now we can start bringing in some rive
       
       <guid>https://hydroblog.netlify.com/blog/exploring-catchments/</guid>
       <description>Zonal StatisticsThis is a quick workflow using some rasters, polygons, and a few packages in R that i’ve used for a couple analysis recently. The main purpose of this workflow is to show the code used and how to get some simple zonal statistics in R and explore them relatively easy. Thus, there will be a lot of code! If you take anything out of this I hope it would be that zonal statistics in R are pretty awesome right now.</description>
-    </item>
-    
-    <item>
-      <title>A seedling</title>
-      <link>https://hydroblog.netlify.com/talk/seedling/</link>
-      <pubDate>Mon, 13 Jan 2020 14:15:59 -0600</pubDate>
-      
-      <guid>https://hydroblog.netlify.com/talk/seedling/</guid>
-      <description></description>
     </item>
     
     <item>

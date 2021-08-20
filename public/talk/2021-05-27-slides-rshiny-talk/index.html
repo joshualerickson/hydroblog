@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="generator" content="Hugo 0.87.0" />
-<title>Wes Anderson and Ridges | hydroblog</title>
+<title>Slides-Rshiny Talk | hydroblog</title>
 
 
 <meta property="twitter:site" content="@joshualerickson">
@@ -24,36 +24,34 @@
   
     
   
-<meta name="description" content="This is a quick exploration into the {wesanderson} and {ggridges} using USGS daily data.
-">
+<meta name="description" content="applications in hydrology">
 
 
 <meta property="og:site_name" content="hydroblog">
-<meta property="og:title" content="Wes Anderson and Ridges | hydroblog">
-<meta property="og:description" content="This is a quick exploration into the {wesanderson} and {ggridges} using USGS daily data.
-" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/" />
+<meta property="og:title" content="Slides-Rshiny Talk | hydroblog">
+<meta property="og:description" content="applications in hydrology" />
+<meta property="og:type" content="page" />
+<meta property="og:url" content="https://hydroblog.netlify.com/talk/2021-05-27-slides-rshiny-talk/" />
 <meta property="og:locale" content="en">
 
 
 
 
     
-        <meta property="og:image" content="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/sidebar-listing.png" >
+        <meta property="og:image" content="https://hydroblog.netlify.com/talk/2021-05-27-slides-rshiny-talk/featured.jpg" >
         <meta property="twitter:card" content="summary_large_image">
-        <meta name="twitter:image" content="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/sidebar-listing.png" >
+        <meta name="twitter:image" content="https://hydroblog.netlify.com/talk/2021-05-27-slides-rshiny-talk/featured.jpg" >
     
     
-  <meta itemprop="name" content="Wes Anderson and Ridges">
-<meta itemprop="description" content="This is a quick exploration into the {wesanderson} and {ggridges} using USGS daily data.
-">
+  <meta itemprop="name" content="Slides-Rshiny Talk">
+<meta itemprop="description" content="applications in hydrology"><meta itemprop="datePublished" content="2021-05-27T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2021-05-27T00:00:00+00:00" />
+<meta itemprop="wordCount" content="20"><meta itemprop="image" content="https://hydroblog.netlify.com/talk/2021-05-27-slides-rshiny-talk/featured.jpg">
+<meta itemprop="keywords" content="" />
   
   <!--[if IE]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   <link rel="shortcut icon" href="/img/water.ico" type="image/x-icon">
   <link rel="icon" href="/img/water.ico" type="image/x-icon">
-  
-    <link rel="alternate" type="application/rss+xml" href="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/index.xml" title="hydroblog" />
   
   
   <link rel="stylesheet" href="/style.main.min.5477c20f89738a32763391bbc2f43dbdfc2db0e7faba550c86cac92c99efa6b6.css" integrity="sha256-VHfCD4lzijJ2M5G7wvQ9vfwtsOf6ulUMhsrJLJnvprY=" media="screen">
@@ -65,7 +63,7 @@
   <script src="/main.min.0fe7313cc594fa307cdf603bcf065f456b2b2539a1f686ce5f3445d01e702a8d.js" type="text/javascript"></script>
 </head>
 <body>
-      <div class="grid-container list-sidebar">
+      <div class="grid-container">
 <header class="site-header pt4 pb2 mb4 bb b--transparent ph5 headroom z-max" role="banner">
   <nav class="site-nav db dt-l w-100" role="navigation">
     <a class="site-brand db dtc-l v-mid link no-underline w-100 w-33-l tc tl-l" href="https://hydroblog.netlify.com/" title="Home">
@@ -81,7 +79,7 @@
         
         
         
-      <a class="link f6 f5-l dib pv1 ph2 active" href="/blog/" title="Blog">Blog</a>
+      <a class="link f6 f5-l dib pv1 ph2 " href="/blog/" title="Blog">Blog</a>
       
         
         
@@ -91,96 +89,97 @@
         
         
         
-      <a class="link f6 f5-l dib pv1 ph2 " href="/talk/" title="Talks">Talks</a>
+      <a class="link f6 f5-l dib pv1 ph2 active" href="/talk/" title="Talks">Talks</a>
       
       
     </div>
   </nav>
 </header>
 
+<main class="page-main pa4" role="main">
+  <section class="page-content mw7 center">
+    <article class="post-content pa0 ph4-l">
+      <header class="post-header">
+        <h1 class="f1 lh-solid measure-narrow mb3 fw4">Slides-Rshiny Talk</h1>
+        
+        <p class="f6 measure lh-copy mv1"></p>
+        <p class="f7 db mv0 ttu">May 27, 2021</p>
+      
+      <section class="event-details cf pt5-ns pt4">
+  
+  
+  <div class="first-column">
+    <h5 class="row-label">Date</h5>
+  </div>
+  <div class="second-column">
+    <p class="row-details">
 
-<main class="page-main pa4 section" role="main">
-  <section class="blog-content mw7 center">
-    
-      
-        
-                                   
-     
-     
-<article class="mv4 mv5-l bb">
-  
-  
-  
-  
-  <div class="flex flex-column mb4 mb5-l  flex-row-ns">
-    <figure class="mr4-ns ma0 mb2 mb0-l w-100 w-40-ns">
-      <a href="/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/" class="db">
-        
-          <img src="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/featured.png" class="db ma0 dim" alt="">
-        
-      </a>
-    </figure>
-    <div class="flex flex-column w-100 w-60-ns pr3-ns">
-      <header class="w-100">
-        <h1 class="f3 mv2 lh-title underline"><a href="/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/" class="db">Ridges &amp; Wes Anderson</a></h1>
-        
-      </header>
-      
-      <p class="f6 lh-copy mv2 flex-auto">This is a quick exploration into the {wesanderson} and {ggridges} using USGS daily data.</p>
-      <footer class="w-100">
-      
-      <p class="f7 db mv1">By Josh Erickson in <a href="https://hydroblog.netlify.com/categories/r">R</a>  <a href="https://hydroblog.netlify.com/categories/hydrology">Hydrology</a> </p>
-      <p class="f7 db mv1">April 4, 2021</p>
-    </footer>
-    </div>
+
+
+
+
+  May 27, 2021
+</p>
+  </div>
+  <div class="first-column">
+    <h5 class="row-label">Time</h5>
+  </div>
+  <div class="second-column">
+    <p class="row-details">
+
+
+
+
+  12:00 AM
+
+</p>
   </div>
   
   
   
-</article>
+</section>
+      </header>
+      <section class="post-body pt5 pb4">
+        <p>Here is a link to the brief Rshiny talk with applications in hydrology I just did. Hope you enjoy!</p>
+<p>
+<a href="https://www.hydroblog.org/slides/rshiny_talk/rshiny_talk.html" target="_blank" rel="noopener">https://www.hydroblog.org/slides/rshiny_talk/rshiny_talk.html</a></p>
 
-      
-    
-
-
-
-
-  </section>
-</main>
-<aside class="page-sidebar" role="complementary">
-                         
- 
-
-
-                       
- 
-
-
-
-
-
-
-
-
-
-
-
-  <img src="/blog/2021-04-04-ridges-wes-anderson/sidebar-listing.png" class="db ma0">
-
-
-<div class="blog-info ph4 pt4 pb4 pb0-l">
+        
+        <details closed class="f6 fw7 input-reset">
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Posted on:</dt>
+    <dd class="fw5 ml0">May 27, 2021</dd>
+  </dl>
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Length:</dt>
+    <dd class="fw5 ml0">1 minute read, 20 words</dd>
+  </dl>
   
+  
+  
+  <dl class="f6 lh-copy">
+    <dt class="fw7">See Also:</dt>
+    
+  </dl>
+</details>
 
-  <h1 class="f3">What are ridge plots?</h1>
-  <p class="f6 lh-copy measure">Ridge plots or ridgeline plots are a way to express the distribution of the data for some categorical variable. This is very similar to a violin plot for box-plots. This helps to see bimodal characteristics better or tailedness of the distribution (see graph above) and is also more intuitive for the reader.</p>
-  <p class="f7 measure lh-copy i mh0-l">Written by Josh Erickson</p>
-
-
+      </section>
+      <footer class="post-footer">
+        <div class="post-pagination dt w-100 mt4 mb2">
+  
+  
+  
+  
+    <a class="next dtc pl2 tr v-top fw6"
+    href="https://hydroblog.netlify.com/talk/2021-03-17-slides-gee-talk/">Slides-GEE Talk &rarr;</a>
   
 </div>
 
-
-</aside>
+      </footer>
+    </article>
+    
+  </section>
+</main>
 <footer class="site-footer pv4 bt b--transparent ph5" role="contentinfo">
   <nav class="db dt-l w-100">
     <p class="site-copyright f7 db dtc-l v-mid w-100 w-33-l tc tl-l pv2 pv0-l mv0 lh-copy">
