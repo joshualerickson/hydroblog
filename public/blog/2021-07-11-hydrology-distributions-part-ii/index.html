@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head>
+  
+                           
+     
+
+
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.87.0" />
+<title>Hydrology Distributions: Part II | hydroblog</title>
+
+
+<meta property="twitter:site" content="@joshualerickson">
+<meta property="twitter:creator" content="@joshualerickson">
+
+
+
+
+
+
+
+  
+    
+  
+<meta name="description" content="Part II of hydrology distributions. A look into different distributions and frequency analysis.">
+
+
+<meta property="og:site_name" content="hydroblog">
+<meta property="og:title" content="Hydrology Distributions: Part II | hydroblog">
+<meta property="og:description" content="Part II of hydrology distributions. A look into different distributions and frequency analysis." />
+<meta property="og:type" content="page" />
+<meta property="og:url" content="https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/" />
+<meta property="og:locale" content="en">
+
+
+
+
+    
+        <meta property="og:image" content="https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/featured.png" >
+        <meta property="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/featured.png" >
+    
+    
+  <meta itemprop="name" content="Hydrology Distributions: Part II">
+<meta itemprop="description" content="Part II of hydrology distributions. A look into different distributions and frequency analysis."><meta itemprop="datePublished" content="2021-10-12T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2021-10-12T00:00:00+00:00" />
+<meta itemprop="wordCount" content="2805"><meta itemprop="image" content="https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/featured.png">
+<meta itemprop="keywords" content="" />
+  
+  <!--[if IE]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <link rel="shortcut icon" href="/img/water.ico" type="image/x-icon">
+  <link rel="icon" href="/img/water.ico" type="image/x-icon">
+  
+  
+  <link rel="stylesheet" href="/style.main.min.5477c20f89738a32763391bbc2f43dbdfc2db0e7faba550c86cac92c99efa6b6.css" integrity="sha256-VHfCD4lzijJ2M5G7wvQ9vfwtsOf6ulUMhsrJLJnvprY=" media="screen">
+  
+  
+  <script src="/panelset.min.078a92db9bd3228df502db3d9e0453c3cf3d910abe3f8deca0ad196c7071ad41.js" type="text/javascript"></script>
+  
+  
+  <script src="/main.min.0fe7313cc594fa307cdf603bcf065f456b2b2539a1f686ce5f3445d01e702a8d.js" type="text/javascript"></script>
+</head>
+<body>
+      <div class="grid-container single-sidebar">
+<header class="site-header pt4 pb2 mb4 bb b--transparent ph5 headroom z-max" role="banner">
+  <nav class="site-nav db dt-l w-100" role="navigation">
+    <a class="site-brand db dtc-l v-mid link no-underline w-100 w-33-l tc tl-l" href="https://hydroblog.netlify.com/" title="Home">
+      <img src="/img/water_blue.png" class="dib db-l h2 w-auto" alt="hydroblog">
+    </a>
+    <div class="site-links db dtc-l v-mid w-100 w-47-l tc tr-l mt3 mt0-l ttu tracked">
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 " href="/about/" title="About hydroblog">About</a>
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 active" href="/blog/" title="Blog">Blog</a>
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 " href="/project/" title="Project Portfolio">Projects</a>
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 " href="/talk/" title="Talks">Talks</a>
+      
+      
+    </div>
+  </nav>
+</header>
+
+<main class="page-main pa4" role="main">
+  <section class="page-content mw7 center">
+    <article class="post-content pa0 pr3-l">
+      <header class="post-header">
+        <h1 class="f1 lh-solid measure-narrow mb3 fw4">Hydrology Distributions: Part II</h1>
+        <h4 class="f4 mt0 mb4 lh-title measure">Part II of hydrology distributions. A look into different distributions and frequency analysis.</h4>
+        <p class="f6 measure lh-copy mv1">By Josh Erickson in <a href="https://hydroblog.netlify.com/categories/r">R</a>  <a href="https://hydroblog.netlify.com/categories/hydrology">Hydrology</a>  <a href="https://hydroblog.netlify.com/categories/statistics">Statistics</a> </p>
+        <p class="f7 db mv0 ttu">October 12, 2021</p>
+      </header>
+      <section class="post-body pt5 pb4">
+        
+<script src="https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/index_files/header-attrs/header-attrs.js"></script>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#part-ii">Part II</a>
+<ul>
+<li><a href="#theoretical-pdfs">Theoretical PDF’s</a></li>
+<li><a href="#visualizing">Visualizing</a></li>
+<li><a href="#assumptions">Assumptions</a></li>
+<li><a href="#frequency-of-occurrence">Frequency of Occurrence</a></li>
+<li><a href="#solving">Solving</a></li>
+<li><a href="#wrap-it-up">Wrap it up</a></li>
+</ul></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This will be part two of a three part blog series <em>‘Hydrology Distributions’</em> where we’ll look at different distributions in R using a handful of packages. A lot of times in hydrology you’ll end up collecting data (rainfall, snowdepth, runoff, etc) to try and fit a theoretical distribution for further analysis aka frequency, probability, recurrence, etc. These distributions come in all shapes and sizes (literally) and can be confusing at times but hopefully we can break these concepts down without too much incredulity from those pesky/pedantic statisticians 😊. In (<a href="https://hydroblog.netlify.app/2021/06/07/2021-06-07-hydroclimatic-distributions/">part I</a>) we looked at descriptive statistics and probability distributions (pmf and pdf). In part II we’ll bring in some data and compare distributions visually and then work out some probabilities for some commonly used theoretical distributions in hydrology, e.g. normal (N), Lognormal (LN), Log-Pearson Type III (LP3), Pearson Type III (P3), Gumbel (G), Weibull (W) and Generalized Extreme-value Distribution (GEV). In part III we’ll use a few goodness-of-fit tests to see which theoretical distribution best represents the underlying empirical distribution and talk about domain expertise and visualization as key additions to picking a distribution.</p>
+</div>
+<div id="part-ii" class="section level2">
+<h2>Part II</h2>
+<p>In (<a href="https://hydroblog.netlify.app/2021/06/07/2021-06-07-hydroclimatic-distributions/">part I</a>) we went over probability mass functions (pmf) and probability density functions (pdf) as well as introduced the cumulative distribution function (cdf). If you haven’t read (<a href="https://hydroblog.netlify.app/2021/06/07/2021-06-07-hydroclimatic-distributions/">part I</a>) please go back and read unless you are comfortable with these aforementioned topics. In part II we will go beyond the normal distribution and start looking at other distributions that are commonly used in hydrology. In part one we talked about pdf’s and how we can use theoretical pdf’s as a proxy for our sampled data. This is really helpful if you don’t have a long period of record (say N = 60 or something) or want to fit to a certain <em>a priori</em> distribution. It’s important to note that we need to make sure our data is stationary and iid (independent and identically distributed). We’ll cover this quickly but it’s really good to remember when doing these type analysis (frequency). In part I we just looked at the normal distribution but there are many other relavant pdf’s for hydroclimatic variables. We can use these theoretical pdf’s to our advantage since they have already been worked out mathematically! From there, we can introduce the idea of a <em>frequency of occurrence</em> and how one would go about calculating it along with how we might want to use it. But first we’ll go through the pdf’s mathematically and visually to get a better understanding of these different distributions.</p>
+<div id="goals" class="section level4">
+<h4>Goals</h4>
+<ul>
+<li>see some different pdf equations</li>
+<li>explore visually</li>
+<li>check assumptions</li>
+<li>frequency of occurrence</li>
+</ul>
+</div>
+<div id="theoretical-pdfs" class="section level3">
+<h3>Theoretical PDF’s</h3>
+<p>I know it’s a lot but I think it’s helpful to just see the different pdf’s (<span class="math inline">\(f_{x}(x)\)</span>) written out symbolically. If we remember from part I (normal distribution) there are parameters that we need to sample from our data and then we can enter them into the pdf. That is essentially the beautiful mess below (parameters for different pdfs). Thus, we’ll look at the following distributions below: normal (N), Lognormal (LN), Log-Pearson Type III (LP3), Pearson Type III (P), Gumbel (G), Weibull (W) and Generalized Extreme-value Distribution (GEV).</p>
+<div style="display: flex;">
+<div class="thing_row">
+<div style="flex-basis: 10px;">
+<center>
+<strong>Normal</strong>
+</center>
+<p><span class="math display">\[
+{\displaystyle {\frac {1}{\sqrt {2\pi \sigma^2 }}}\;e^{-(x-\mu)^{2}/2\sigma^2}}
+\]</span></p>
+</div>
+</div>
+<div style="flex-basis: 175px;">
+
+</div>
+<div class="thing_row">
+<div style="flex-basis: 10px;">
+<center>
+<strong>Lognormal</strong>
+</center>
+<p><span class="math display">\[
+{\displaystyle {\frac {1}{\sqrt {2\pi \beta^2 }}}\;e^{-\ln(x-\alpha)^{2}/2\beta^2}}
+\]</span></p>
+</div>
+</div>
+<div style="flex-basis: 175px;">
+
+</div>
+<div class="thing_row">
+<div style="flex-basis: 10px;">
+<center>
+<strong>Log-Pearson III</strong>
+</center>
+<p><span class="math display">\[ 
+{\displaystyle {\frac {\lambda^\beta(\log(x)-\epsilon)^{\beta-1}e^{-\lambda(\log(x)-\epsilon)}}{\Gamma(\beta)}}}
+\]</span></p>
+</div>
+</div>
+<div style="flex-basis: 175px;">
+
+</div>
+<div class="thing_row">
+<div style="flex-basis: 1%;">
+<center>
+<strong>Pearson III</strong>
+</center>
+<p><span class="math display">\[
+{\displaystyle {\frac {\lambda^\beta(x-\epsilon)^{\beta-1}e^{-\lambda(x-\epsilon)}}{\Gamma(\beta)}}}
+\]</span></p>
+</div>
+</div>
+</div>
+<p><br2></p>
+<div style="display: flex;">
+<div style="flex-basis: 100px;">
+
+</div>
+<div class="thing_row">
+<div style="flex-basis: 100px;">
+<center>
+<strong>Gumbel</strong>
+</center>
+<p><span class="math display">\[
+{\displaystyle \frac{1}{\alpha}\exp\bigg[ \mp\frac{x-\beta}{\alpha}-\exp\bigg(\mp\frac{x-\beta}{\alpha}\bigg)\bigg]}
+\]</span></p>
+</div>
+</div>
+<div style="flex-basis: 10px;">
+
+</div>
+<div class="thing_row">
+<div style="flex-basis: 10px;">
+<center>
+<strong>Weibull</strong>
+</center>
+<p><span class="math display">\[
+{\displaystyle {\alpha}x^{\alpha-1}\beta^{-\alpha}\exp\Big[-\Big(x/\beta\Big)^\alpha\Big]} 
+\]</span></p>
+</div>
+</div>
+</div>
+<p><br2></p>
+<div style="display: flex;">
+<div style="flex-basis: 250px;">
+
+</div>
+<div class="thing_row">
+<div style="flex-basis: 250px;">
+<center>
+<strong>GEV</strong>
+</center>
+<p><span class="math display">\[
+{\displaystyle 
+\frac{1}{\sigma}\,t(x)^{\xi+1}e^{-t(x)} \\
+\text{where} \\
+t(x)=\begin{cases}{\big (}1+\xi ({\tfrac {x-\mu }{\sigma }}){\big )}^{-1/\xi }&amp;{\textrm {if}}\ \xi \neq 0\\e^{-(x-\mu )/\sigma }&amp;{\textrm {if}}\ \xi =0\end{cases}}
+\]</span></p>
+</div>
+</div>
+</div>
+<p>So what do these things look like with real data? That is to say, what would these pdf’s produce if we fed it some observations? Well, that is what we’ll look into in the next part! Visualizing! These equations above are just pdf’s. That’s it! If you have observations you can then feed these observations into the equations above. We’ll start to see below how some look better than others though.</p>
+</div>
+<div id="visualizing" class="section level3">
+<h3>Visualizing</h3>
+<p>To do this let’s bring in a set of peak flows from a USGS gauging station. Then we can start to view the data in a few different ways: time series, histogram and density plots.</p>
+<pre class="r"><code>flower_peak &lt;- wildlandhydRo::wyUSGS(sites = &#39;12303100&#39;)</code></pre>
+<center>
+<strong>Visualizing Plots of Peak Discharge in Different Ways</strong>
+</center>
+<div style="display: flex;">
+<div style="flex-basis: 33%;">
+<p><img src="https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/index_files/figure-html/unnamed-chunk-3-1.png" width="960" /></p>
+</div>
+<div style="flex-basis: 33%;">
+<p><img src="https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/index_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+</div>
+<div style="flex-basis: 33%;">
+<p><img src="https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/index_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
+</div>
+</div>
+<p>So what would happen if we just took the probabilities of the empirical data? Like, why do we need to fit a distribution anyways? Good point! We can find probabilities with our data and should! However, most of the time you’ll want to fit to a distribution because you want to estimate a <em>rare</em> event and you don’t have enough data collected. So, let’s check out our data. We’ll use the code taken from <a href="https://vt-hydroinformatics.github.io/floods.html#calculate-exceedance-probability-and-return-period">JP Gannons’</a> book/lectures and use the Gringorten plotting position formula. For more information on exceedance probabilities check out the JP Gannons’ <a href="https://vt-hydroinformatics.github.io/floods.html#calculate-exceedance-probability-and-return-period">site</a> or for other <a href="https://scialert.net/fulltext/?doi=jas.2012.1501.1506">plotting position methods</a>. Side-bar, just like anything in statistics this can get deep fast and very pedantic! So please be aware that this is <em>just</em> a quick look and there are plenty of reasons you might want to change plotting position methods, e.g. distribution, <em>a priori</em>, length of record, pedantic, etc.</p>
+<center>
+<strong>Gringorten plotting position</strong>
+</center>
+<p><span class="math display">\[
+q_i = \frac{i-a}{N+1-2a} \\
+\displaystyle{\text{where,} \\
+q_i = \text{Exceedance probability}\\
+N = \text{Number of observations in your record}\\
+i = \text{Rank of specific observation, i = 1 is the largest, i = N is the smallest.}\\
+a = \text{constant for estimation = 0.44}
+}\]</span></p>
+<p>We’ll just apply this to our data and get an idea of what the probabilities are.</p>
+<pre class="r"><code>exceed_flower &lt;- wildlandhydRo:::get_exceedence(flower_peak$Peak)</code></pre>
+<p>Below we can see the results of our stations exceedance probabilities and associated flows. Notice how it only goes to 0.0164127 probability which is equivalent to a 61 year return interval! This is not good if we wanted to know the 0.1 probability of exceeding a associated flow aka 100 year event. We would need to fit a line and then extrapolate beyond our domain. Wait, what?! Yeah, I know we shouldn’t do that! But, we can get around that by substituting with a <em>theoretical</em> distribution 😉.</p>
+<p><img src="https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/index_files/figure-html/unnamed-chunk-7-1.png" width="960" /></p>
+<p>Now that we know we need to fit to a theoretical distribution (since we want to go beyond) we can start to explore the pdf’s from above. The goal is to see if we can find something close. To do that we’ll need to <em>fit</em> our empirical data (<code>flower_peak</code>) to a theoretical one. Plug and chug, right? Well, what the heck. Yes! The only reason I say that is it gets a little nutty when you dive into sample statistics and parameter estimation IMO. So for this example we’re going to spare ourselves on the math side and just have the computer do the fitting for us.</p>
+<div class="b--red ba bw2 ma2 pa4 shadow-1">
+<p><strong>This is where it gets pretty mathy and is just better to use a package to do the math for you. When we solved for the normal distribution pdf in Part I it was easy since the parameters are the mean (<span class="math inline">\(\mu\)</span>) and standard deviation (<span class="math inline">\(\sigma\)</span>) of the sample distribution; however, this is not the case for all distributions! We need something called sample statistics or parameter estimation to accomplish this task but it’s too much for this blog post (maybe another time 😄). See JP Gannons section on the Gumbel distribution and how to calculate the Gumbel distribution as an <a href="https://vt-hydroinformatics.github.io/floods.html#calculate-gumbel-distribution-parameters">example</a>.</strong></p>
+</div>
+<p>We can do this pretty fast with the help of a few packages: {fitdistplusr}, {extRemes}, {smwrBase}. I wrapped these up in a function called <code>batch_distribution()</code> in the {wildlandhydRo} package. The function will fit our data to different distributions and then we can plot them against each other. Some will be off and some close.</p>
+<pre class="r"><code>library(smwrBase)
+library(evd)
+
+flower_dist &lt;- flower_peak %&gt;% wildlandhydRo::batch_distribution(Peak)
+
+wildlandhydRo::plot_densDist(flower_dist, facet = F) + geom_density(data = flower_peak, aes(Peak, linetype = &#39;Empirical&#39;), size = 2, key_glyph = &#39;path&#39;,bw = 50) + scale_linetype_manual(values = c(&#39;Empirical&#39; = 2), label = &#39;&#39;) + labs(linetype = &#39;Empirical&#39;) + theme(axis.text = element_text(size = 18))</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/index_files/figure-html/unnamed-chunk-8-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>The graph above shows us both the empirical against the theoretical distributions. What’s nice about this is we can start to see what it means by ‘fit a distribution’ to the empirical. This is an important step in frequency analysis as it will determine what you use for your final probabilities/results. As we can see, there are a couple distributions that are a little different than the others (weibull and normal) and a few that look really close (GEV, log Pearson and Pearson) to the empirical distribution.</p>
+<p>The idea is that the more data we collect the more a theoretical distribution will fit to our empirical data. We can see that some distributions are underfitting and overfitting! We can also see this in a Q-Q plot like below.</p>
+<p><img src="https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/index_files/figure-html/unnamed-chunk-9-1.png" width="960" /></p>
+<p>You can see that some distributions again are a little better at representing the empirical data but all of them underestimate the right-tail of the data. What distribution should we use then? This is where we need help and would need to use some hypothesis testing for ‘goodness of fit’ (GOF), domain expertise and a little more exploration into parameter estimation but we’ll deal with that in part III. Just remember though that these are just pdf’s (<a href="https://hydroblog.netlify.app/2021/06/07/2021-06-07-hydroclimatic-distributions/">part I</a>) and we use our sample data to estimate plug-in. That’s it!</p>
+</div>
+<div id="assumptions" class="section level3">
+<h3>Assumptions</h3>
+<p>One key component of using theoretical distributions is the underlying data follows some assumptions; iid and stationarity. We’ll do a quick test for stationarity and then talk through iid. Below we’ll test for stationarity using the Dickey-Fuller test (Fuller, 1996). What we are trying to find is whether the mean and variance change over time. If they don’t then the data is assumed stationary. Most annual maximum series (AMS) in hydrology follow the stationarity assumption; however, with recent climate change or other factors (jump, land management) these assumptions cannot be assumed so it’s always good to check (Maity, 2018).</p>
+<pre class="r"><code>library(tseries)
+
+flower_stationarity &lt;- flower_peak %&gt;% 
+  filter(!is.na(Peak))
+
+adf.test(flower_stationarity$Peak, k = 1)</code></pre>
+<pre><code>## 
+##  Augmented Dickey-Fuller Test
+## 
+## data:  flower_stationarity$Peak
+## Dickey-Fuller = -3.1453, Lag order = 1, p-value = 0.131
+## alternative hypothesis: stationary</code></pre>
+<p>Since the hypothesis test was above the threshold we set (I promise we set it at 0.05 😆) then we can’t reject the null. Now we need to make sure our data is iid. We are doing AMS so autocorrelation is not a problem so we can assume our data is independent. However, for the identically distributed assumption we need to make sure our peak flows are from the same distribution. That is to say, the flow regime needs to be the same. We can explore this by looking at the different times these peak flows happened, e.g. winter rain-on-snow (ROS), spring snowmelt, summer-fall rainstorms.</p>
+<p><img src="https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/index_files/figure-html/unnamed-chunk-11-1.png" width="960" /></p>
+<p>We can see that most of the peak flows are in the <em>snowmelt</em> regime but there are a few that are from the ROS. Since these are from two different populations we need to take one out to proceed with the frequency analysis. Now if we take the ROS out and only look at the <em>snowmelt</em> regime then we can meet our assumptions.</p>
+<pre class="r"><code>flower_peak_snow &lt;- flower_peak %&gt;% 
+  mutate(month = month(peak_dt)) %&gt;% 
+  filter(!is.na(Peak), 
+         month %in% c(4,5,6))
+
+adf.test(flower_peak_snow$Peak, k = 1)</code></pre>
+<pre><code>## 
+##  Augmented Dickey-Fuller Test
+## 
+## data:  flower_peak_snow$Peak
+## Dickey-Fuller = -2.8654, Lag order = 1, p-value = 0.2408
+## alternative hypothesis: stationary</code></pre>
+<p>We now have some new competitors…</p>
+<pre class="r"><code>flower_dist_snow &lt;- wildlandhydRo::batch_distribution(flower_peak_snow, Peak)
+wildlandhydRo::plot_qqDist(flower_dist_snow, facet = T) + geom_point(data = flower_peak_snow, aes(Peak, Peak), size = 1) + theme(axis.text = element_text(size = 18),
+                                                                                                                       strip.text = element_text(size = 14))</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/index_files/figure-html/unnamed-chunk-13-1.png" width="960" /></p>
+<p>Looks like the Gumbel distribution is possibly the best fit (eyeballing) so let’s use that in the following examples.</p>
+</div>
+<div id="frequency-of-occurrence" class="section level3">
+<h3>Frequency of Occurrence</h3>
+So why do we even care about pdf’s in hydrology? Well, a lot of times we will use these pdf’s to calculate frequency of occurrence aka probability of occurrence aka annual return interval (ARI) aka annual exceedance probability (AEP). What the heck! Yeah I know, there are a lot of ways people say the same thing 😉. These probabilities give us a statistical understanding of discharge and it’s probability of occurring during a water year. From that, we can use for planning, risk and reliability of hydrologic design. There are a few different ways to calculate probability of occurrence (univariate pdf’s): plotting position (mentioned earlier), plug-into pdf (part I) or frequency analysis and probably others 🤷. Frequency analysis is pretty intuitive and it will look really familiar to something in <a href="https://hydroblog.netlify.app/2021/06/07/2021-06-07-hydroclimatic-distributions/">part I</a> (Z-score) but is referred to as the <em>general equation of frequency analysis</em> (Maity, 2018). Essentially we are going to calculate for the <em>value</em> (flow in our case or <span class="math inline">\(X_T\)</span>) given by<br />
+<br>
+<center>
+<strong><em>general equation of frequency analysis</em></strong>
+</center>
+<p><span class="math display">\[
+X_T = \overline{X} + KS \\ 
+\displaystyle{\text{where,} \\
+X_T = \text{magnitude of the hydrologic variable with a return period of}\ T; \\
+\overline{X} = \text{mean of the hydrologic variable}; \\
+S = \text{standard deviation of the hydrologic variable; and} \\ 
+K = \text{frequency factor, a function of the return period} \ T\ \text{and the assumed frequency distribution function}}
+\]</span></p>
+This looks really similar to the classic Z score for a normal distribution, right?<br />
+<br>
+<center>
+<strong>Z score</strong>
+</center>
+<p><span class="math display">\[
+Z=\frac{(\text{value} - \overline{x})}{s^2} \leftrightarrow Zs^2 + \overline{x} = \text{value}
+\]</span></p>
+<p><span class="math display">\[
+\displaystyle{\text{where,} \\
+Z = \text{frequency factor (aka K)} \\
+\text{value}= \text{magnitude of the variable aka} \ X_T}
+\]</span></p>
+<p>That’s because it is! We are just now solving for a value (<span class="math inline">\(X_T\)</span> magnitude with reoccurrence interval) instead of the <span class="math inline">\(Z\)</span> or <span class="math inline">\(K\)</span> value. Below we’ll work through an example using a Gumbel distribution. Step-by-step.</p>
+</div>
+<div id="solving" class="section level3">
+<h3>Solving</h3>
+<p>To solve for <span class="math inline">\(X_T\)</span> we are going to need a few things; <span class="math inline">\(\overline{X}, Z, K\)</span>. Let’s start with the <span class="math inline">\(\overline{X}\)</span>. This is just the mean of the series!</p>
+<pre class="r"><code>mean_flower &lt;- flower_peak_snow %&gt;% 
+  pull(Peak) %&gt;% mean()</code></pre>
+<p>Now that we got <span class="math inline">\(\overline{X}\)</span> let’s solve for <span class="math inline">\(K\)</span>. This is just the standard deviation of the series.</p>
+<pre class="r"><code>sd_flower &lt;- flower_peak_snow %&gt;% 
+  pull(Peak) %&gt;% sd()</code></pre>
+<p>For the final variable <span class="math inline">\(K\)</span>, we’ll need to find the frequency factor for the Gumbel distribution. Below we’ll use the formula from Al-Mashidani &amp; Mujda (1978) to find <span class="math inline">\(K\)</span> by using 0.1 probability or <span class="math inline">\(T=10\)</span> as our point estimate.</p>
+<center>
+<strong>Formula for Gumbel K</strong>
+</center>
+<p><span class="math display">\[
+K=-\Bigg[\frac{(6)^{\frac{1}{2}}(0.5772 + \text{lnln}\ T/T -1)}{\pi}\Bigg]
+\]</span></p>
+<pre class="r"><code>#find K
+k_flower &lt;- -(((6^.5)*(0.5772 + log(log(10/(10-1)))))/pi)</code></pre>
+<p>So we’ll want to compare the plotting method with the frequency analysis to see if our graphs were right and we’re not way off the mark. As you can see below, they are really close. This is good 👍!</p>
+<pre class="r"><code>#solve for frequency analysis
+frequency_analysis &lt;- mean_flower + k_flower*sd_flower
+
+frequency_analysis</code></pre>
+<pre><code>## [1] 346.7417</code></pre>
+<pre class="r"><code>#now show exceedance probability
+exceed_flower %&gt;% filter(exceedance_probability &lt;= 0.11,
+                         exceedance_probability &gt;= 0.09) %&gt;% 
+  pull(x)</code></pre>
+<pre><code>## [1] 356</code></pre>
+<p>Or the easy way is to use the <code>evd::qgumbel()</code> function to find the flow at that recurrence interval, see below. We’ll use the <code>batch_distribution()</code> object from earlier, e.g. <code>flower_dist_snow()</code>.</p>
+<pre class="r"><code>loc_flower &lt;- flower_dist_snow$gumbel$estimate[[&#39;loc&#39;]]
+scale_flower &lt;- flower_dist_snow$gumbel$estimate[[&#39;scale&#39;]]
+
+flower_at_10yr_ari &lt;- evd::qgumbel(0.9, loc = loc_flower, scale = scale_flower)
+flower_at_10yr_ari</code></pre>
+<pre><code>## [1] 352.0953</code></pre>
+<p>Now let’s do what we set out to do and extrapolate! Remember we wanted to see what a 100-year return interval (aka ARI) would give us and now we can do that. We’ll use the theoretical distribution to get us there. We just enter the equivalent to a 100 ARI (e.g. <span class="math inline">\(ARI = 1-\frac{1}{T}\)</span>) in the {evd} equation above and we get back the estimated flow!</p>
+<pre class="r"><code>flower_at_100yr_ari &lt;- evd::qgumbel(0.99, loc = loc_flower, scale = scale_flower)
+flower_at_100yr_ari</code></pre>
+<pre><code>## [1] 509.2854</code></pre>
+<p>Pretty cool. We can take it a step further with the <code>wildlandhydRo::batch_frequency()</code>. This will give us some probabilities up to 0.005 but of course you can always go further if needed.</p>
+<pre class="r"><code>flower_ff &lt;- wildlandhydRo::batch_frequency(flower_peak_snow, Peak)
+
+flower_ff %&gt;% 
+  filter(Distribution == &#39;Gumbel&#39;) %&gt;% 
+  ggplot(aes(ReturnInterval, Value, color = Distribution)) + 
+  geom_point() +
+  geom_line() +
+  labs(x = &#39;Return Interval&#39;, y = &#39;Discharge (cfs)&#39;, title = &#39;Return Intervals using a Gumbel Distribution&#39;)</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/index_files/figure-html/unnamed-chunk-20-1.png" width="960" /></p>
+</div>
+<div id="wrap-it-up" class="section level3">
+<h3>Wrap it up</h3>
+<p>So we were able to take some hydrological data (stream flow annual peaks/maximums) and see how this data looks with different theoretical distributions. From there we explored different ways of getting probabilities and why we might want to use a theoretical distribution. Wrapping up we looked at a few ways to get that information. I hope that this was a nice overview of some hydrology distribution stuff! If you have any questions or comments give me a shout. In the next blog post we’ll look at the ‘what’ dististribution should we use.</p>
+</div>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Al-Mashidani, G., LAL, P. B., &amp; MUJDA, M. F. (1978). A simple version of Gumbel’s method for flood estimation/Version simplifiée de la méthode de Gumbel pour l’estimation des crues. Hydrological Sciences Journal, 23(3), 373-380.</p>
+<p>Maity, R. (2018). Statistical methods in hydrology and hydroclimatology. Springer.</p>
+<p>Fuller, W. A. (1996). Introduction to Statistical Time Series, second ed., New York: John Wiley and Sons.</p>
+</div>
+
+      </section>
+      <footer class="post-footer">
+        <div class="post-pagination dt w-100 mt4 mb2">
+  
+  
+  
+  
+    <a class="next dtc pl2 tr v-top fw6"
+    href="https://hydroblog.netlify.com/blog/2021-03-11-spatial-holdouts-and-feature-selection/">Spatial Holdouts and Feature Selection &rarr;</a>
+  
+</div>
+
+      </footer>
+    </article>
+    
+      
+<div class="post-comments pa0 pa4-l mt4">
+
+</div>
+
+
+    
+  </section>
+</main>
+<aside class="page-sidebar" role="complementary">
+                         
+ 
+
+
+                       
+ 
+
+
+
+
+
+
+
+
+
+
+
+  <img src="/blog/sidebar-listing.jpg" class="db ma0">
+
+
+<div class="blog-info ph4 pt4 pb4 pb0-l">
+  
+
+  <h1 class="f3">One step at a time.</h1>
+  <p class="f6 lh-copy measure">&lsquo;One step at a time&rsquo; is a phrase I say a lot to myself when I dive into complex topics and subject matter. It helps me come back to the moment and remember that this is a marathon not a sprint. It takes time. So, let&rsquo;s help each other one step at a time!</p>
+  <p class="f7 measure lh-copy i mh0-l">Written by Josh Erickson</p>
+
+
+  <small class="db f7"><a href="/blog/" class="dib fw7 ttu bt bw1 b--black-10 pt3">View recent posts</a></small>
+</div>
+
+
+  
+  <details open class="f6 fw7 input-reset">
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Posted on:</dt>
+    <dd class="fw5 ml0">October 12, 2021</dd>
+  </dl>
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Length:</dt>
+    <dd class="fw5 ml0">14 minute read, 2805 words</dd>
+  </dl>
+  
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Categories:</dt>
+    <dd class="fw5 ml0"> <a href="https://hydroblog.netlify.com/categories/r">R</a>  <a href="https://hydroblog.netlify.com/categories/hydrology">Hydrology</a>  <a href="https://hydroblog.netlify.com/categories/statistics">Statistics</a> </dd>
+  </dl>
+  
+  
+  
+  <dl class="f6 lh-copy">
+    <dt class="fw7">See Also:</dt>
+    
+  </dl>
+</details>
+
+</aside>
+<footer class="site-footer pv4 bt b--transparent ph5" role="contentinfo">
+  <nav class="db dt-l w-100">
+    <p class="site-copyright f7 db dtc-l v-mid w-100 w-33-l tc tl-l pv2 pv0-l mv0 lh-copy">
+      &copy; 2021 RStudio, Anywhere
+      <span class="middot-divider"></span>
+      Made with <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title"><a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/hugo-apero/" rel="dct:source">Hugo Apéro</a></span>.
+      <br />
+      
+Based on <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title"><a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/formspree/blogophonic-hugo" rel="dct:source">Blogophonic</a></span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://formspree.io" property="cc:attributionName" rel="cc:attributionURL">Formspree</a>.
+    </p>
+    
+    <div class="site-social-links db dtc-l v-mid w-100 w-33-l tc pv2 pv0-l mv0">
+      <div class="social-icon-links" aria-hidden="true">
+  
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <a class="link dib h1 w1 ml0 mr2 f6 o-90 glow" href="https://github.com/joshualerickson" title="github" target="_blank" rel="noopener">
+      <i class="fab fa-github fa-lg fa-fw"></i>
+    </a>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <a class="link dib h1 w1 ml0 mr2 f6 o-90 glow" href="https://twitter.com/joshualerickson" title="twitter" target="_blank" rel="noopener">
+      <i class="fab fa-twitter fa-lg fa-fw"></i>
+    </a>
+  
+</div>
+
+    </div>
+    
+    <div class="site-links f6 db dtc-l v-mid w-100 w-67-l tc tr-l pv2 pv0-l mv0">
+      
+    </div>
+  </nav>
+  <script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</footer>
+
+      </div>
+    </body>
+</html>

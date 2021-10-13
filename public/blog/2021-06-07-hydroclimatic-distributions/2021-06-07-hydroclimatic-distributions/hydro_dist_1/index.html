@@ -46,7 +46,7 @@
   <meta itemprop="name" content="Hydrology Distributions: Part I">
 <meta itemprop="description" content="Part I in a series about hydrology distributions. Part I goes over descriptive statistics and pmf, pdf and cdf."><meta itemprop="datePublished" content="2021-06-07T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2021-06-07T00:00:00+00:00" />
-<meta itemprop="wordCount" content="2961"><meta itemprop="image" content="https://hydroblog.netlify.com/blog/2021-06-07-hydroclimatic-distributions/2021-06-07-hydroclimatic-distributions/hydro_dist_1/features.png">
+<meta itemprop="wordCount" content="2991"><meta itemprop="image" content="https://hydroblog.netlify.com/blog/2021-06-07-hydroclimatic-distributions/2021-06-07-hydroclimatic-distributions/hydro_dist_1/features.png">
 <meta itemprop="keywords" content="R,Hydrology," />
   
   <!--[if IE]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
@@ -110,6 +110,29 @@
 <script src="https://hydroblog.netlify.com/blog/2021-06-07-hydroclimatic-distributions/2021-06-07-hydroclimatic-distributions/hydro_dist_1/index_files/header-attrs/header-attrs.js"></script>
   <link rel="stylesheet" href="style.css" type="text/css" />
 
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#part-i">Part I</a>
+<ul>
+<li><a href="#plotting">Plotting</a></li>
+<li><a href="#descriptive-stats">Descriptive Stats</a>
+<ul>
+<li><a href="#central-tendency">Central Tendency</a></li>
+<li><a href="#dispersion">Dispersion</a></li>
+<li><a href="#skewness">Skewness</a></li>
+<li><a href="#tailednesskurtosis">Tailedness/Kurtosis</a></li>
+<li><a href="#banfield-stats">Banfield Stats</a></li>
+</ul></li>
+<li><a href="#probability-distributions-univariate">Probability Distributions (univariate)</a>
+<ul>
+<li><a href="#pmf">pmf</a></li>
+<li><a href="#pdf">pdf</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
 
 <pre class="r"><code>library(wildlandhydRo)
 library(evd)
@@ -125,7 +148,7 @@ theme_set(theme_bw())</code></pre>
 </div>
 <div id="part-i" class="section level1">
 <h1>Part I</h1>
-<p>For part one we will get pretty ‘<em>mathy</em>’ by looking at descriptive stats and probability distributions and how they are derived. This is not meant to be a full blown course into statistics! Thus, I’m assuming the reader has some basic understanding of statistics and calculus but if you want more information please see this book from <span class="citation">@maity2018statistical</span> titled ‘<em>Statistical Methods in Hydrology and Hydroclimatology</em>’. This book does not have a free copy but is worth the buy if you can. Otherwise, here are some other sources that I think would be relevant to the series (<a href="https://tinyheero.github.io/2016/03/17/prob-distr.html">prob-distr</a>, <a href="https://rafalab.github.io/dsbook/distributions.html">distributions</a>).</p>
+<p>For part one we will get pretty ‘<em>mathy</em>’ by looking at descriptive stats and probability distributions and how they are derived. This is not meant to be a full blown course into statistics! Thus, I’m assuming the reader has some basic understanding of statistics and calculus but if you want more information please see this book from Maity (2018) titled ‘<em>Statistical Methods in Hydrology and Hydroclimatology</em>’. This book does not have a free copy but is worth the buy if you can. Otherwise, here are some other sources that I think would be relevant to the series (<a href="https://tinyheero.github.io/2016/03/17/prob-distr.html">prob-distr</a>, <a href="https://rafalab.github.io/dsbook/distributions.html">distributions</a>).</p>
 <p>So, what is a distribution? In a basic sense, a distribution is a set of observations (discrete or continuous) that shows how this set is distributed or how frequently values occur, e.g. <span class="math inline">\(banfield = \{1,4,5,5.3,3.546,10, \dots, n\}\)</span>. This set of observations (<span class="math inline">\(banfield\)</span>) can then be used graphically (plotting), descriptively (central tendency, dispersion, skewness and tailedness) or inferentially (theoretical distributions) to uncover more about the underlying data. So, let’s bring in some daily SWE data from a Snow Telemetry (SNOTEL) site (<span class="math inline">\(banfield\)</span>) and see what the data looks like graphically. We can do this by looking at a histogram (counting) or density plot. This gives us an idea of how the data is distributed and where values frequently occur.</p>
 <div id="plotting" class="section level2">
 <h2>Plotting</h2>
@@ -326,6 +349,7 @@ We can see the chunk of the normal distribution that we took out. We take the 20
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
+<p>Maity, R. (2018). Statistical methods in hydrology and hydroclimatology. Springer.</p>
 </div>
 
       </section>
@@ -396,7 +420,7 @@ We can see the chunk of the normal distribution that we took out. We take the 20
   </dl>
   <dl class="f6 lh-copy">
     <dt class="fw7">Length:</dt>
-    <dd class="fw5 ml0">14 minute read, 2961 words</dd>
+    <dd class="fw5 ml0">15 minute read, 2991 words</dd>
   </dl>
   
   <dl class="f6 lh-copy">
