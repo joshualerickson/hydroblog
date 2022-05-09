@@ -6,7 +6,16 @@
     <description>Recent content in blogging on hydroblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 12 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/blog/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 06 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>remr</title>
+      <link>https://hydroblog.netlify.com/blog/2022-05-06-remr/</link>
+      <pubDate>Fri, 06 May 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2022-05-06-remr/</guid>
+      <description>Taking a look at the {remr} and how one might use it for art or analysis.</description>
+    </item>
+    
     <item>
       <title>Hydrology Distributions: Part II</title>
       <link>https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/</link>
@@ -91,6 +100,15 @@ library(dataRetrieval)library(tidyverse)Now we can start bringing in some rive
       
       <guid>https://hydroblog.netlify.com/blog/exploring-catchments/</guid>
       <description>Zonal StatisticsThis is a quick workflow using some rasters, polygons, and a few packages in R that i’ve used for a couple analysis recently. The main purpose of this workflow is to show the code used and how to get some simple zonal statistics in R and explore them relatively easy. Thus, there will be a lot of code! If you take anything out of this I hope it would be that zonal statistics in R are pretty awesome right now.</description>
+    </item>
+    
+    <item>
+      <title>ANCOVA</title>
+      <link>https://hydroblog.netlify.com/blog/ancova/ancova_rmd/ancova/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/ancova/ancova_rmd/ancova/</guid>
+      <description>TL;DRANCOVA is a mix of both linear regression and a t-test/ANOVA and is in the family of General Linear Models (GLM). It can help you correct for Type II error, by increasing your power through covariates. This is important if you can’t control for covariates in the experimental design. ANOCOVA let’s you account for this in the analysis. It still uses the same fundamentals of NHST (Null Hypothesis Significance Testing) and compares the variance explained to the variance unexplained aka F-test.</description>
     </item>
     
   </channel>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head>
+  
+                           
+     
+
+
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.87.0" />
+<title>remr | hydroblog</title>
+
+
+<meta property="twitter:site" content="@joshualerickson">
+<meta property="twitter:creator" content="@joshualerickson">
+
+
+
+
+
+
+
+  
+    
+  
+<meta name="description" content="what the heck?! yes, remr. relative elevation model...">
+
+
+<meta property="og:site_name" content="hydroblog">
+<meta property="og:title" content="remr | hydroblog">
+<meta property="og:description" content="what the heck?! yes, remr. relative elevation model..." />
+<meta property="og:type" content="page" />
+<meta property="og:url" content="https://hydroblog.netlify.com/blog/2022-05-06-remr/" />
+<meta property="og:locale" content="en">
+
+
+
+
+    
+        <meta property="og:image" content="https://hydroblog.netlify.com/blog/2022-05-06-remr/featured.png" >
+        <meta property="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="https://hydroblog.netlify.com/blog/2022-05-06-remr/featured.png" >
+    
+    
+  <meta itemprop="name" content="remr">
+<meta itemprop="description" content="Taking a look at the {remr} and how one might use it for art or analysis."><meta itemprop="datePublished" content="2022-05-06T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2022-05-06T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1538"><meta itemprop="image" content="https://hydroblog.netlify.com/blog/2022-05-06-remr/featured.png">
+<meta itemprop="keywords" content="" />
+  
+  <!--[if IE]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <link rel="shortcut icon" href="/img/water.ico" type="image/x-icon">
+  <link rel="icon" href="/img/water.ico" type="image/x-icon">
+  
+  
+  <link rel="stylesheet" href="/style.main.min.5477c20f89738a32763391bbc2f43dbdfc2db0e7faba550c86cac92c99efa6b6.css" integrity="sha256-VHfCD4lzijJ2M5G7wvQ9vfwtsOf6ulUMhsrJLJnvprY=" media="screen">
+  
+  
+  <script src="/panelset.min.078a92db9bd3228df502db3d9e0453c3cf3d910abe3f8deca0ad196c7071ad41.js" type="text/javascript"></script>
+  
+  
+  <script src="/main.min.0fe7313cc594fa307cdf603bcf065f456b2b2539a1f686ce5f3445d01e702a8d.js" type="text/javascript"></script>
+</head>
+<body>
+      <div class="grid-container single-sidebar">
+<header class="site-header pt4 pb2 mb4 bb b--transparent ph5 headroom z-max" role="banner">
+  <nav class="site-nav db dt-l w-100" role="navigation">
+    <a class="site-brand db dtc-l v-mid link no-underline w-100 w-33-l tc tl-l" href="https://hydroblog.netlify.com/" title="Home">
+      <img src="/img/water_blue.png" class="dib db-l h2 w-auto" alt="hydroblog">
+    </a>
+    <div class="site-links db dtc-l v-mid w-100 w-47-l tc tr-l mt3 mt0-l ttu tracked">
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 " href="/about/" title="About hydroblog">About</a>
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 active" href="/blog/" title="Blog">Blog</a>
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 " href="/project/" title="Project Portfolio">Projects</a>
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 " href="/talk/" title="Talks">Talks</a>
+      
+      
+    </div>
+  </nav>
+</header>
+
+<main class="page-main pa4" role="main">
+  <section class="page-content mw7 center">
+    <article class="post-content pa0 pr3-l">
+      <header class="post-header">
+        <h1 class="f1 lh-solid measure-narrow mb3 fw4">remr</h1>
+        <h4 class="f4 mt0 mb4 lh-title measure">what the heck?! yes, remr. relative elevation model...</h4>
+        <p class="f6 measure lh-copy mv1">By Josh Erickson in <a href="https://hydroblog.netlify.com/categories/r">R</a>  <a href="https://hydroblog.netlify.com/categories/hydrology">Hydrology</a> </p>
+        <p class="f7 db mv0 ttu">May 6, 2022</p>
+      </header>
+      <section class="post-body pt5 pb4">
+        
+  <link rel="stylesheet" href="style.css" type="text/css" />
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#dem">DEM</a></li>
+<li><a href="#remr">remr</a></li>
+<li><a href="#so-what">So what?</a></li>
+<li><a href="#interpolation">Interpolation</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>I wanted to do a quick dive into the <a href="https://github.com/joshualerickson/remr">{remr}</a> and show how to create Relative Elevation Models (REM) relatively easy in R. You might be asking, ‘what the heck is a REM?’ An REM is a way to get elevations relative to a specific elevation. For example, you might want to see whether elevations further away from a point are relatively lower or higher. One way to do this is create transects (linestrings) at a certain angle from the point of interest (cross-section method) or use an interpolation method (IDW, KNN, etc) to relate elevations. This can help with river restoration and design (<a href="https://onlinelibrary.wiley.com/doi/pdf/10.1002/rra.3378">Powers et al. 2019</a>), flood prone areas and research, and of course fun art stuff 🤣. Highly recommended, Dan Coe has some great tutorials on REM in QGIS with step by step instructions, find <a href="https://dancoecarto.com/tutorials">here</a>.</p>
+</div>
+<div id="dem" class="section level2">
+<h2>DEM</h2>
+<p>A big part of a REM is the elevation grid. There are plenty of ways to get elevation grids in R but for reproducibility I’m going to use the <a href="https://github.com/jhollist/elevatr">{elevatr}</a>. We need to find an AOI (area of interest) and then we can call the <code>get_elev_raster()</code> function.</p>
+<pre class="r"><code>#load libraries we&#39;ll need
+library(terra)
+library(elevatr)
+library(remr)
+library(sf)
+library(mapedit)
+library(mapview)
+library(leaflet)
+library(stars)
+library(gstat)
+library(tidyverse)</code></pre>
+<p>A quick way to do this is by using <a href="https://github.com/r-spatial/mapedit">{mapedit}</a>. We’ll find an AOI and then draw a box. This is what we’ll use in {elevatr}. Again, you can use your own bbox, spatial object, etc but for ease we’ll draw.</p>
+<pre class="r"><code>aoi &lt;- drawFeatures()</code></pre>
+<br>
+<center>
+<p><img src='inst/www/draw.gif' class = 'center'></p>
+</center>
+<p><br></p>
+<p>Once you have an AOI, you can then call the {elevatr} function <code>get_elev_raster()</code> to get a DEM. To make it easier to work with an REM we’ll need to convert our raster to meters projection instead of degrees. Also, the <code>z</code> argument is indicative of the zoom (higher meaning better resolution) and <code>clip</code> helps decide how to clip the DEM.</p>
+<pre class="r"><code># convert aoi to utm proj.
+aoi_proj &lt;- aoi %&gt;% st_transform(crs = &#39;+proj=utm +zone=52 +datum=WGS84 +units=m +no_defs&#39;)
+
+# get elevation raster (DEM) with utm proj.
+ele &lt;- get_elev_raster(locations = aoi_proj,
+                       z = 13,
+                       prj = &#39;+proj=utm +zone=52 +datum=WGS84 +units=m +no_defs&#39;,
+                       clip = &#39;bbox&#39;)</code></pre>
+<p>Now that we have a DEM we need to figure out what points we want to relate to. When using {remr}, the function needs a linestring. Why linestring? Well, it’s easier to create a final grid (REM) but essentially it creates points along the linestring, so… you could technically use points (maybe in a future release). I like to use one straight linestring (like below) but you could also use multiple linestrings (you would need to run lapply() or map() though on each feature). So let’s draw a linestring on our DEM.</p>
+<pre class="r"><code>line_aoi &lt;- mapview(ele)@map %&gt;%     
+            drawFeatures() %&gt;% 
+            st_transform(&#39;+proj=utm +zone=52 +datum=WGS84 +units=m +no_defs&#39;)</code></pre>
+<p>Ok, before we go on let’s look at what we have.</p>
+<p><img src="https://hydroblog.netlify.com/blog/2022-05-06-remr/index_files/figure-html/unnamed-chunk-6-1.png" width="960" /></p>
+<p>We have a DEM and a line that goes through it.Pretty simple, right? From here we want to see what the adjacent elevation is <strong>relative</strong> to the line. This is where we’ll use the {remr}.</p>
+</div>
+<div id="remr" class="section level2">
+<h2>remr</h2>
+<p>At a bare minimum, we need to provide a DEM and a line. We also need to know the split on the line (<code>distance</code>) and the length of the transects (<code>length</code>). This is a <strong>cross-section</strong> method and right now is the current method in {remr}. The split will typically be the resolution of the raster input. You can use the code below to get an idea of a distance by using {leafextras} and {maview/leaflet} to get a measurement.</p>
+<pre class="r"><code>mapview(list(ele, line_aoi))@map %&gt;% 
+  leaflet.extras::addMeasurePathToolbar()</code></pre>
+<center>
+<img src="distance.png" width="370" />
+</center>
+<div class="b--red ba bw2 ma2 pa4 shadow-1">
+<p>This can take a while depending on resolution and size! Also, it’s a memory eater as well… I’d like to have an option to write to disk in the future but for now just be aware.</p>
+</div>
+<p>Running the <code>get_rem()</code>.</p>
+<pre class="r"><code>rem &lt;- get_rem(linestring = line_aoi,
+               raster = ele,
+               distance = raster::res(ele)[[1]]],
+               length = 4000)</code></pre>
+<p>The function is getting elevations at each point along the linestring (<code>line_aoi</code>) at a distance as well as along a transect at a 90 degree angle. This gives a grid of points and elevations. Here is a close up below. I just took some random transects to show how it’s oriented across the linestring but essentially there is one every <em>distance</em> of the input (it would look like a blur if I showed all).</p>
+<p><img src="https://hydroblog.netlify.com/blog/2022-05-06-remr/index_files/figure-html/unnamed-chunk-10-1.png" width="960" /></p>
+<p>We can also see that each point has an elevation associated with it (see below). We now need to subtract these elevations from the main elevation (linestring).</p>
+<p><img src="https://hydroblog.netlify.com/blog/2022-05-06-remr/index_files/figure-html/unnamed-chunk-11-1.png" width="960" /></p>
+<p>This will give us a <strong>relative</strong> elevation!</p>
+<pre class="r"><code>rem$rem &lt;- rem$elevation_main - rem$elevation_adj
+
+rem_rast &lt;- terra::rasterize(terra::vect(rem), terra::rast(ele), 
+        field = &quot;rem&quot;)
+
+rem_rast &lt;- terra::focal(rem_rast, fun = &#39;mean&#39;, window = 3, na.policy = &#39;only&#39;, na.rm = TRUE )</code></pre>
+<p>This will give us a grid of elevations related to the main linestring. Some will be lower (positive) and some higher (negative). This gives us a good idea of where water could theoretically pop up (gaining groundwater reach or overflow surface water). This really helps with visualizing floodplains prior to field observations.</p>
+<p><img src="https://hydroblog.netlify.com/blog/2022-05-06-remr/index_files/figure-html/unnamed-chunk-13-1.png" width="960" /></p>
+<p>But wait. How is this helpful? It just tells us information from the line? Wouldn’t it be better to just do it along the stream. For sure. Along a stream would be better but it would also overlap (can be done with a consistent angle, i.e. not at 90 for every point). This is where you can take a <strong>regression of choice</strong> and use that instead as your elevation main. So below we’ll use a LOESS function to predict the elevation. What this does is give an arbitrary value to relate to, which will make it easier to see and use for understanding adjacent areas.</p>
+<pre class="r"><code>rem_loess &lt;- rem %&gt;% 
+  st_drop_geometry() %&gt;% 
+  group_by(group) %&gt;% 
+  slice(n = 1) %&gt;% 
+  na.omit() %&gt;%
+  ungroup() %&gt;% 
+  mutate(loess = as.numeric(predict(loess(elevation_main~group, data = .)))) %&gt;% select(loess, group) %&gt;% right_join(rem, by = &#39;group&#39;)</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2022-05-06-remr/index_files/figure-html/unnamed-chunk-15-1.png" width="960" /></p>
+<p>Now we can redo the the REM with LOESS as our main elevation.</p>
+<pre class="r"><code>rem_loess$rem_loess &lt;- rem_loess$loess - rem_loess$elevation_adj
+
+rem_rast_loess &lt;- terra::rasterize(terra::vect(rem_loess), terra::rast(ele), field = &quot;rem_loess&quot;)
+
+rem_rast_loess &lt;- terra::focal(rem_rast_loess, fun = &#39;mean&#39;, window = 3, na.policy = &#39;only&#39;, na.rm = TRUE )</code></pre>
+<p>Now let’s look at the REM. Ahhh, much better! You can see that when you compare side-by-side it’s not too much of a difference; however, the farther up river you go the more the elevation increases and will make it difficult to see. With a REM, this isn’t the case since it’s always relating to the line!</p>
+<p><img src="https://hydroblog.netlify.com/blog/2022-05-06-remr/index_files/figure-html/unnamed-chunk-17-1.png" width="960" /></p>
+</div>
+<div id="so-what" class="section level2">
+<h2>So what?</h2>
+<p>Totally agree. So what, right? We could just use the DEM grid to interpret and check. Yes. There are a lot of different ways to add a <em>relative</em> (the relation you want) linestring. For example, you could collect bankfull heights in the field, terrace heights, thalweg, etc. The REM then relates back to these elevations and gives you an idea of height above or below. With the DEM approach, you are always having to do the math on the fly!</p>
+</div>
+<div id="interpolation" class="section level2">
+<h2>Interpolation</h2>
+<p>Another approach is the interpolation method, which as you can imagine ‘<strong>interpolates</strong>’ the elevations near a line. This is great for stream segments in the <a href="https://github.com/USGS-R/nhdplusTools">{nhdplusTools}</a> because of the overlapping that would occur if we used the transect method. Below we’ll look at a stream in the USA (NFK Flathead River) and apply the interpolation method.</p>
+<ul>
+<li>Get DEM<br />
+</li>
+<li>Get Stream Segment</li>
+<li>Interpolate<br />
+</li>
+<li>Subtraction</li>
+</ul>
+<div id="dem-1" class="section level4">
+<h4>DEM</h4>
+<p>Again we’ll use the {elevatr} package to get the DEM as well as use a meters projection.</p>
+<pre class="r"><code>aoi2 &lt;- drawFeatures()</code></pre>
+<pre class="r"><code># convert aoi to utm proj.
+aoi2_proj &lt;- aoi2 %&gt;% st_transform(crs = &#39;+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs&#39;)
+
+# get elevation raster (DEM) with utm proj.
+ele2 &lt;- get_elev_raster(locations = aoi2_proj,
+                       z = 13,
+                       prj = &#39;+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs&#39;,
+                       clip = &#39;bbox&#39;)</code></pre>
+<p>Get the stream segment using <a href="https://github.com/joshualerickson/gwavr">{gwavr}</a> package.</p>
+<pre class="r"><code>library(gwavr)
+
+nhd &lt;- get_nldi_interactively() 
+
+nhd_crop &lt;- nhd[[1]]$UM %&gt;% 
+            st_transform(&#39;+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs&#39;) %&gt;% 
+  st_crop(aoi2_proj)</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2022-05-06-remr/index_files/figure-html/unnamed-chunk-21-1.png" width="960" /></p>
+<p>Now we can use the <code>st_line_sample()</code> in {sf} to get points along the river.</p>
+<pre class="r"><code>points_along_river &lt;- nhd_crop %&gt;% st_cast(.,&#39;LINESTRING&#39;) %&gt;% 
+  st_line_sample(., density = terra::res(ele2)[[1]]) %&gt;%    st_as_sf()</code></pre>
+<p>From here, we just choose a <strong>interpolator of choice</strong>! We’ll use IDW from the {gstat} package. We’ll extract the elevation from each point and then use that to interpolate onto the elevation grid.</p>
+<pre class="r"><code>points_along_river &lt;- points_along_river %&gt;% st_cast(&#39;POINT&#39;) %&gt;% st_as_sf() %&gt;% rename(geometry = &#39;x&#39;) 
+
+points_along_river$ele &lt;- terra::extract(terra::rast(ele2), terra::vect(points_along_river))[,2] 
+
+points_along_river &lt;- points_along_river %&gt;% na.omit()
+
+setup_points &lt;- gstat(formula=ele~1, id = &#39;ele&#39;, data=points_along_river)
+
+## from terra issue 208
+fg &lt;- function(model, x, crs, ...) {
+     v &lt;- st_as_sf(x, coords=c(&quot;x&quot;, &quot;y&quot;), crs=crs)
+     p &lt;- predict(model, v, ...)
+     # right now you need to cbind the coordinates; that I can fix
+     cbind(x, as.data.frame(p)[,1:2])
+}
+
+idw &lt;- terra::interpolate(ele2, setup_points, fun = fg, crs = &#39;+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs&#39;, na.rm = T)</code></pre>
+<p>Finally, we’ll just subtract the OG elevation grid from then new interpolated grid to get the REM!</p>
+<pre class="r"><code>idwr &lt;- idw-ele2</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2022-05-06-remr/index_files/figure-html/unnamed-chunk-25-1.png" width="960" /></p>
+</div>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>As you can see there are a couple different ways to do this as well as different ways to apply. I typically just use it to see the confinement of a floodplain and valley. Alright, alright. Mostly just for art :) Hope this helps! Have fun with REMs!</p>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Powers, P. D., Helstab, M., &amp; Niezgoda, S. L. (2019). A process‐based approach to restoring depositional river valleys to Stage 0, an anastomosing channel network. River Research and Applications, 35(1), 3-13.</p>
+</div>
+
+      </section>
+      <footer class="post-footer">
+        <div class="post-pagination dt w-100 mt4 mb2">
+  
+  
+  
+  
+    <a class="next dtc pl2 tr v-top fw6"
+    href="https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/">Hydrology Distributions: Part II &rarr;</a>
+  
+</div>
+
+      </footer>
+    </article>
+    
+      
+<div class="post-comments pa0 pa4-l mt4">
+
+</div>
+
+
+    
+  </section>
+</main>
+<aside class="page-sidebar" role="complementary">
+                         
+ 
+
+
+                       
+ 
+
+
+
+
+
+
+
+
+
+
+
+  <img src="/blog/sidebar-listing.jpg" class="db ma0">
+
+
+<div class="blog-info ph4 pt4 pb4 pb0-l">
+  
+
+  <h1 class="f3">One step at a time.</h1>
+  <p class="f6 lh-copy measure">&lsquo;One step at a time&rsquo; is a phrase I say a lot to myself when I dive into complex topics and subject matter. It helps me come back to the moment and remember that this is a marathon not a sprint. It takes time. So, let&rsquo;s help each other one step at a time!</p>
+  <p class="f7 measure lh-copy i mh0-l">Written by Josh Erickson</p>
+
+
+  <small class="db f7"><a href="/blog/" class="dib fw7 ttu bt bw1 b--black-10 pt3">View recent posts</a></small>
+</div>
+
+
+  
+  <details open class="f6 fw7 input-reset">
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Posted on:</dt>
+    <dd class="fw5 ml0">May 6, 2022</dd>
+  </dl>
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Length:</dt>
+    <dd class="fw5 ml0">8 minute read, 1538 words</dd>
+  </dl>
+  
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Categories:</dt>
+    <dd class="fw5 ml0"> <a href="https://hydroblog.netlify.com/categories/r">R</a>  <a href="https://hydroblog.netlify.com/categories/hydrology">Hydrology</a> </dd>
+  </dl>
+  
+  
+  
+  <dl class="f6 lh-copy">
+    <dt class="fw7">See Also:</dt>
+    
+  </dl>
+</details>
+
+</aside>
+<footer class="site-footer pv4 bt b--transparent ph5" role="contentinfo">
+  <nav class="db dt-l w-100">
+    <p class="site-copyright f7 db dtc-l v-mid w-100 w-33-l tc tl-l pv2 pv0-l mv0 lh-copy">
+      &copy; 2022 RStudio, Anywhere
+      <span class="middot-divider"></span>
+      Made with <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title"><a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/hugo-apero/" rel="dct:source">Hugo Apéro</a></span>.
+      <br />
+      
+Based on <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title"><a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/formspree/blogophonic-hugo" rel="dct:source">Blogophonic</a></span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://formspree.io" property="cc:attributionName" rel="cc:attributionURL">Formspree</a>.
+    </p>
+    
+    <div class="site-social-links db dtc-l v-mid w-100 w-33-l tc pv2 pv0-l mv0">
+      <div class="social-icon-links" aria-hidden="true">
+  
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <a class="link dib h1 w1 ml0 mr2 f6 o-90 glow" href="https://github.com/joshualerickson" title="github" target="_blank" rel="noopener">
+      <i class="fab fa-github fa-lg fa-fw"></i>
+    </a>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <a class="link dib h1 w1 ml0 mr2 f6 o-90 glow" href="https://twitter.com/joshualerickson" title="twitter" target="_blank" rel="noopener">
+      <i class="fab fa-twitter fa-lg fa-fw"></i>
+    </a>
+  
+</div>
+
+    </div>
+    
+    <div class="site-links f6 db dtc-l v-mid w-100 w-67-l tc tr-l pv2 pv0-l mv0">
+      
+    </div>
+  </nav>
+  <script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</footer>
+
+      </div>
+    </body>
+</html>

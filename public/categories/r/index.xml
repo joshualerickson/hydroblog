@@ -6,7 +6,16 @@
     <description>Recent content in R on hydroblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 12 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/categories/r/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 06 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/categories/r/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>remr</title>
+      <link>https://hydroblog.netlify.com/blog/2022-05-06-remr/</link>
+      <pubDate>Fri, 06 May 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2022-05-06-remr/</guid>
+      <description>Taking a look at the {remr} and how one might use it for art or analysis.</description>
+    </item>
+    
     <item>
       <title>Hydrology Distributions: Part II</title>
       <link>https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/</link>
