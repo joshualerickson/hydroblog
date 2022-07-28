@@ -179,6 +179,16 @@ ParallelWith {wildlandhydRo} it is really easy to get station data in parallel.
     </item>
     
     <item>
+      <title>Slides-trexr Talk</title>
+      <link>https://hydroblog.netlify.com/talk/2022-07-27-slides-trexr-talk/</link>
+      <pubDate>Thu, 27 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/talk/2022-07-27-slides-trexr-talk/</guid>
+      <description>Here is a link to the talk I just did about the R package {trexr}. Hope you enjoy!
+ https://www.hydroblog.org/slides/trexr_talk/trexr_talk.html</description>
+    </item>
+    
+    <item>
       <title>Ridges &amp; Wes Anderson</title>
       <link>https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/</link>
       <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
