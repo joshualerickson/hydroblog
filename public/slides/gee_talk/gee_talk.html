@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Google Earth Engine   (GEE)   applications in hydrology</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Josh Erickson" />
+    <script src="gee_talk_files/header-attrs/header-attrs.js"></script>
+    <link href="gee_talk_files/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="gee_talk_files/tile-view/tile-view.js"></script>
+    <link href="gee_talk_files/tachyons/tachyons.min.css" rel="stylesheet" />
+    <script src="gee_talk_files/clipboard/clipboard.min.js"></script>
+    <link href="gee_talk_files/shareon/shareon.min.css" rel="stylesheet" />
+    <script src="gee_talk_files/shareon/shareon.min.js"></script>
+    <link href="gee_talk_files/xaringanExtra-shareagain/shareagain.css" rel="stylesheet" />
+    <script src="gee_talk_files/xaringanExtra-shareagain/shareagain.js"></script>
+    <script src="gee_talk_files/fabric/fabric.min.js"></script>
+    <link href="gee_talk_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="gee_talk_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#FF0000"],"pen_size":3,"eraser_size":30}) })</script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Google Earth Engine <br> <span style="font-size: 30px">(GEE)</span> <br> <span style="font-size: 30px">applications in hydrology</span>
+### <span style="color: black; font-size: 25px">Josh Erickson</span>
+### <span style="color: black; font-size: 25px">USDA-Forest Service</span>
+
+---
+
+
+
+
+
+
+
+## About Me
+
+- Hydrologist (day job)
+- Remote Sensing Analyst (detail)
+- Geoscience and Math background
+- Focus is leveraging computing platforms (R, Python, GEE) for resource management work.
+
+.me-box[]
+---
+
+
+## Goals
+--
+
+- Leave having an idea of what GEE is and what it can do  
+
+&lt;br&gt;
+&lt;img src="gee_talk_files/images/gee.png" height="50px" right: 25%/&gt;
+&lt;br&gt;
+&lt;br&gt;
+- Most importantly, some applications in hydrology  
+
+.water-box[]
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+- What, how, apply. 
+
+---
+
+## What is GEE?
+--
+
+- free open source software .blue[(FOSS)]
+
+- Inherently parrallel; uses a .blue[petabyte] scale server ~ 1,000,000 GB
+
+- allows .blue[clients (users)] to ask for products (Image/ImageCollections)
+
+- And then will process those requests .blue[server-side]
+
+--
+
+&lt;img src="gee_talk_files/images/client_server.png" height="325px" /&gt;
+
+---
+
+
+## Advantages
+--
+
+- Extensive collections (e.g. imagery, geophysical, weather/climate models, etc.)
+
+
+- Reducing big ImageCollections 
+
+- Fast, really really fast!
+
+- Lots of documentation, apps, tutorials, research, etc.
+
+--
+
+.ferrari-box[
+
+]
+
+--
+
+## Disadvantages (IMO)
+
+--
+
+- Can be 'coding' barrier entry
+
+- Can be abstract-ish, i.e. remote sensing
+
+- Research buzz...
+
+.problems-box[]
+
+
+
+---
+
+
+## Reduce Image (The how?)
+
+--
+
+A big advantage of earth engine is to reduce large image collections fast. 
+
+.bg-washed-green.b--dark-green.ba.bw2.br3.shadow-5.ph4.mt5[
+For example, let's say we want the median PRISM monthly precipitation from 2010-present]
+&lt;br&gt;
+&lt;br&gt;
+&lt;center&gt;
+&lt;img src="gee_talk_files/images/precip_intro.png" height="200px" align="bottom" /&gt;
+&lt;/center&gt;
+
+---
+
+
+## Reduce Image (The how?)
+
+&lt;img src="gee_talk_files/images/client_server.png" height="100px" /&gt;
+
+.pull-left[
+&lt;center&gt;
+
+&lt;img src="gee_talk_files/images/reducer.png" height="400px" /&gt;
+
+&lt;/center&gt;
+]
+
+--
+
+.pull-right[
+
+&lt;center&gt;
+
+&lt;img src="gee_talk_files/images/prism.png" height="200px" /&gt;
+
+&lt;/center&gt;
+]
+
+---
+
+
+## Applying the Concept
+Reduce Regions is the key; points and polys. &lt;br&gt;
+Very similar to `extract` in ArcGIS
+.pull-left[
+
+&lt;img src="gee_talk_files/images/prism_zoom2.png" height="250px" /&gt;
+
+]
+
+--
+
+.pull-right[
+.rrhucs-box[]
+]
+
+---
+
+## Applying the Concept
+Reduce Regions is the key; points and polys. &lt;br&gt;
+Very similar to `extract` in ArcGIS
+.pull-left[
+
+&lt;img src="gee_talk_files/images/prism_pts.png" height="225px" /&gt;
+
+]
+
+--
+
+.pull-right[
+.rrPts-box[]
+]
+
+---
+
+## You can provide any geometry
+
+- For example, proposed land use activities.
+
+&lt;img src="gee_talk_files/figure-html/unnamed-chunk-1-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Layer units by images
+
+.units-box[]
+
+---
+
+## Now we have zonal stats for each unit!
+
+.unitsrr-box[]
+
+---
+
+## What about time series?
+Not going to get too crazy but you can.
+
+--
+
+`\(\hat{Y}_t = a_0 + \sum_{n=1}^\infty (a_n\cos nx +b_n\sin nx)\)`
+
+.deep-box[]
+
+--
+
+Just keep it simple
+&lt;br&gt;
+
+&lt;img src="gee_talk_files/images/npp_ts.png" width="35%" style="display: block; margin: auto auto auto 0;" /&gt;
+
+---
+
+# Banding
+
+This is a way to keep a certain temporal feature, e.g. year, month, week, etc.
+
+.pull-left[
+
+&lt;img src="gee_talk_files/images/reducer.png" height="425px" /&gt;
+
+]
+
+--
+
+.pull-right[
+&lt;img src="gee_talk_files/images/to_bands.png" height="300px" /&gt;
+]
+
+---
+# Example with previous points
+
+.pull-left[
+
+&lt;img src="gee_talk_files/images/prism_pts.png" height="225px" /&gt;
+
+]
+
+--
+
+.pull-right[
+
+
+&lt;img src="gee_talk_files/images/precip_time.png" width="100%" /&gt;
+
+]
+
+---
+# Example with previous points
+
+&lt;center&gt;
+&lt;img src="gee_talk_files/images/precip_month.png" height="500px" /&gt;
+&lt;/center&gt;
+
+---
+
+# Animation with time series
+
+&lt;center&gt;
+&lt;img src="gee_talk_files/images/prism_18_19.gif" height="500px" /&gt;
+&lt;/center&gt;
+
+---
+
+# Animation with time series
+
+&lt;center&gt;
+&lt;img src="gee_talk_files/images/ndvi_18_19.gif" height="500px" /&gt;
+&lt;/center&gt;
+
+---
+# Animation with time series
+
+&lt;center&gt;
+&lt;img src="gee_talk_files/images/drought.gif" height="500px" /&gt;
+&lt;/center&gt;
+
+---
+
+# Animation with time series
+
+&lt;center&gt;
+&lt;img src="gee_talk_files/images/jbratt.gif" height="500px" /&gt;
+&lt;/center&gt;
+
+---
+
+# Into the future?
+&lt;center&gt;
+&lt;img src="https://media.giphy.com/media/ZZkCo8zKWtt2ZgozfX/giphy.gif" height="500px" /&gt;
+&lt;/center&gt;
+
+---
+# Into the future?
+
+There are available climate models in GEE. NASA Earth Exchange.
+
+&lt;center&gt;
+&lt;img src="gee_talk_files/images/climate.png" height="500px" /&gt;
+&lt;/center&gt;
+
+---
+# Into the future?
+
+What about the units we looked at?
+
+--
+
+.pull-left[
+&lt;img src="gee_talk_files/images/units.png" height="300px" /&gt;
+]
+
+
+--
+
+.pull-right[
+&lt;img src="gee_talk_files/images/future_temp_box.png" height="400px" /&gt;
+]
+
+---
+# Wrapping Up
+
+--
+
+- GEE is a way to .blue[reduce] big image collections
+
+.pull-right[
+
+&lt;center&gt;
+
+&lt;img src="gee_talk_files/images/prism.png" height="75px" /&gt;
+
+&lt;/center&gt;
+]
+
+--
+
+- You can do it from local to regional .blue[scale]
+
+.pull-right[
+
+&lt;center&gt;
+
+&lt;img src="gee_talk_files/images/units.png" height="75px" /&gt;
+
+&lt;/center&gt;
+]
+
+--
+
+- Climate projections into the .blue[future]
+
+.pull-right[
+
+&lt;center&gt;
+
+&lt;img src="gee_talk_files/images/climate.png" height="75px" /&gt;
+
+&lt;/center&gt;
+]
+
+---
+
+# Wrapping Up
+
+- slides available at https://hydroblog.org/slides/gee_talk/gee_talk.html
+
+- some apps from Justin Braaten; https://emaprlab.users.earthengine.app/view/lt-gee-time-series-animator, https://t.co/xqUN7W8KBa?amp=1, https://t.co/3fTl0wI8Gh?amp=1
+&lt;center&gt;
+.end-box[]
+&lt;/center&gt;
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
