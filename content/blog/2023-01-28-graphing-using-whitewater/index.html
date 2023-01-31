@@ -1,0 +1,116 @@
+---
+title: "Graphing Using whitewater"
+author: "Josh Erickson"
+date: '2023-01-28'
+slug: []
+categories:
+- R
+- Hydrology
+tags:
+- dataRetrieval
+- Hydrology
+- R
+- https://github.com/USGS-R/dataRetrieval
+subtitle: ''
+excerpt: ''
+draft: yes
+series: null
+layout: single
+---
+
+
+
+<div id="intro" class="section level2">
+<h2>Intro</h2>
+<p>whitewater was originally developed for parallel processing but has always had some data wrangling and tranformations to help visualise USGS NWIS data quickly. In this post we’ll use the advantages of whitewater to look at a site graphically a few different ways (tiled, ). Then we can take these functional programming advantages and use within a reactive framework like R shiny.</p>
+</div>
+<div id="get-data" class="section level2">
+<h2>Get Data</h2>
+<p>Let’s load the packages. We’ll use {ggfx} to give it an extra effects but you don’t necessarily need it.</p>
+<pre class="r"><code>library(whitewater)
+library(dplyr)
+library(ggplot2)
+library(ggfx)</code></pre>
+<p>Now let’s get a sites daily value. We’ll get a couple different flow regimes (snowmelt vs precipitation).</p>
+<pre class="r"><code>yaak_dv &lt;- ww_dvUSGS(&#39;12304500&#39;,
+                     wy_month = 10)
+
+elwah_dv &lt;- ww_dvUSGS(&#39;12045500&#39;,
+                                wy_month = 10)</code></pre>
+</div>
+<div id="raster-graph" class="section level2">
+<h2>Raster Graph</h2>
+<p>This is an approach I saw during a presentation and can be accessed as well through the <a href="https://waterwatch.usgs.gov/index.php?id=wwchart_rastergraph">Raster-Hydrograph</a> builder online.</p>
+<p>Below is the code to create raster-hydrograph plot using {ggplot2}. What’s nice is the <code>wy_doy</code> and <code>month_abb</code> that whitewater returns. This let’s us stack the water years and the day of the year like a raster or tile. This is essentially a heatmap by water and day of year filled by flow value.</p>
+<pre class="r"><code>raster_hydrograph &lt;- function(daily_values) {
+  
+xbreaks &lt;- c(1, 32,  62,  93, 124, 152, 183, 213, 244, 274, 305, 336)
+
+dup_labels &lt;- function(x) daily_values$month_abb[match(x, daily_values$wy_doy)]
+
+daily_values %&gt;% 
+  ggplot(aes(wy_doy, wy)) + 
+  with_outer_glow(geom_tile(aes(fill = Flow))) +
+  scale_y_continuous( breaks = seq(min(daily_values$wy),
+                                  max(daily_values$wy),
+                                  by = 10),
+                     name = &#39;Water Year&#39;) +
+  scale_x_continuous(breaks = xbreaks,
+                     name = &#39;Day of Year&#39;,
+                     sec.axis = dup_axis(labels = dup_labels, name = NULL),
+                     expand = c(0,0)) + 
+  scale_fill_gradientn(colors = hcl.colors(11, palette = &#39;Spectral&#39;),
+                       labels = scales::comma,
+                       name = &#39;Discharge (cfs)&#39;,
+                       trans = &#39;log&#39;) +
+  labs(title = &#39;Raster-Hydrograph of Daily Discharge (cfs)&#39;,
+       subtitle = paste0(&#39;at USGS site &#39;, daily_values[1,]$site_no,
+                         &#39; &#39;,
+                         daily_values[1,]$Station)) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, size = 8),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.background = element_rect(fill = NA),
+        panel.ontop = T, 
+        axis.ticks.x = element_blank(),
+        axis.text.x.bottom = element_text(vjust = 5.5,face = &#39;bold&#39;), 
+        axis.text.x.top = element_text(hjust = -.45, vjust = -5.5, face = &#39;bold&#39;))
+}</code></pre>
+<p>Now we can plot any station from the <code>ww_dvUSGS()</code> functions. Notice how different the two graphs are! This is a reflection of the different flow regimes and how distribution and timing of runoff matters.</p>
+<pre class="r"><code>raster_hydrograph(yaak_dv)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
+<pre class="r"><code>raster_hydrograph(elwah_dv)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-2.png" width="960" /></p>
+</div>
+<div id="hysteresis" class="section level2">
+<h2>Hysteresis</h2>
+<p>Another way to view these flow regime differences is through a lagged version of itself. In other words, a bivariate plot of flow and its lagged flow. In a basic sense the flow will make clockwise circles. The width of these circles can help understand the response of the system, i.e. wider meaning flashier and narrow meaning slow steady increases.</p>
+<p>To do this we’ll need to create som lagged versions of the daily value tables.</p>
+<pre class="r"><code>lagged_yaak &lt;- yaak_dv %&gt;% mutate(flow_lag = lag(Flow, 1))
+lagged_elwah &lt;- elwah_dv %&gt;% mutate(flow_lag = lag(Flow, 1))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="960" /></p>
+<p>Now let’s create a function like we did before to look at all the months.</p>
+<pre class="r"><code>hysteresis_plot &lt;- function(daily_values, lag_days = 1){
+  
+  lagged_df &lt;- daily_values %&gt;% mutate(flow_lag = lag(Flow, lag_days))
+  
+lagged_df %&gt;% 
+  ggplot(aes(Flow, flow_lag)) + 
+  geom_path(aes(color = wy), 
+            alpha = 0.1,
+            arrow = ggplot2::arrow(
+        length = ggplot2::unit(1.5, &quot;mm&quot;),
+        ends = &quot;last&quot;
+      )) +
+  geom_abline(slope = 1, intercept = 0) + 
+  facet_wrap(~month_abb, scales = &#39;free&#39;) +
+  theme_bw()
+
+}</code></pre>
+<pre class="r"><code>hysteresis_plot(yaak_dv)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="960" /></p>
+<pre class="r"><code>hysteresis_plot(elwah_dv)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-2.png" width="960" /></p>
+</div>
