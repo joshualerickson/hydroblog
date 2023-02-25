@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head>
+  
+                           
+     
+
+
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.110.0">
+<title>ANCOVA | hydroblog</title>
+
+
+<meta property="twitter:site" content="@joshualerickson">
+<meta property="twitter:creator" content="@joshualerickson">
+
+
+
+
+
+
+
+  
+    
+  
+<meta name="description" content="A modern, beautiful, and easily configurable blog theme for Hugo.">
+
+
+<meta property="og:site_name" content="hydroblog">
+<meta property="og:title" content="ANCOVA | hydroblog">
+<meta property="og:description" content="A modern, beautiful, and easily configurable blog theme for Hugo." />
+<meta property="og:type" content="page" />
+<meta property="og:url" content="https://hydroblog.netlify.com/blog/ancova/ancova_rmd/ancova/" />
+<meta property="og:locale" content="en">
+
+
+
+
+    
+        <meta property="og:image" content="https://hydroblog.netlify.com/blog/sidebar-listing.jpg" >
+        <meta property="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="https://hydroblog.netlify.com/blog/sidebar-listing.jpg" >
+    
+    
+  <meta itemprop="name" content="ANCOVA">
+<meta itemprop="description" content="TL;DRANCOVA is a mix of both linear regression and a t-test/ANOVA and is in the family of General Linear Models (GLM). It can help you correct for Type II error, by increasing your power through covariates. This is important if you can’t control for covariates in the experimental design. ANOCOVA let’s you account for this in the analysis. It still uses the same fundamentals of NHST (Null Hypothesis Significance Testing) and compares the variance explained to the variance unexplained aka F-test.">
+
+<meta itemprop="wordCount" content="1382">
+<meta itemprop="keywords" content="" />
+  
+  <!--[if IE]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <link rel="shortcut icon" href="/img/water.ico" type="image/x-icon">
+  <link rel="icon" href="/img/water.ico" type="image/x-icon">
+  
+  
+  <link rel="stylesheet" href="/style.main.min.508aa34bb4fa7ebfddd6892a4ec251e1ce46ad0e0c5be6380abc84336f01b14e.css" integrity="sha256-UIqjS7T6fr/d1okqTsJR4c5GrQ4MW&#43;Y4CryEM28BsU4=" media="screen">
+  
+  
+  <script src="/panelset.min.ed1ac24b6e16f4e2481e3d1d098ae66f5bc77438aef619e6e266d8ac5b00dc72.js" type="text/javascript"></script>
+  
+  
+  <script src="/main.min.7140673bd85439c1260ddfc4fa63d13f541eed4c4e37099a4925541959e4ebeb.js" type="text/javascript"></script>
+</head>
+<body>
+      <div class="grid-container">
+<header class="site-header pt4 pb2 mb4 bb b--transparent ph5 headroom z-max" role="banner">
+  <nav class="site-nav db dt-l w-100" role="navigation">
+    <a class="site-brand db dtc-l v-mid link no-underline w-100 w-33-l tc tl-l" href="https://hydroblog.netlify.com/" title="Home">
+      <img src="/img/water_blue.png" class="dib db-l h2 w-auto" alt="hydroblog">
+    </a>
+    <div class="site-links db dtc-l v-mid w-100 w-47-l tc tr-l mt3 mt0-l ttu tracked">
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 " href="/about/" title="About hydroblog">About</a>
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 active" href="/blog/" title="Blog">Blog</a>
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 " href="/project/" title="Project Portfolio">Projects</a>
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 " href="/talk/" title="Talks">Talks</a>
+      
+      
+    </div>
+  </nav>
+</header>
+
+<main class="page-main pa4" role="main">
+  <section class="page-content mw7 center">
+    <article class="post-content pa0 ph4-l">
+      <header class="post-header">
+        <h1 class="f1 lh-solid measure-narrow mb3 fw4">ANCOVA</h1>
+        
+        <p class="f6 measure lh-copy mv1">By Josh Erickson</p>
+        <p class="f7 db mv0 ttu">January 1, 0001</p>
+
+      
+
+      </header>
+      <section class="post-body pt5 pb4">
+        
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="tldr" class="section level2">
+<h2>TL;DR</h2>
+<p>ANCOVA is a mix of both linear regression and a t-test/ANOVA and is in the family of General Linear Models (GLM). It can help you correct for Type II error, by increasing your power through covariates. This is important if you can’t control for covariates in the experimental design. ANOCOVA let’s you account for this in the analysis. It still uses the same fundamentals of NHST (Null Hypothesis Significance Testing) and compares the variance explained to the variance unexplained aka F-test. However, it helps <em>adjust</em> means in the F-test by decreasing the variance unexplained (Type II error) which in turn increases your F value. In addition, since it uses both linear regression and t-test/ANOVA you acquire a lot of assumptions along way, which can be unreasonable with most data. But, if your data follows these assumptions then it is a great way to account for Type II error and compare multiple groups.</p>
+</div>
+<div id="intro" class="section level2">
+<h2>Intro</h2>
+<p>In this post we’ll go over the <em>math</em> behind ANCOVA (Analysis of Covariance) and see how the final output of a function like <code>sasGM::GLM()</code> or <code>aov()</code> calculates the results. ANCOVA is very similar to ANOVA (Analysis of Variance) and if you want more on that topic please see this <a href="https://www.hydroblog.org/blog/anova/anova/2021-08-17/">post</a>. Just like ANOVA or t-test, ANCOVA requires a continuous dependant variable (DV) and a categorical independent variable (IV) but ANCOVA let’s us add some continuous <em>covariates</em> to the equation as well. This is this coupled effect of linear regression and t-test/ANOVA. Why might we want to do this? Well, sometimes in experimental design we can’t (or it’s hard to) control for a random variable but we could measure that variable along the way or glean from the experiment. In other words, we get the variance attributed to these random variables through analysis rather than from experimental design. This can be thought of as ‘adjusting’ or ‘controlling’ the means between groups. The goal is to see how and why this happens. Below we will try and learn about these topics,</p>
+<ul>
+<li>Quick overview of t-test/linear regression<br />
+</li>
+<li>Start adding covariates</li>
+<li>Walk through results</li>
+</ul>
+<p>My goal is to add as much visualization as possible as I think that will help capture the interplay between linear regression and ANCOVA. I’ll also skim over some of the assumptions and won’t go into too much detail albeit very important.</p>
+<div id="t-test-and-linear-regression" class="section level3">
+<h3>t-test and Linear Regression</h3>
+<p>Why the heck are we going to talk about a t-test and linear regression for ANCOVA? Well, they are both for ANCOVA which is what we’ll be building up to so if you understand a t-test and linear regression then ANCOVA will make a little bit more sense (IMO). First we’ll go over linear regression and then show how that is really similar to a t-test.</p>
+<div id="linear-regression" class="section level4">
+<h4>Linear Regression</h4>
+<p>Linear regression is a powerful technique to use when you want to understand a relationship between a DV and a IV; however, it needs to follow certain assumptions: must be linear, normality of residuals, iid, homoscedastic, multicollinearity (more than one IV). As you can see, we are taking on a lot of assumptions with linear regression but remember if your data doesn’t violate these then it is very powerful (low variance)! Let’s bring in some data and start with a simple linear regression example. We’ll be looking at soil surveys with post harvest detrimental soil disturbance (DSD) results. We want to see if there is a relationship between precipitation (IV) and DSD (DV).</p>
+</div>
+<div id="data-visualizing" class="section level4">
+<h4>Data Visualizing</h4>
+<p>Let’s plot the data and see what’s going on. We would guess that if you increase your precipitation you potentially would increase the DSD due to possibly more residual soil moisture content.</p>
+<p><img src="/blog/ancova/ancova_rmd/ancova_files/figure-html/unnamed-chunk-2-1.png" width="960" /></p>
+<p>As you can see from the plot above it looks like there’s a relationship but how can we measure that? Like, how could we say that there is a relationship or not mathmatically? Well, within GLM’s there is a nice way to test this with an F test. It is important t note though that this is not the only way and you can also look into other methods: Pearson, Kendall or Spearman correlation coefficients or <span class="math inline">\(R^2\)</span>. We’ll be focusing on the F test because it’ll relate to the t-test/ANOVA. The F test basically compares the variance explained by the variance unexplained in the DV. This is so close to <span class="math inline">\(R^2\)</span> but I won’t get distracted… What we’ll do is walk through this and solve for the equation below. Let’s look at the Pearson correlation coefficient.<br />
+<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a4cc9fe9045094c94ef2804c44d8ea098af8173f" class="mwe-math-fallback-image-inline" aria-hidden="true" style="vertical-align: -3.338ex; width:29.955ex; height:7.676ex;" alt="{\displaystyle \sum _{i=1}^{K}\sum _{j=1}^{n_{i}}\left(Y_{ij}-{\bar {Y}}_{i\cdot }\right)^{2}/(N-K),}">
+<span class="math display">\[
+{\displaystyle F=\frac{\text{explained variance}}{\text{unexplained variance}}= \frac{\sum_{i=1}^{K}n_{i}({\bar{Y}}_{i\cdot}-{\bar {Y}})^{2}/(K-1)}{\sum _{i=1}^{K}\sum _{j=1}^{n_{i}}\left(Y_{ij}-{\bar {Y}}_{i\cdot }\right)^{2}/(N-K)}}
+\]</span></p>
+<p>Ok, too much? Yes, too much! Let’s start with the numerator and work through that trying to understand why we are saying <em>explained variance</em>. The numerator is essentially the variance that we can explain from both the DV and the fit. Let’s break this up into to ideas: sum of the squares of the DV SS(mean) and sum of the squares of the fit SS(fit). Let’s visualize what these would look like with our data.</p>
+<p><img src="/blog/ancova/ancova_rmd/ancova_files/figure-html/unnamed-chunk-3-1.png" width="960" /></p>
+<p>In the graph above you can see that we are just taking all of the points and finding their distance to the overall DV mean, squaring, then summing them up. This is what the equation would look like below.</p>
+<p><span class="math display">\[
+{\displaystyle \text{SS(mean)} = \sum_{i=1}^{n}{(x_i-\overline{x})^2}}
+\]</span>
+Now what would the SS(fit) look like? Well below you see we just do the same thing as above except now we take the distance to the fit line.</p>
+<p><img src="/blog/ancova/ancova_rmd/ancova_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+<p>Here’s what the equation would look like.</p>
+<p><span class="math display">\[
+{\displaystyle \text{SS(fit)} = \sum_{i=1}^{n}{(x_i-\hat{y})^2}}
+\]</span>
+Now if we take these two equations and subtract the error of the fit from the error of the mean we would get the explained error right? Yes, well we need to account for <span class="math inline">\(N\)</span> and <span class="math inline">\(K\)</span> but essentially that is what we’re doing. Now we need to solve for the unexplained variance in the denominator. Well, lucky for us that is SS(fit)! So, now let’s bring it all together.<br />
+<span class="math display">\[
+{\displaystyle F= \frac{\sum_{i=1}^{K}n_{i}({\bar{Y}}_{i\cdot}-{\bar {Y}})^{2}/(K-1)}{\sum _{i=1}^{K}\sum _{j=1}^{n_{i}}\left(Y_{ij}-{\bar {Y}}_{i\cdot }\right)^{2}/(N-K)}=\frac{\text{SS(mean)}-\text{SS(fit)}/(K-1)}{\text{SS(fit)/(N-K)}}}
+\]</span></p>
+<pre class="r"><code>sasLM::GLM(dsd ~ slope + group, Data = soil_dsd)</code></pre>
+<pre><code>## $ANOVA
+## Response : dsd
+##                  Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## MODEL             2  334.91 167.453  42.194 &lt; 2.2e-16 ***
+## RESIDUALS       379 1504.12   3.969                      
+## CORRECTED TOTAL 381 1839.03                              
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## $`Type I`
+##       Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## slope  1 265.768 265.768  66.967 4.219e-15 ***
+## group  1  69.139  69.139  17.421 3.718e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## $`Type II`
+##       Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## slope  1 229.471 229.471  57.821 2.285e-13 ***
+## group  1  69.139  69.139  17.421 3.718e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## $`Type III`
+##       Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## slope  1 229.471 229.471  57.821 2.285e-13 ***
+## group  1  69.139  69.139  17.421 3.718e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## $Parameter
+##              Estimate Estimable Std. Error  Df t value  Pr(&gt;|t|)    
+## (Intercept)    4.1122         0    0.22321 379 18.4227 &lt; 2.2e-16 ***
+## slope          0.0756         1    0.00994 379  7.6040 2.285e-13 ***
+## grouptire     -0.8575         0    0.20544 379 -4.1739 3.718e-05 ***
+## grouptractor   0.0000         0    0.00000 379                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>t.test(dsd~group, data = soil_dsd)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  dsd by group
+## t = -4.8019, df = 360.73, p-value = 2.308e-06
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -1.4810741 -0.6204224
+## sample estimates:
+##    mean in group tire mean in group tractor 
+##              4.354968              5.405716</code></pre>
+<p>So just like with ANCOVA we want to see if there is a difference between groups. Side-bar, if you just have two groups you use a t-test and if you have more than two you use ANOVA but if you want to control for variables then you can use ANCOVA (2 or more groups). So let’s bring in some data and see what we are after.</p>
+</div>
+</div>
+</div>
+
+        
+        <details closed class="f6 fw7 input-reset">
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Posted on:</dt>
+    <dd class="fw5 ml0">January 1, 0001</dd>
+  </dl>
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Length:</dt>
+    <dd class="fw5 ml0">7 minute read, 1382 words</dd>
+  </dl>
+  
+  
+  
+  <dl class="f6 lh-copy">
+    <dt class="fw7">See Also:</dt>
+    
+  </dl>
+</details>
+
+      </section>
+      <footer class="post-footer">
+        <div class="post-pagination dt w-100 mt4 mb2">
+  
+  
+    <a class="prev dtc pr2 tl v-top fw6"
+    href="https://hydroblog.netlify.com/blog/exploring-catchments/">&larr; Exploring Catchments</a>
+  
+  
+  
+</div>
+
+      </footer>
+    </article>
+    
+      
+<div class="post-comments pa0 pa4-l mt4">
+
+</div>
+
+
+    
+  </section>
+</main>
+<footer class="site-footer pv4 bt b--transparent ph5" role="contentinfo">
+  <nav class="db dt-l w-100">
+    <p class="site-copyright f7 db dtc-l v-mid w-100 w-33-l tc tl-l pv2 pv0-l mv0 lh-copy">
+      &copy; 2023 RStudio, Anywhere
+      <span class="middot-divider"></span>
+      Made with <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title"><a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/hugo-apero/" rel="dct:source">Hugo Apéro</a></span>.
+      <br />
+      
+Based on <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title"><a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/formspree/blogophonic-hugo" rel="dct:source">Blogophonic</a></span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://formspree.io" property="cc:attributionName" rel="cc:attributionURL">Formspree</a>.
+    </p>
+    
+    <div class="site-social-links db dtc-l v-mid w-100 w-33-l tc pv2 pv0-l mv0">
+      <div class="social-icon-links" aria-hidden="true">
+  
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <a class="link dib h1 w1 ml0 mr2 f6 o-90 glow" href="https://github.com/joshualerickson" title="github" target="_blank" rel="noopener">
+      <i class="fab fa-github fa-lg fa-fw"></i>
+    </a>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <a class="link dib h1 w1 ml0 mr2 f6 o-90 glow" href="https://twitter.com/joshualerickson" title="twitter" target="_blank" rel="noopener">
+      <i class="fab fa-twitter fa-lg fa-fw"></i>
+    </a>
+  
+</div>
+
+    </div>
+    
+    <div class="site-links f6 db dtc-l v-mid w-100 w-67-l tc tr-l pv2 pv0-l mv0">
+      
+    </div>
+  </nav>
+  <script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</footer>
+
+      </div>
+    </body>
+</html>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>https://github.com/USGS-R/dataRetrieval on hydroblog</title>
+    <link>https://hydroblog.netlify.com/tags/https/github.com/usgs-r/dataretrieval/</link>
+    <description>Recent content in https://github.com/USGS-R/dataRetrieval on hydroblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language><atom:link href="https://hydroblog.netlify.com/tags/https/github.com/usgs-r/dataretrieval/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Graphing Using whitewater</title>
+      <link>https://hydroblog.netlify.com/blog/2023-01-28-graphing-using-whitewater/</link>
+      <pubDate>Sat, 28 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2023-01-28-graphing-using-whitewater/</guid>
+      <description>IntroGet DataRaster GraphHysteresis3D SpaghettiConclusionReferencesIntro{whitewater} was originally developed for parallel processing but has always had some data wrangling and transformations sugar that can help visualize USGS NWIS data effectively. In this post we’ll use the advantages of {whitewater} to look at a site graphically a few different ways (tiled, hysteresis, 3D spaghetti).
+Get DataLet’s load the packages. We’ll use {ggfx} to give it an extra effects but you don’t necessarily need it.</description>
+    </item>
+    
+    <item>
+      <title>Data Retrieval</title>
+      <link>https://hydroblog.netlify.com/blog/data-retrieval/</link>
+      <pubDate>Thu, 20 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/data-retrieval/</guid>
+      <description>This is a quick peek into the perks of using R and USGS package dataRetrieval. This package is pretty slick and has a lot of functions associated with it. We will just look into some basic functions like readNWISdv to get some USGS gauging data and then do some quick exploratory data analysis to using the tidyverse.
+First, load the packages (or install) from the library().
+library(dataRetrieval)library(tidyverse)Now we can start bringing in some river data.</description>
+    </item>
+    
+    <item>
+      <title>USGS, GEE and R. What?!?</title>
+      <link>https://hydroblog.netlify.com/blog/usgs-rgee-and-r-what/</link>
+      <pubDate>Thu, 20 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/usgs-rgee-and-r-what/</guid>
+      <description>Over the next month I’m going to be posting some quick examples from a few R packages that I’ve stumbled into. One is the dataRetrieval package by USGS. In short, it let’s you download any gauging station data across the country right into R and in a tidy format. How sweet is that? USGS also has other packages like the suite of smwr packages. These packages provide the user with some commonly used (but often tedious) functions used in hydrology, e.</description>
+    </item>
+    
+  </channel>
+</rss>

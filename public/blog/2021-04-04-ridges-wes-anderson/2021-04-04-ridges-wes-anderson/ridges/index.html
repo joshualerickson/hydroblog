@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head>
+  
+                           
+     
+
+
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.110.0">
+<title>Ridges &amp; Wes Anderson | hydroblog</title>
+
+
+<meta property="twitter:site" content="@joshualerickson">
+<meta property="twitter:creator" content="@joshualerickson">
+
+
+
+
+
+
+
+  
+    
+  
+<meta name="description" content="This is a quick exploration into the {wesanderson} and {ggridges} using USGS daily data.">
+
+
+<meta property="og:site_name" content="hydroblog">
+<meta property="og:title" content="Ridges &amp; Wes Anderson | hydroblog">
+<meta property="og:description" content="This is a quick exploration into the {wesanderson} and {ggridges} using USGS daily data." />
+<meta property="og:type" content="page" />
+<meta property="og:url" content="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/" />
+<meta property="og:locale" content="en">
+
+
+
+
+    
+        <meta property="og:image" content="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/featured.png" >
+        <meta property="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/featured.png" >
+    
+    
+  <meta itemprop="name" content="Ridges &amp; Wes Anderson">
+<meta itemprop="description" content="This is a quick exploration into the {wesanderson} and {ggridges} using USGS daily data."><meta itemprop="datePublished" content="2021-04-04T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2021-04-04T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1246"><meta itemprop="image" content="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/featured.png">
+<meta itemprop="keywords" content="R,Hydrology," />
+  
+  <!--[if IE]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <link rel="shortcut icon" href="/img/water.ico" type="image/x-icon">
+  <link rel="icon" href="/img/water.ico" type="image/x-icon">
+  
+  
+  <link rel="stylesheet" href="/style.main.min.508aa34bb4fa7ebfddd6892a4ec251e1ce46ad0e0c5be6380abc84336f01b14e.css" integrity="sha256-UIqjS7T6fr/d1okqTsJR4c5GrQ4MW&#43;Y4CryEM28BsU4=" media="screen">
+  
+  
+  <script src="/panelset.min.ed1ac24b6e16f4e2481e3d1d098ae66f5bc77438aef619e6e266d8ac5b00dc72.js" type="text/javascript"></script>
+  
+  
+  <script src="/main.min.7140673bd85439c1260ddfc4fa63d13f541eed4c4e37099a4925541959e4ebeb.js" type="text/javascript"></script>
+</head>
+<body>
+      <div class="grid-container single-sidebar">
+<header class="site-header pt4 pb2 mb4 bb b--transparent ph5 headroom z-max" role="banner">
+  <nav class="site-nav db dt-l w-100" role="navigation">
+    <a class="site-brand db dtc-l v-mid link no-underline w-100 w-33-l tc tl-l" href="https://hydroblog.netlify.com/" title="Home">
+      <img src="/img/water_blue.png" class="dib db-l h2 w-auto" alt="hydroblog">
+    </a>
+    <div class="site-links db dtc-l v-mid w-100 w-47-l tc tr-l mt3 mt0-l ttu tracked">
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 " href="/about/" title="About hydroblog">About</a>
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 active" href="/blog/" title="Blog">Blog</a>
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 " href="/project/" title="Project Portfolio">Projects</a>
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 " href="/talk/" title="Talks">Talks</a>
+      
+      
+    </div>
+  </nav>
+</header>
+
+<main class="page-main pa4" role="main">
+  <section class="page-content mw7 center">
+    <article class="post-content pa0 pr3-l">
+      <header class="post-header">
+        <h1 class="f1 lh-solid measure-narrow mb3 fw4">Ridges &amp; Wes Anderson</h1>
+        <h4 class="f4 mt0 mb4 lh-title measure">This is a quick exploration into the {wesanderson} and {ggridges} using USGS daily data.</h4>
+        <p class="f6 measure lh-copy mv1">By Josh Erickson in <a href="https://hydroblog.netlify.com/categories/r">R</a>  <a href="https://hydroblog.netlify.com/categories/hydrology">Hydrology</a> </p>
+        <p class="f7 db mv0 ttu">April 4, 2021</p>
+      </header>
+      <section class="post-body pt5 pb4">
+        
+<script src="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/index_files/header-attrs/header-attrs.js"></script>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+
+
+<div id="intro" class="section level1">
+<h1>Intro</h1>
+<p>I’ve been wanting to use the <a href="https://github.com/karthik/wesanderson">wesanderson</a> package on some hydrological data using ridge plots (<a href="https://github.com/wilkelab/ggridges">ggridges</a>) and today I had the chance to play around and finally make some graphs. So, we’ll just make some basic graphs that hopefully will be aestetically pleasing and get the message across to stake holders, layperson, or others in your circle.</p>
+<p>First we’ll need a few packages.</p>
+<pre class="r"><code>library(wildlandhydRo)
+library(ggridges)
+library(wesanderson)
+library(tidyverse)</code></pre>
+<p>Now let’s get some USGS streamflow data! We’ll grab the daily values for the Yaak River gauging station near Troy, Montana and also grab some annual and monthly stats using some functions in <a href="https://github.com/joshualerickson/wildlandhydRo">wildlandhydRo</a>. The wildlandhydRo package is a wrapper around <a href="">dataRetrieval</a> but does some tidying and extra stats and also can run in parallel which is nice if your grabbing lots of data, e.g. multiple sites.</p>
+<pre class="r"><code>yaak_dv &lt;- batch_USGSdv(sites = &#39;12304500&#39;,parameterCd = &#39;00060&#39;)
+
+yaak_my &lt;- yaak_dv %&gt;% wymUSGS()</code></pre>
+<p>Sweet, now we have some data we can explore with <code>ggplot2</code> and <code>ggridges</code> to see if there are any density plots that might help us understand the distribution of streamflow at this site.</p>
+<p>Let’s start with monthly stats; like, what’s the monthly distribution of daily streamflow at this site? We’ll bring in the daily values and group by month.</p>
+<pre class="r"><code>yaak_dv %&gt;% 
+  ggplot(aes(Flow, month, group = month)) +
+  geom_density_ridges() + theme_ridges() + labs(title = &#39;Monthly Distribution of Daily Flow; Yaak River near Troy, Montana&#39;)</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/index_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+<p>As you can see, some of the data distributions (months April, May, June) have way different values. This might not be the most aestetically pleasing graph but it does tell us that these months are the high streamflow months on average! What if we just looked at them together? Here, we’ll start to add some color with the <code>wesanderson</code> palette.</p>
+<pre class="r"><code>yaak_dv %&gt;% filter(month %in% c(4,5,6)) %&gt;%
+  ggplot(aes(Flow, month_abb,  fill = stat(x))) +
+  geom_density_ridges_gradient()+ 
+  scale_fill_gradientn(colors = wes_palette(&#39;Darjeeling2&#39;, type = &#39;continuous&#39;)) + theme_ridges()  +
+  labs(title = &#39;Apr-Jun Distribution of Daily Flow; Yaak River near Troy, Montana&#39;, y = &#39;Month&#39;, fill = &#39;Mean Flow (cfs)&#39;)</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/index_files/figure-html/unnamed-chunk-5-1.png" width="960" />
+Or, what’s nice with <code>ggridges</code> is overlaying a cdf gradient and add a rug as well.</p>
+<pre class="r"><code>yaak_dv %&gt;% filter(month %in% c(4,5,6)) %&gt;%
+  ggplot(aes(Flow, month_abb, fill = 0.5 - abs(0.5 - stat(ecdf)))) +
+  stat_density_ridges(geom = &quot;density_ridges_gradient&quot;, calc_ecdf = TRUE,
+    jittered_points = TRUE,
+    position = position_points_jitter(width = 0.05, height = 0),
+    point_shape = &#39;|&#39;, point_size = 1, point_alpha = 1) +
+  scale_fill_gradientn(colors = wes_palette(&#39;Chevalier1&#39;, type = &#39;continuous&#39;)) + theme_ridges()  +
+  labs(title = &#39;Apr-Jun Distribution of Daily Flow; \nYaak River near Troy, Montana&#39;, y = &#39;Month&#39;, fill = &#39;Probability (CDF)&#39;)</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/index_files/figure-html/unnamed-chunk-6-1.png" width="960" /></p>
+<p>Here we can start to see that May has the highest mean Flow and June/April are very similar. What would the other months look like if we left out Apr-Jun? We can do the same as above except leave those months out.</p>
+<pre class="r"><code>yaak_dv %&gt;% filter(!month %in% c(4,5,6)) %&gt;%
+  ggplot(aes(Flow, month_abb, fill = stat(x))) +
+  geom_density_ridges_gradient()+ 
+  scale_fill_gradientn(colors = wes_palette(&#39;Chevalier1&#39;, type = &#39;continuous&#39;)) + theme_ridges()  +
+  labs(title = &#39;July-March Distribution of Daily Flow; \nYaak River near Troy, Montana&#39;, y = &#39;Month&#39;, fill = &#39;Mean Flow (cfs)&#39;) + scale_x_continuous(limits = c(1,1500))</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/index_files/figure-html/unnamed-chunk-7-1.png" width="960" /></p>
+<p>Probably not the best graph to do because we are leaving out a chunk of data, i.e. can be misleading… However, you can play with the <code>scale</code> and <code>rel_min_height</code> argument in <code>geom_density_ridges</code> which might make it possible to include all the months while keeping the balance of message and aesthetics. Let’s see.</p>
+<pre class="r"><code>yaak_dv %&gt;% 
+  group_by(month) %&gt;% mutate(mean_flow = round(mean(Flow),0)) %&gt;% 
+  ungroup() %&gt;% 
+  ggplot(aes(Flow, month_abb)) +
+  geom_density_ridges(aes(fill = mean_flow),scale = 15,rel_min_height = 0.01)+ 
+  scale_fill_gradientn(colors = wes_palette(&#39;Zissou1&#39;, type = &#39;continuous&#39;)) + theme_ridges()  +
+  labs(title = &#39;Monthly Distribution of Daily Flow; \nYaak River near Troy, Montana&#39;, y = &#39;Month&#39;, fill = &#39;Mean Flow (cfs)&#39;)+ scale_x_continuous(limits = c(-500,12000))</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/index_files/figure-html/unnamed-chunk-8-1.png" width="960" /></p>
+<p>Not the best but better than the first try. Play around with these arguments a try and strike a balance with the message and looks. Here, we are showing that May is the month with the highest mean flow and that you decrease mean flow the farther you move away.</p>
+<p>What about across years? Now that we know what month has the highest mean flow we can also use that to our advantage when plotting by year. But first, let’s see how the daily flow looks over the period of record for this gauging station.</p>
+<pre class="r"><code>yaak_dv %&gt;% 
+  group_by(wy) %&gt;% mutate(mean_flow = round(mean(Flow),0)) %&gt;% 
+  ungroup() %&gt;% 
+  ggplot(aes(Flow, wy, group = wy)) +
+  geom_density_ridges(aes(fill = mean_flow),scale = 10,rel_min_height = 0.1)+ 
+  scale_fill_gradientn(colors = wes_palette(&#39;Rushmore1&#39;, type = &#39;continuous&#39;)) + theme_ridges()  +
+  labs(title = &#39;Water Year Distribution of Daily Flow; \nYaak River near Troy, Montana&#39;, y = &#39;Water Year&#39;, fill = &#39;Mean Flow (cfs)&#39;)+ scale_x_continuous(limits = c(1,500))</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/index_files/figure-html/unnamed-chunk-9-1.png" width="960" /></p>
+<p>This is cool to look at but probably not the most revealing or easy to dissecting anything meaningful. What if we only used Apr-Jun daily flow values and looked at the distributions, would that clear anything up?</p>
+<pre class="r"><code>yaak_dv %&gt;% filter(month %in% c(4,5,6)) %&gt;% 
+  group_by(wy) %&gt;% mutate(mean_flow = round(mean(Flow),0)) %&gt;% 
+  ungroup() %&gt;% 
+  ggplot(aes(Flow, wy, group = wy)) +
+  geom_density_ridges(aes(fill = mean_flow),scale = 15,rel_min_height = 0.001)+ 
+  scale_fill_gradientn(colors = wes_palette(&#39;Darjeeling2&#39;, type = &#39;continuous&#39;)) + theme_ridges()  +
+  labs(title = &#39;Water Year Distribution of Daily Flow; \nYaak River near Troy, Montana&#39;,subtitle = &#39;Mean Flow for Apr-Jun&#39;, y = &#39;Water Year&#39;, fill = &#39;Mean Flow (cfs)&#39;)+ scale_x_continuous(limits = c(-500,10000))</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/index_files/figure-html/unnamed-chunk-10-1.png" width="960" /></p>
+<p>Still not the best, so what if we faceted by month!? Let’s try that and see if there are any patterns in streamflow distributions.</p>
+<pre class="r"><code>yaak_dv %&gt;% filter(month %in% c(3,4,5,6,7,8)) %&gt;%  
+  ggplot(aes(Flow, wy, group = wy, fill = stat(x))) +
+  geom_density_ridges_gradient(scale = 25,rel_min_height = 0.1)+ 
+  scale_fill_gradientn(colors = wes_palette(&#39;Darjeeling2&#39;, type = &#39;continuous&#39;)) + 
+theme_ridges() + 
+  labs(title = &#39;Water Year Distribution of Daily Flow; \nYaak River near Troy, Montana&#39;, y = &#39;Water Year&#39;, fill = &#39;Mean Flow (cfs)&#39;, subtitle = &#39;broken into months&#39;) + facet_wrap(~month_abb, scales = &#39;free&#39;, ncol = 2)</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/index_files/figure-html/unnamed-chunk-11-1.png" width="960" /></p>
+<p>This is somewhat more revealing, especially the later summer distributions. It almost looks like July and August are lower than in the past. Let’s look at August.</p>
+<pre class="r"><code>yaak_dv %&gt;% filter(month %in% c(8)) %&gt;% 
+  group_by(wy) %&gt;% mutate(mean_flow = round(mean(Flow),0)) %&gt;% 
+  ungroup() %&gt;% 
+  ggplot(aes(Flow, wy, group = wy)) +
+  geom_density_ridges(aes(fill = mean_flow))+ 
+  scale_fill_gradientn(colors = wes_palette(&#39;Cavalcanti1&#39;, type = &#39;continuous&#39;)) + theme_ridges(grid = F)  +
+  labs(title = &#39;Water Year Distribution of Daily Flow \nby in August; Yaak River near Troy, Montana&#39;, y = &#39;Water Year&#39;, fill = &#39;Mean Flow (cfs)&#39;)</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/index_files/figure-html/unnamed-chunk-12-1.png" width="960" /></p>
+<p>Ok, now let’s look at it with a scatterplot. We’ll use the <code>yaak_my</code> data we grabbed at the beginning. Be careful when applying smoothing parameters and always remember to be in ‘exploratory’ mode not ‘confirmatory’ mode.</p>
+<pre class="r"><code>yaak_my %&gt;% filter(month_abb == &#39;Aug&#39;) %&gt;% 
+  pivot_longer(c(&#39;Maximum&#39;, &#39;Minimum&#39;, &#39;Median&#39;)) %&gt;% 
+  ggplot(aes(wy, value, color = name)) + geom_line() + 
+  scale_color_manual(values = wes_palette(&#39;Darjeeling1&#39;)) +
+  geom_smooth() + 
+  facet_wrap(~name, scales = &#39;free&#39;) + 
+  labs(color = &#39;Stats&#39;, title = &#39;Period of Record August Stats at \nYaak River near Troy, MT&#39;, y = &#39;Discharge (cfs)&#39;, x = &#39;Water Year&#39;)</code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/index_files/figure-html/unnamed-chunk-13-1.png" width="960" /></p>
+<pre class="r"><code>library(ggstream)
+
+yaak_my %&gt;% filter(month_abb == &#39;Aug&#39;) %&gt;% 
+  pivot_longer(c(&#39;Maximum&#39;, &#39;Minimum&#39;, &#39;Median&#39;, &#39;Mean&#39;)) %&gt;% 
+  ggplot(aes(wy, value, fill = name, color = name, label = name)) + 
+    geom_stream(extra_span = 0.013,bw = 0.8, type = &quot;ridge&quot;, n_grid = 3000) +
+    geom_stream_label(size = 4, type = &quot;ridge&quot;, n_grid = 1000) +
+  cowplot::theme_minimal_vgrid(font_size = 12) +
+  theme(legend.position = &quot;none&quot;) +
+  scale_colour_manual(values = wes_palette(&#39;Chevalier1&#39;) %&gt;% colorspace::darken(.8)) +
+  scale_fill_manual(values =  wes_palette(&#39;Chevalier1&#39;)  %&gt;% colorspace::lighten(.2))+
+  labs(title = &#39;Period of Record August Stats at \nYaak River near Troy, MT&#39;, y = &#39;Discharge (cfs)&#39;, x = &#39;Water Year&#39;) </code></pre>
+<p><img src="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/index_files/figure-html/unnamed-chunk-14-1.png" width="960" />
+<img src="https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/index_files/figure-html/unnamed-chunk-15-1.png" width="960" /></p>
+<p>So, this leads us to more exploration and doing more time series analysis but for now we’ll just end this dive into <code>ggridges</code> and the <code>wesanderson</code> packages. Have a good one!</p>
+</div>
+
+      </section>
+      <footer class="post-footer">
+        <div class="post-pagination dt w-100 mt4 mb2">
+  
+  
+  
+  
+</div>
+
+      </footer>
+    </article>
+    
+      
+<div class="post-comments pa0 pa4-l mt4">
+
+</div>
+
+
+    
+  </section>
+</main>
+<aside class="page-sidebar" role="complementary">
+                         
+ 
+
+
+                       
+ 
+
+
+
+
+
+
+
+
+
+
+
+  <img src="/blog/2021-04-04-ridges-wes-anderson/sidebar-listing.png" class="db ma0">
+
+
+<div class="blog-info ph4 pt4 pb4 pb0-l">
+  
+
+  <h1 class="f3">What are ridge plots?</h1>
+  <p class="f6 lh-copy measure">Ridge plots or ridgeline plots are a way to express the distribution of the data for some categorical variable. This is very similar to a violin plot for box-plots. This helps to see bimodal characteristics better or tailedness of the distribution (see graph above) and is also more intuitive for the reader.</p>
+  <p class="f7 measure lh-copy i mh0-l">Written by Josh Erickson</p>
+
+
+  
+</div>
+
+
+<div class="ad-unit pa4">
+  
+  <p class="f7 measure-narrow lh-copy mv0 pt5"><span class="b ttu db">Made by Formspree</span><span><a href="https://formspree.io" target="_blank">Formspree is a form backend, API and email  service for HTML forms</a>. It is the simplest way to collect form submissions on your static website.</span></p>
+  
+</div>
+
+  
+  <details open class="f6 fw7 input-reset">
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Posted on:</dt>
+    <dd class="fw5 ml0">April 4, 2021</dd>
+  </dl>
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Length:</dt>
+    <dd class="fw5 ml0">6 minute read, 1246 words</dd>
+  </dl>
+  
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Categories:</dt>
+    <dd class="fw5 ml0"> <a href="https://hydroblog.netlify.com/categories/r">R</a>  <a href="https://hydroblog.netlify.com/categories/hydrology">Hydrology</a> </dd>
+  </dl>
+  
+  
+  
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Tags:</dt>
+    <dd class="fw5 ml0"> <a href="https://hydroblog.netlify.com/tags/r">R</a>  <a href="https://hydroblog.netlify.com/tags/hydrology">Hydrology</a> </dd>
+  </dl>
+  
+  <dl class="f6 lh-copy">
+    <dt class="fw7">See Also:</dt>
+    
+    <dd class="fw5 ml0"><a href="/blog/2023-01-28-graphing-using-whitewater/">Graphing Using whitewater</a></dd>
+    
+    <dd class="fw5 ml0"><a href="/blog/mann_kendall/mann_kendall_work/">Mann-Kendall</a></dd>
+    
+    <dd class="fw5 ml0"><a href="/blog/mann_kendall/">Mann-Kendall</a></dd>
+    
+  </dl>
+</details>
+
+</aside>
+<footer class="site-footer pv4 bt b--transparent ph5" role="contentinfo">
+  <nav class="db dt-l w-100">
+    <p class="site-copyright f7 db dtc-l v-mid w-100 w-33-l tc tl-l pv2 pv0-l mv0 lh-copy">
+      &copy; 2023 RStudio, Anywhere
+      <span class="middot-divider"></span>
+      Made with <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title"><a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/hugo-apero/" rel="dct:source">Hugo Apéro</a></span>.
+      <br />
+      
+Based on <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title"><a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/formspree/blogophonic-hugo" rel="dct:source">Blogophonic</a></span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://formspree.io" property="cc:attributionName" rel="cc:attributionURL">Formspree</a>.
+    </p>
+    
+    <div class="site-social-links db dtc-l v-mid w-100 w-33-l tc pv2 pv0-l mv0">
+      <div class="social-icon-links" aria-hidden="true">
+  
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <a class="link dib h1 w1 ml0 mr2 f6 o-90 glow" href="https://github.com/joshualerickson" title="github" target="_blank" rel="noopener">
+      <i class="fab fa-github fa-lg fa-fw"></i>
+    </a>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <a class="link dib h1 w1 ml0 mr2 f6 o-90 glow" href="https://twitter.com/joshualerickson" title="twitter" target="_blank" rel="noopener">
+      <i class="fab fa-twitter fa-lg fa-fw"></i>
+    </a>
+  
+</div>
+
+    </div>
+    
+    <div class="site-links f6 db dtc-l v-mid w-100 w-67-l tc tr-l pv2 pv0-l mv0">
+      
+    </div>
+  </nav>
+  <script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</footer>
+
+      </div>
+    </body>
+</html>

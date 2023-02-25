@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>https://github.com/r-spatial on hydroblog</title>
+    <link>https://hydroblog.netlify.com/tags/https/github.com/r-spatial/</link>
+    <description>Recent content in https://github.com/r-spatial on hydroblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language><atom:link href="https://hydroblog.netlify.com/tags/https/github.com/r-spatial/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Exploring Catchments</title>
+      <link>https://hydroblog.netlify.com/blog/exploring-catchments/</link>
+      <pubDate>Tue, 09 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/exploring-catchments/</guid>
+      <description>Zonal StatisticsThis is a quick workflow using some rasters, polygons, and a few packages in R that i’ve used for a couple analysis recently. The main purpose of this workflow is to show the code used and how to get some simple zonal statistics in R and explore them relatively easy. Thus, there will be a lot of code! If you take anything out of this I hope it would be that zonal statistics in R are pretty awesome right now.</description>
+    </item>
+    
+  </channel>
+</rss>

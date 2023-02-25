@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>hydroblog</title>
+    <link>https://hydroblog.netlify.com/</link>
+    <description>Recent content on hydroblog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 28 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Netlify</title>
+      <link>https://hydroblog.netlify.com/collection/day02/01-netlify/</link>
+      <pubDate>Sat, 02 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/collection/day02/01-netlify/</guid>
+      <description>So far, we&amp;rsquo;ve been leveraging GitHub Pages for publishing. This works great, but for blogdown we&amp;rsquo;ll start using Netlify. Let&amp;rsquo;s start RIGHT NOW with a site we&amp;rsquo;ve already built and published.
+Pre-requisites Pick either your postcards site, or your distill site from day 01. Refresh your memory- which repository was it again?</description>
+    </item>
+    
+    <item>
+      <title>A GitHub profile</title>
+      <link>https://hydroblog.netlify.com/collection/day01/01-github/</link>
+      <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/collection/day01/01-github/</guid>
+      <description>Profile https://docs.github.com/en/github/setting-up-and-managing-your-github-profile/personalizing-your-profile
+Pin projects to profile https://docs.github.com/en/github/setting-up-and-managing-your-github-profile/pinning-items-to-your-profile
+Profile README This is new! Let&amp;rsquo;s do it:
+https://docs.github.com/en/github/setting-up-and-managing-your-github-profile/managing-your-profile-readme</description>
+    </item>
+    
+    <item>
+      <title>Prework</title>
+      <link>https://hydroblog.netlify.com/collection/prework/</link>
+      <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/collection/prework/</guid>
+      <description>Welcome to the Introducing Yourself Online workshop! We look forward to meeting you. Before attending the workshop, please complete the following prework.
+Set up RStudio Cloud Sign up for a free RStudio Cloud account at https://rstudio.cloud/ before the workshop. I recommend logging in with an existing Google or GitHub account, if you have one (rather than creating a new account with another password you have to remember). I want you to be able to work from your own laptop in this workshop, but Cloud is an important back-up plan should you run into troubles.</description>
+    </item>
+    
+    <item>
+      <title>A postcard</title>
+      <link>https://hydroblog.netlify.com/collection/day01/02-postcards/</link>
+      <pubDate>Sat, 02 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/collection/day01/02-postcards/</guid>
+      <description>Pre-requisites First, make sure you have the latest version of the postcards package installed from CRAN:
+install.packages(&amp;#34;postcards&amp;#34;) Restart your R session. If you use RStudio, use the menu item Session &amp;gt; Restart R or the associated keyboard shortcut:
+Ctrl + Shift + F10 (Windows and Linux) or Command + Shift + F10 (Mac OS). packageVersion(&amp;#34;postcards&amp;#34;) [1] ‘0.2.0’ Create GitHub repo Online.
+Clone GitHub repo usethis::create_from_github(&amp;#34;https://github.com/apreshill/global-postcard.git&amp;#34;) ✨ Commit &amp;amp; Push! ✨</description>
+    </item>
+    
+    <item>
+      <title>Using blogdown</title>
+      <link>https://hydroblog.netlify.com/collection/day02/02-blogdown/</link>
+      <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/collection/day02/02-blogdown/</guid>
+      <description>Pre-requisites First, make sure you have the latest version of the blogdown package installed from CRAN:
+install.packages(&amp;#34;blogdoown&amp;#34;) Restart your R session. If you use RStudio, use the menu item Session &amp;gt; Restart R or the associated keyboard shortcut:
+Ctrl + Shift + F10 (Windows and Linux) or Command + Shift + F10 (Mac OS). packageVersion(&amp;#34;blogdown&amp;#34;) [1] ‘1.0’ Create GitHub repo Online.
+Clone GitHub repo usethis::create_from_github(&amp;#34;https://github.com/apreshill/global-blogdown.git&amp;#34;) ✨ Commit &amp;amp; Push! ✨</description>
+    </item>
+    
+    <item>
+      <title>A distill site</title>
+      <link>https://hydroblog.netlify.com/collection/day01/03-distill/</link>
+      <pubDate>Sat, 02 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/collection/day01/03-distill/</guid>
+      <description>Pre-requisites First, make sure you have the latest version of the distill package installed from CRAN:
+install.packages(&amp;quot;distill&amp;quot;) Restart your R session. If you use RStudio, use the menu item Session &amp;gt; Restart R or the associated keyboard shortcut:
+Ctrl + Shift + F10 (Windows and Linux) or Command + Shift + F10 (Mac OS). &amp;lt;!-- --&amp;gt; packageVersion(&amp;quot;distill&amp;quot;) [1] ‘1.2’ Create GitHub repo Online.
+Clone GitHub repo usethis::create_from_github(&amp;quot;https://github.com/apreshill/global-distill.git&amp;quot;) ✨ Commit &amp;amp; Push!</description>
+    </item>
+    
+    <item>
+      <title>Warm woolen mittens</title>
+      <link>https://hydroblog.netlify.com/collection/day02/03-blogdown/</link>
+      <pubDate>Sat, 02 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/collection/day02/03-blogdown/</guid>
+      <description> Hi, I&#39;m the here-bot cat! Use me to find your way in your website.
+Here I am: content/collection\day02\03-blogdown\index.md To remove me, delete this line inside that file: {{&amp;lt; here &amp;gt;}}
+My content section is: collection My layout is: single-series part 2! does this work? now for some very cool things more get ready! </description>
+    </item>
+    
+    <item>
+      <title>Graphing Using whitewater</title>
+      <link>https://hydroblog.netlify.com/blog/2023-01-28-graphing-using-whitewater/</link>
+      <pubDate>Sat, 28 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2023-01-28-graphing-using-whitewater/</guid>
+      <description>IntroGet DataRaster GraphHysteresis3D SpaghettiConclusionReferencesIntro{whitewater} was originally developed for parallel processing but has always had some data wrangling and transformations sugar that can help visualize USGS NWIS data effectively. In this post we’ll use the advantages of {whitewater} to look at a site graphically a few different ways (tiled, hysteresis, 3D spaghetti).
+Get DataLet’s load the packages. We’ll use {ggfx} to give it an extra effects but you don’t necessarily need it.</description>
+    </item>
+    
+    <item>
+      <title>remr</title>
+      <link>https://hydroblog.netlify.com/blog/2022-05-06-remr/</link>
+      <pubDate>Fri, 06 May 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2022-05-06-remr/</guid>
+      <description>Taking a look at the {remr} and how one might use it for art or analysis.</description>
+    </item>
+    
+    <item>
+      <title>Hydrology Distributions: Part II</title>
+      <link>https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/</link>
+      <pubDate>Tue, 12 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2021-07-11-hydrology-distributions-part-ii/</guid>
+      <description>Part II of hydrology distributions. A look into different distributions and frequency analysis.</description>
+    </item>
+    
+    <item>
+      <title>Mann-Kendall</title>
+      <link>https://hydroblog.netlify.com/blog/mann_kendall/mann_kendall_work/</link>
+      <pubDate>Sat, 28 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/mann_kendall/mann_kendall_work/</guid>
+      <description>A look into Mann-Kenall test for monotonic trend.</description>
+    </item>
+    
+    <item>
+      <title>hydroapps is a package that runs hydrological shiny apps</title>
+      <link>https://hydroblog.netlify.com/project/hydroapps/</link>
+      <pubDate>Thu, 19 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/project/hydroapps/</guid>
+      <description>hydroappsThe goal of {hydroapps} is to to create apps for resource management in the context of hydrology monitoring and reporting. This package relies heavily on USGS API and wouldn’t be possible with out it (much thanks). However, this package is highly experimental and is used mostly by myself but I think it’s worth sharing! Please enjoy and contributions are welcome!
+GoalsAs of 08/07/2021 the app is functional. Things to work on:</description>
+    </item>
+    
+    <item>
+      <title>wildlandhydRo is a package that leverages USGS and SNOTEL APIs.</title>
+      <link>https://hydroblog.netlify.com/project/wildlandhydro/</link>
+      <pubDate>Thu, 19 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/project/wildlandhydro/</guid>
+      <description>IntroThe goal of wildlandhydRo is to create wrapper functions around commonly used packages like streamstats, snotelr and dataRetrieval and prepare them for chunk-based parallelism, data munging and reporting. Basically, a package for me but worth sharing with others.
+InstallationYou can install the development version from GitHub with:
+# install.packages(&amp;quot;devtools&amp;quot;)devtools::install_github(&amp;quot;joshualerickson/wildlandhydRo&amp;quot;)ExamplesBelow are some common examples that I routinely use with the package.
+ParallelWith {wildlandhydRo} it is really easy to get station data in parallel.</description>
+    </item>
+    
+    <item>
+      <title>exploreRGEE</title>
+      <link>https://hydroblog.netlify.com/project/explorergee/</link>
+      <pubDate>Wed, 18 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/project/explorergee/</guid>
+      <description>exploreRGEEThe goal of exploreRGEE is to explore Google Earth Engine (GEE) in the Rstudio IDE. This package uses bindings and functions from rgee and other spatial packages (sf, leaflet) to explore Google Earth Engine collections relatively quickly while using R. This package is meant to be exploratory and experimental but also provides the user quick functions to reproducible tasks, e.g. repetitive workflows. The reason for doing this inR is that some people are not familiar with JavaScript or Python but versed in R and this provides easy access to use GEE with commonly used methods for exploratory data analysis (tidyverse).</description>
+    </item>
+    
+    <item>
+      <title>ANOVA</title>
+      <link>https://hydroblog.netlify.com/blog/anova/anova/2021-08-17/</link>
+      <pubDate>Tue, 17 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/anova/anova/2021-08-17/</guid>
+      <description>A look into ANOVA. The long way.</description>
+    </item>
+    
+    <item>
+      <title>Baseflow Index (BFI)</title>
+      <link>https://hydroblog.netlify.com/blog/2021-07-31-baseflow-index-bfi/2021-07-31-baseflow-index-bfi/baseflow/</link>
+      <pubDate>Sat, 31 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2021-07-31-baseflow-index-bfi/2021-07-31-baseflow-index-bfi/baseflow/</guid>
+      <description>A quick tutorial on the {lfstat} baseflow().</description>
+    </item>
+    
+    <item>
+      <title>Hydrology Distributions: Part I</title>
+      <link>https://hydroblog.netlify.com/blog/2021-06-07-hydroclimatic-distributions/2021-06-07-hydroclimatic-distributions/hydro_dist_1/</link>
+      <pubDate>Mon, 07 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2021-06-07-hydroclimatic-distributions/2021-06-07-hydroclimatic-distributions/hydro_dist_1/</guid>
+      <description>Part I in a series about hydrology distributions. Part I goes over descriptive statistics and pmf, pdf and cdf.</description>
+    </item>
+    
+    <item>
+      <title>Slides-Rshiny Talk</title>
+      <link>https://hydroblog.netlify.com/talk/2021-05-27-slides-rshiny-talk/</link>
+      <pubDate>Thu, 27 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/talk/2021-05-27-slides-rshiny-talk/</guid>
+      <description>Here is a link to the brief Rshiny talk with applications in hydrology I just did. Hope you enjoy!
+https://www.hydroblog.org/slides/rshiny_talk/rshiny_talk.html</description>
+    </item>
+    
+    <item>
+      <title>Slides-trexr Talk</title>
+      <link>https://hydroblog.netlify.com/talk/2022-07-27-slides-trexr-talk/</link>
+      <pubDate>Thu, 27 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/talk/2022-07-27-slides-trexr-talk/</guid>
+      <description>Here is a link to the talk I just did about the R package {trexr}. Hope you enjoy!
+https://www.hydroblog.org/slides/trexr_talk/trexr.html</description>
+    </item>
+    
+    <item>
+      <title>Ridges &amp; Wes Anderson</title>
+      <link>https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/</link>
+      <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2021-04-04-ridges-wes-anderson/2021-04-04-ridges-wes-anderson/ridges/</guid>
+      <description>This is a quick exploration into the {wesanderson} and {ggridges} using USGS daily data.</description>
+    </item>
+    
+    <item>
+      <title>Slides-GEE Talk</title>
+      <link>https://hydroblog.netlify.com/talk/2021-03-17-slides-gee-talk/</link>
+      <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/talk/2021-03-17-slides-gee-talk/</guid>
+      <description>Here is a link to the brief GEE talk I just did. Hope you enjoy!
+https://www.hydroblog.org/slides/gee_talk/gee_talk.html</description>
+    </item>
+    
+    <item>
+      <title>Spatial Holdouts and Feature Selection</title>
+      <link>https://hydroblog.netlify.com/blog/2021-03-11-spatial-holdouts-and-feature-selection/</link>
+      <pubDate>Thu, 11 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2021-03-11-spatial-holdouts-and-feature-selection/</guid>
+      <description>Findings
+Both model types (gbm and random forest) are very sensitive when using all variables and no spatial hold-outs; however, when increasing the hold out size (iid becomes more appropriate) we see that random forest takes some time before it stabilizes unlike gbm which is able to control for that effect early on.
+FFS variable selection at cluster holdout 10 was 9 variables while the new variable selection (unnamed) used only 5 variables at a cluster holdout of 10 while keeping the same accuracy; making the model more parsimonious.</description>
+    </item>
+    
+    <item>
+      <title>Global Forest Change</title>
+      <link>https://hydroblog.netlify.com/blog/2021-03-04-global-forest-change/</link>
+      <pubDate>Thu, 04 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2021-03-04-global-forest-change/</guid>
+      <description>IntroductionBelow is a workflow used to create a forest change raster (2011-2019) for the Watershed Condition Class (WCC) analysis in USDA-USFS Region 1. The workflow leverages Google Earth Engine (GEE) (Gorelick et al. 2017) to get large remote sensing products fast and easy. This allows for reproducibility in the future as well as quick return times for clients, i.e. making large requests managable. The analysis uses the United States National Land Cover Database (NLCD) (Yang et al.</description>
+    </item>
+    
+    <item>
+      <title>gsutil workflow</title>
+      <link>https://hydroblog.netlify.com/blog/2021-03-04-gsutil-workflow/</link>
+      <pubDate>Thu, 04 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/2021-03-04-gsutil-workflow/</guid>
+      <description>Working with gsutil Introduction This is a workflow on how to download multiple objects from a bucket on google cloud storage. Basically, so I stop forgetting how to do it.
+Moving objects Technically, you can create your own folders via some (above my head) method but I&amp;rsquo;ll just default to using the UI on GCS. From there, you can then start to move files that you&amp;rsquo;ve uploaded via desktop, R, earth engine, etc.</description>
+    </item>
+    
+    <item>
+      <title>An Rmarkdown post</title>
+      <link>https://hydroblog.netlify.com/blog/rmarkdown/</link>
+      <pubDate>Wed, 30 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/rmarkdown/</guid>
+      <description> Air quality with(airquality, boxplot(Temp ~ Month)) with(airquality, plot(Ozone ~ Temp)) mlev &amp;lt;- levels(with(airquality, as.factor(Month))) with(airquality, plot(Ozone ~ Temp, pch = as.numeric(mlev), col = mlev)) </description>
+    </item>
+    
+    <item>
+      <title>RGEE and PRISM</title>
+      <link>https://hydroblog.netlify.com/blog/rgee-and-prism/</link>
+      <pubDate>Fri, 21 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/rgee-and-prism/</guid>
+      <description>This is the quick rundown on the rgee package that is pretty dope. The r-spatial folks have thrown down some sweet packages sf, stars, mapview (just to name a few) and now rgee. This is some pretty slick stuff. If your versed in JavaScript (JS) and wonder ‘should I waste my time with this API interface?’. Don’t worry. I’m not going to try and convince you to be a ‘R’ person just showing some of the basics and capabilities of using GEE R.</description>
+    </item>
+    
+    <item>
+      <title>Data Retrieval</title>
+      <link>https://hydroblog.netlify.com/blog/data-retrieval/</link>
+      <pubDate>Thu, 20 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/data-retrieval/</guid>
+      <description>This is a quick peek into the perks of using R and USGS package dataRetrieval. This package is pretty slick and has a lot of functions associated with it. We will just look into some basic functions like readNWISdv to get some USGS gauging data and then do some quick exploratory data analysis to using the tidyverse.
+First, load the packages (or install) from the library().
+library(dataRetrieval)library(tidyverse)Now we can start bringing in some river data.</description>
+    </item>
+    
+    <item>
+      <title>USGS, GEE and R. What?!?</title>
+      <link>https://hydroblog.netlify.com/blog/usgs-rgee-and-r-what/</link>
+      <pubDate>Thu, 20 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/usgs-rgee-and-r-what/</guid>
+      <description>Over the next month I’m going to be posting some quick examples from a few R packages that I’ve stumbled into. One is the dataRetrieval package by USGS. In short, it let’s you download any gauging station data across the country right into R and in a tidy format. How sweet is that? USGS also has other packages like the suite of smwr packages. These packages provide the user with some commonly used (but often tedious) functions used in hydrology, e.</description>
+    </item>
+    
+    <item>
+      <title>Exploring Catchments</title>
+      <link>https://hydroblog.netlify.com/blog/exploring-catchments/</link>
+      <pubDate>Tue, 09 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/exploring-catchments/</guid>
+      <description>Zonal StatisticsThis is a quick workflow using some rasters, polygons, and a few packages in R that i’ve used for a couple analysis recently. The main purpose of this workflow is to show the code used and how to get some simple zonal statistics in R and explore them relatively easy. Thus, there will be a lot of code! If you take anything out of this I hope it would be that zonal statistics in R are pretty awesome right now.</description>
+    </item>
+    
+    <item>
+      <title>Contact</title>
+      <link>https://hydroblog.netlify.com/contact/</link>
+      <pubDate>Mon, 25 Feb 2019 13:38:41 -0600</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/contact/</guid>
+      <description>** Contact page don&amp;rsquo;t contain a body, just the front matter above. See form.html in the layouts folder.
+Formspree requires a (free) account and new form to be set up. The link is made on the final published url in the field: Restrict to Domain. It is possible to register up to 2 emails free and you can select which one you want the forms to go to within Formspree in the Settings tab.</description>
+    </item>
+    
+    <item>
+      <title>Typography Styles &amp; Element Examples</title>
+      <link>https://hydroblog.netlify.com/elements/</link>
+      <pubDate>Mon, 18 Feb 2019 12:27:33 -0600</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/elements/</guid>
+      <description>Font Sizes A A A A A A A A 6rem
+(96px) 5rem
+(80px) 3rem
+(48px) 2.25rem
+(36px) 1.5rem
+(24px) 1.25rem
+(20px) 1rem
+(16px) .875rem
+(14px) Type Samples Head&amp;shy;line Sub&amp;shy;head&amp;shy;line Level 1 Heading One page to rule them all...well, not really. This page displays sample typography and page elements to illustrate their style. Things like headings and paragraphs showing the beautiful type scale, form elements, tabular data, and image layouts just to name a few.</description>
+    </item>
+    
+    <item>
+      <title>ANCOVA</title>
+      <link>https://hydroblog.netlify.com/blog/ancova/ancova_rmd/ancova/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/blog/ancova/ancova_rmd/ancova/</guid>
+      <description>TL;DRANCOVA is a mix of both linear regression and a t-test/ANOVA and is in the family of General Linear Models (GLM). It can help you correct for Type II error, by increasing your power through covariates. This is important if you can’t control for covariates in the experimental design. ANOCOVA let’s you account for this in the analysis. It still uses the same fundamentals of NHST (Null Hypothesis Significance Testing) and compares the variance explained to the variance unexplained aka F-test.</description>
+    </item>
+    
+    <item>
+      <title>Contributors</title>
+      <link>https://hydroblog.netlify.com/contributors/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/contributors/</guid>
+      <description>Thank you to all the folks who have contributed both technical and creative skills to this project:
+Desirée De Leon 🦒 (designed 5 of the custom color themes, made illustrations for the workshop, and provided general aesthetic feedback along the way)
+Garrick Aden-Buie 🧙‍♀️ (debugged headroom.js and lent his panelset.js code to the theme)
+Allison Horst 🐕 (awesome illustrations of campfires, seedlings, and evergreens, as well as my R Markdown hedgehog mascot 🦔)</description>
+    </item>
+    
+    <item>
+      <title>License</title>
+      <link>https://hydroblog.netlify.com/license/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/license/</guid>
+      <description>My blog posts are released under a Creative Commons Attribution-ShareAlike 4.0 International License.</description>
+    </item>
+    
+  </channel>
+</rss>
