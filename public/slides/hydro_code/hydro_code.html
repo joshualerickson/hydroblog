@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Code-based tools   for   hydrologic data assessment</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Josh Erickson" />
+    <script src="hydro_code_files/header-attrs/header-attrs.js"></script>
+    <link href="hydro_code_files/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="hydro_code_files/tile-view/tile-view.js"></script>
+    <link href="hydro_code_files/animate.css/animate.xaringan.css" rel="stylesheet" />
+    <link href="hydro_code_files/tachyons/tachyons.min.css" rel="stylesheet" />
+    <link href="hydro_code_files/panelset/panelset.css" rel="stylesheet" />
+    <script src="hydro_code_files/panelset/panelset.js"></script>
+    <script src="hydro_code_files/clipboard/clipboard.min.js"></script>
+    <link href="hydro_code_files/shareon/shareon.min.css" rel="stylesheet" />
+    <script src="hydro_code_files/shareon/shareon.min.js"></script>
+    <link href="hydro_code_files/xaringanExtra-shareagain/shareagain.css" rel="stylesheet" />
+    <script src="hydro_code_files/xaringanExtra-shareagain/shareagain.js"></script>
+    <script src="hydro_code_files/fabric/fabric.min.js"></script>
+    <link href="hydro_code_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="hydro_code_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#FF0000"],"pen_size":3,"eraser_size":30,"palette":[]}) })</script>
+    <script src="hydro_code_files/xaringanExtra-progressBar/progress-bar.js"></script>
+    <script src="hydro_code_files/freezeframe/freezeframe.min.js"></script>
+    <script src="hydro_code_files/xaringanExtra-freezeframe/freezeframe-init.js"></script>
+    <script id="xaringanExtra-freezeframe-options" type="application/json">{"selector":"img[src$=\"gif\"]","trigger":"click","overlay":false,"responsive":true,"warnings":true}</script>
+    <link href="hydro_code_files/xaringanExtra-extra-styles/xaringanExtra-extra-styles.css" rel="stylesheet" />
+    <link href="hydro_code_files/animate.css-xaringan/animate.fade.css" rel="stylesheet" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# <span style="color: white; font-size: 60px ">Code-based tools <br> for <br> hydrologic data assessment</span>
+]
+.author[
+### <span style="color: white; font-size: 45px">Josh Erickson</span>
+]
+.institute[
+### <span style="color: white; font-size: 35px">USDA-Forest Service</span>
+]
+
+---
+
+&lt;style&gt;
+@import url('https://fonts.googleapis.com/css2?family=Gochi+Hand&amp;family=Handlee&amp;display=swap');
+&lt;/style&gt;
+
+
+
+<div>
+<style type="text/css">.xaringan-extra-logo {
+width: 110px;
+height: 128px;
+z-index: 0;
+background-image: url(hydro_code_files/images/usda_usfs.png);
+background-size: contain;
+background-repeat: no-repeat;
+position: absolute;
+right:1em;bottom:-2em;
+}
+</style>
+<script>(function () {
+  let tries = 0
+  function addLogo () {
+    if (typeof slideshow === 'undefined') {
+      tries += 1
+      if (tries < 10) {
+        setTimeout(addLogo, 100)
+      }
+    } else {
+      document.querySelectorAll('.remark-slide-content:not(.title-slide):not(.inverse):not(.hide_logo)')
+        .forEach(function (slide) {
+          const logo = document.createElement('div')
+          logo.classList = 'xaringan-extra-logo'
+          logo.href = null
+          slide.appendChild(logo)
+        })
+    }
+  }
+  document.addEventListener('DOMContentLoaded', addLogo)
+})()</script>
+</div>
+
+<style>.xe__progress-bar__container {
+  bottom:0;
+  opacity: 1;
+  position:absolute;
+  right:0;
+  left: 0;
+}
+.xe__progress-bar {
+  height: 0.25em;
+  background-color: #0051BA;
+  width: calc(var(--slide-current) / var(--slide-total) * 100%);
+}
+.remark-visible .xe__progress-bar {
+  animation: xe__progress-bar__wipe 200ms forwards;
+  animation-timing-function: cubic-bezier(.86,0,.07,1);
+}
+@keyframes xe__progress-bar__wipe {
+  0% { width: calc(var(--slide-previous) / var(--slide-total) * 100%); }
+  100% { width: calc(var(--slide-current) / var(--slide-total) * 100%); }
+}</style>
+
+
+
+
+
+## What is Coding?
+
+--
+
+- Coding is a way to communicate with computers through computer programming languages.  0️⃣'s and 1️⃣'s  
+
+--
+
+.body-gif[&lt;img src='https://media.giphy.com/media/QpVUMRUJGokfqXyfa1/giphy.gif'&gt;]
+
+--
+
+- examples include;
+
+--
+
+  - Python  &lt;img style="vertical-align:middle" src="hydro_code_files/images/python.png" height="35px"&gt;
+  
+--
+
+  - R &lt;img style="vertical-align:middle" src="hydro_code_files/images/r_sticker.png" height="35px"&gt;   
+  
+--
+
+  - JavaScript  (JS) &lt;img style="vertical-align:middle" src="hydro_code_files/images/js.png" height="35px"&gt;
+  
+--
+
+  - &lt;img style="vertical-align:middle" src="hydro_code_files/images/c.png" height="35px"&gt;, &lt;img style="vertical-align:middle" src="hydro_code_files/images/c_plus_plus.png" height="35px"&gt;, Rust &lt;img style="vertical-align:middle" src="hydro_code_files/images/rust.png" height="35px"&gt;, Fortran &lt;img style="vertical-align:middle" src="hydro_code_files/images/fortran.png" height="35px"&gt;, etc. 
+  
+--
+
+- In our domain; most likely going to use (Python, R, JS).
+
+--
+
+---
+
+.center-warning[Warning]
+
+.center-text[We will look at code!]
+
+---
+
+&lt;img src='hydro_code_files/images/not_impressed.png' height='350px' width='600px'
+     class="center" style="margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%)"&gt;
+
+---
+
+&lt;img src='hydro_code_files/images/so_why.jpg' height='350px' width='600px'
+     class="center" style="margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%)"&gt;
+
+
+---
+&lt;center&gt;
+&lt;br&gt;
+.ff-big[Automation]
+&lt;br&gt;
+&lt;br&gt;
+.ff-big[Scalability]
+&lt;br&gt;
+&lt;br&gt;
+.ff-big[One stop shop]
+&lt;br&gt;
+&lt;br&gt;
+.ff-big[Reproducibility]
+&lt;/center&gt;
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;img src='https://media.giphy.com/media/ik4ckLyRQe6YM/giphy.gif' class='center'&gt;
+
+---
+
+.ff-mid[Plus I'll share some links; how to get started.]
+
+
+&lt;img src='hydro_code_files/images/ima_coder.png' class='center' height=500&gt;
+
+---
+
+## Outline  
+
+--
+
+- Go over .blue[automating] some tasks like getting USGS gage data.
+
+--
+
+- How to .blue[scale] an idea with coding.
+
+--
+
+- .blue[One stop shop] -- do spatial analysis.
+
+--
+
+- .blue[Reproducibility].
+
+--
+
+- Where to get started!
+
+---
+
+## Automation  
+
+--
+
+- Let's explore some .blue[peak flows] at USGS gauging stations; visually.
+
+--
+
+- And then do a flood frequency analysis.
+
+--
+
+
+&lt;img src='hydro_code_files/images/peaks.png'&gt;
+  
+---
+## Getting the data with coding
+
+--
+
+With coding it's as simple as loading a few libraries and then calling some functions.
+
+--
+
+
+```r
+library(tidyverse)
+library(ggtext)
+library(whitewater)
+
+# get peak flow data
+peak_yaak &lt;- ww_wyUSGS(sites = 12304500)
+
+# graph data
+ggplot(peak_yaak, aes(peak_dt, peak_va)) + 
+  geom_point() + 
+  geom_line() +
+  scale_y_continuous(labels = scales::comma_format()) + 
+  geom_smooth(method = 'lm', alpha = 0.15) 
+```
+
+--
+---
+
+&lt;img src='hydro_code_files/images/yaak_peak.png' class='center'&gt;
+
+--
+
+---
+
+## Flood Frequency  
+
+--
+
+What's nice about coding is there are plenty of options!  
+
+--
+
+&lt;img src='hydro_code_files/images/ff_eq.png' height=400 class='center'&gt;
+
+---
+
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+library(wildlandhydRo)
+
+# Low outlier detection using MGMT
+low_thresh &lt;- MGBT::MGBT(peak_yaak$peak_va)
+
+#get distributions
+yaak_dist &lt;- batch_distribution(peak_yaak, peak_va)
+
+#get frequencies
+yaak_ff &lt;- batch_frequency(peak_yaak, peak_va)
+
+#get goodness of fit tests
+rep_dist &lt;- reportDist(yaak_dist)
+```
+]
+
+.panel[.panel-name[QQ Plot]
+
+
+```r
+plot_qqDist(yaak_dist)
+```
+&lt;img src='hydro_code_files/images/dist.png' width='600px' height='400px'&gt;
+]
+
+.panel[.panel-name[Frequency]
+
+
+```r
+ggplot(yaak_ff, aes(ReturnInterval, Value, color = Distribution)) + geom_point() + geom_line()
+```
+&lt;img src='hydro_code_files/images/ff_graph.png' width='600px' height='400px'&gt;
+]
+
+.panel[.panel-name[GOF]
+
+
+```r
+plot_reportDist(rep_dist)
+```
+&lt;img src='hydro_code_files/images/gof.png' width='800px' height='500px'&gt;
+]
+]
+
+---
+
+## Without Coding  
+
+--
+
+&lt;img src='hydro_code_files/images/excel_pf.png'&gt;
+
+---
+
+.center-black[Yes. It can be done.]
+.center-text[I think so...]
+---
+
+.big-text-center[But what happens when we need to do this for 10, 20, 100 sites?]
+
+---
+
+.body-gif-bot[&lt;img src='https://media.giphy.com/media/3o752gZdDHjObx309W/giphy.gif'&gt;]
+
+--
+
+.big-text[It doesn't have to be like this!]
+---
+
+.big-text-center[This is where .blue[_scalability_] comes into play.]
+---
+
+.big-text-center[I like to explore USGS sites for stationarity and would like to see how HUC 17 looks.]
+
+---
+
+.big-gif-bot[&lt;img src='hydro_code_files/images/usgs_sites.png' height=600 class = 'center'&gt;]
+
+---
+
+.big-text-center[But, the method of clicking would take forever... 10 min/site for 675 = 11 days @ 10 hour days!!!!]
+
+---
+
+.big-text-center[With coding we can do that in a matter of minutes!]
+
+---
+
+By running in parallel we can get all the daily values for each site in about 11 minutes!
+
+```r
+#need to call future::plan()
+
+##### Remember, please use 10 or less workers #####
+plan(multisession(workers = 11))
+
+#running on 11 cores
+
+system.time({
+pnw_dv &lt;- ww_dvUSGS(huc17_sites$site_no,
+                    parameter_cd = '00060',
+                    wy_month = 10,
+                    parallel = TRUE,
+                    verbose = FALSE)
+})
+
+#&gt;    user  system elapsed 
+#&gt;   39.96    2.47  559.56
+```
+
+---
+background-image: url('hydro_code_files/images/mk.png')
+background-size: 90%
+
+---
+
+.big-text-center[Looks like there's some clustering?]
+
+
+---
+
+.big-text-center[Should we bring into .blue[ArcGIS]? Well, you can for sure. But, why not just
+do it in the .blue[same environment?] ]
+
+---
+
+.center-black[Remember. .blue[One stop shop!]]
+
+
+---
+
+.big-text-center[Local Gi or Gi* (hot spot analysis).]  
+
+---
+&lt;center&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+.ff-big[
+`\(G_i = \frac{\sum_j w_{ij} x_j}{\sum_j x_j}\)`
+]
+&lt;/center&gt;
+---
+
+&lt;img src='hydro_code_files/images/hucs_and_points.png' class='center'&gt;
+
+
+---
+
+Now with the polygons and averages we can see if there are any 'hot spots'...
+
+
+```r
+tau_hot_spots &lt;- tau_lags |&gt; 
+  mutate(
+    Gi = local_g_perm(tau_lag, nb, wt, nsim = 499)
+  ) |&gt; 
+  unnest(Gi)
+```
+
+
+---
+
+&lt;img src='hydro_code_files/images/hsa.png' class='center'&gt;
+
+---
+
+.big-text-center[This is great. But can I reproduce this in 1, 2, 5 years?]
+
+
+---
+
+.big-text[Sure. Why not?]
+
+.body-gif-bottom[&lt;img src='https://media.giphy.com/media/tsgNNs93oIbwk/giphy.gif'&gt;]
+
+
+---
+
+## Reproducibility  
+
+--
+
+.ff-mid[* Version Control
+]
+
+--
+
+.ff-mid[* Documentation  
+]
+--
+
+.ff-mid[* Environment/Dependencies
+]
+---
+
+.big-text-center[Version control can help with maintaining your code and projects.]
+
+---
+
+.big-text-center[Github &lt;img src='hydro_code_files/images/github.png'&gt; and Git &lt;img src='hydro_code_files/images/git.png' height=75&gt; are a few common ways to do this.]
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;img src='hydro_code_files/images/github_ww.png'&gt;
+
+---
+
+.big-text-center[Documentation will not only help others but will help .blue[future you!]]
+
+---
+&lt;br&gt;
+.ff-mid[You can document functions]
+
+&lt;img src='hydro_code_files/images/func_doc.png'&gt;
+
+---
+
+.big-text-center[There's so much you can do with documentation!!!!]
+
+---
+
+.big-text-center[Not going to go too deep... but Environment and dependencies will help you and others in the future as well!]
+
+---
+
+.big-text-center[Packages like {renv} &lt;img src='hydro_code_files/images/renv.svg' height=75&gt; and conda &lt;img src='hydro_code_files/images/conda.png' height=75&gt; environments maintain the 'version' you used to run the code. (docker-ish)]
+
+---
+&lt;br&gt;
+&lt;br&gt;
+.big-text-center[This is great because we can then share without worrying too much about whether it will run or not! It's a nice way to gain trust...]
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;img src='https://media.giphy.com/media/d1E2VyhFsxawRbeo/giphy.gif' class = 'center'&gt;
+
+---
+
+.big-text-center[Where to go? How?]
+
+
+---
+&lt;center&gt;
+.ff-mid2[R for Data Science 
+]
+
+&lt;img src='hydro_code_files/images/r4ds.png' height=400&gt;
+
+.ff-mid2[https://r4ds.had.co.nz/
+]
+&lt;/center&gt;
+
+---
+
+&lt;center&gt;
+.ff-mid2[Python for Data Science 
+]
+
+&lt;img src='hydro_code_files/images/p4ds.png' height=400&gt;
+
+.ff-mid2[https://wesmckinney.com/book/
+]
+&lt;/center&gt;
+
+---
+
+.big-text-center[I'd recommend starting with .blue[either]. If you want to build ArcGIS tools I'd recommend Python &lt;img src='hydro_code_files/images/python.png' height = 75&gt;]
+
+---
+
+.ff-mid2[For learning coding along side .blue[hydro] I'd recommend https://www.r4wrds.com/.]
+
+&lt;img src='hydro_code_files/images/r4ws.png' class='center'&gt;
+
+---
+
+.ff-mid2[Other .blue[hydro] focused coding.]
+
+* [nhdplusTools](https://github.com/USGS-R/nhdplusTools) &lt;img src='hydro_code_files/images/nhdplus.png' height=75 style = vertical-align:middle&gt;
+
+* [dataRetrieval](https://github.com/DOI-USGS/dataRetrieval) &lt;img src='hydro_code_files/images/datar.png' height=75 style = vertical-align:middle&gt;
+
+
+* [pygeohydro](https://github.com/hyriver/pygeohydro) &lt;img src='hydro_code_files/images/hyriver.png' height=75 style = vertical-align:middle&gt;
+
+
+* [hyriver](https://docs.hyriver.io/) &lt;img src='hydro_code_files/images/hyriver_logo_text.svg' height=75 style = vertical-align:middle&gt;
+
+
+---
+&lt;center&gt;
+
+.ff-mid2[Where you'll do your coding.
+]  
+
+- Rstudio, VS Code, etc.  
+
+
+&lt;img src='hydro_code_files/images/rstudio_ide.png' height=500&gt;  
+
+&lt;/center&gt;
+
+---
+
+.center-warning[But! We now have a Virtual Desktop (VDI)]
+
+---
+&lt;center&gt;
+.ff-mid[
+[VDI Data Center](https://usdagcc.sharepoint.com/sites/fs-eng-agisp/arcgispro/SitePages/Working%20in%20the%20Data%20Center.aspx)
+]
+
+&lt;/center&gt;
+
+&lt;img src='hydro_code_files/images/vdi_r.png' class = 'center'&gt;
+
+---
+
+.ff-mid[I know it's a lot! So much to cover.]
+
+
+---
+&lt;br&gt;
+&lt;img src='hydro_code_files/images/stoke.png' class='center' height=600&gt;
+
+---
+
+.big-text[I'm willing to help!]
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;img src='https://media.giphy.com/media/l41YiLaqBQDBuyFCU/giphy.gif' class='center' height=400&gt;
+
+
+---
+&lt;center&gt;
+.ff-mid[Thanks! 
+]  
+
+.ff-mid[Questions? 
+]  
+
+.ff-mid[Comments?
+]
+
+.ff-mid[Critiques? :)
+]
+
+&lt;/center&gt;
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

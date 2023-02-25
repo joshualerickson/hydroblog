@@ -1,0 +1,230 @@
+---
+title: Exploring Catchments
+author: Josh Erickson
+date: '2020-06-09'
+slug: exploring-catchments
+output:
+  html_document:
+    highlight: tango
+categories: []
+tags: [https://github.com/r-spatial, https://github.com/isciences/exactextractr]
+description: 'Looking at relationships between watershed catchments and remote sensing data'
+---
+<div style="margin-bottom:100px;">
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+load("D:/Rcodes/Water_Prediction/Final_paper_water_prediction/hwstreamprediction/blog_entry.RData")
+options(width = 200)
+library(ggbiplot)
+library(stars)
+library(raster)
+library(tidyverse)
+library(sf)
+library(exactextractr)
+library(psych)
+```
+
+# Zonal Statistics
+
+This is a quick workflow using some rasters, polygons, and a few packages in R that i've used for a couple analysis recently. The main purpose of this workflow is to show the code used and how to get some simple zonal statistics in R and explore them relatively easy. Thus, there will be a lot of code! If you take anything out of this I hope it would be that zonal statistics in R are pretty awesome right now. The advantage of doing this in R (IMO) has to do with the `tidyverse` package. The tidyverse philosophy is about doing exploratory data analysis (EDA) as freely and efficient as possible (FREEDOM!). With the addition of some other spatial data packages (`raster`,`sf`,`exactextractr`) that are `tidyverse` friendly (especially `sf`, can't stop saying good things about [r-spatial](https://github.com/r-spatial) and some functional programming from the tidyverse, we can explore spatial data pretty quickly! I'm really stoked with `sf`and `exactextractr` for providing the heavy lifting when dealing with this type of analysis in R. Remember, drin.. I mean, geospatial responsibly... 
+
+We will get started by bringing in a raster and extracting the values based on a polygon (HUC). This is just a quick intro to `sf` and `raster`. Remember to keep your datum and crs the same.
+
+```{r, echo=TRUE, eval=FALSE}
+library(ggbiplot)
+library(raster)
+library(tidyverse)
+library(sf)
+library(exactextractr)
+HUC12 <- read_sf("D:/Rcodes/Water_Prediction/Hird_Water_Prediction/waterD/waterPred/Final_workflow/ksank12thclip.shp")
+
+HUC12 <- st_transform(HUC12, "+proj=aea +lat_1=46 +lat_2=48 +lat_0=44 +lon_0=-109.5 +x_0=600000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs" )
+
+HUC12 <- HUC12[,1]
+
+prism <- raster("PRISM.tif")
+
+crs(prism) <- "+proj=aea +lat_1=46 +lat_2=48 +lat_0=44 +lon_0=-109.5 +x_0=600000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+
+prism <- crop(prism, deficit)
+
+HUC12$mean_prism <- exact_extract(prism, HUC12, 'mean')
+```
+
+
+I like using this combo of `sf` and `exactextractr` because you can then transform and manipulate the data just like you would with any other data frame (e.g., `dplyr`) except now you can plot the `sf` object in the style of `ggplot2`.
+
+```{r}
+HUC12 %>% filter(mean_prism > 800) %>% ggplot() + geom_sf(aes(fill = mean_prism))
+HUC12 %>% mutate(prism_deviation = mean(mean_prism)-mean_prism) %>% ggplot() + geom_sf(aes(fill = prism_deviation))
+```
+
+
+By using `exact_extract` we can bring in a lot of different rasters and explore the summary stats at different structures, e.g. polygons or hydrological unit codes (HUC). So let's start by adding more rasters to the current polygon(s) `HUC12`. Feel free to bring in whatever raster you want or polygon as well. 
+
+```{r, eval=FALSE}
+
+
+HUC12$mean_deficit <- exact_extract(deficit, HUC12, 'mean')
+HUC12$mean_decid <- exact_extract(deciduous, HUC12, 'mean')
+HUC12$mean_cpg <- exact_extract(cpgPrecip, HUC12, 'mean')
+HUC12$mean_npp <- exact_extract(nppMid30, HUC12, 'mean')
+HUC12$mean_cad <- exact_extract(CAD, HUC12, 'mean')
+HUC12$mean_ndvi <- exact_extract(ndvi, HUC12, 'mean')
+HUC12$mean_lnAccum <- exact_extract(lnAccum, HUC12, 'mean')
+```
+
+
+```{r}
+plot(HUC12[-1])
+```
+
+
+Now we might want to look at a smaller scale like a HUC 14. So, just bring in a shape file or database and use as the new polygon to run stats on.
+
+```{r, eval=FALSE}
+HUC14 <- read_sf("D:/Rcodes/Water_Prediction/Hird_Water_Prediction/waterD/waterPred/Final_workflow/ksank14thclip.shp")
+
+HUC14 <- st_transform(HUC14, "+proj=aea +lat_1=46 +lat_2=48 +lat_0=44 +lon_0=-109.5 +x_0=600000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs" )
+
+HUC14 <- HUC14[,4]
+HUC14 <- rename(HUC14, Name = HU_14_NAME )
+```
+
+Now do the same for the 14th HUC
+```{r, eval=FALSE}
+HUC14$mean_prism <- exact_extract(prism, HUC14, 'mean')
+HUC14$mean_deficit <- exact_extract(deficit, HUC14, 'mean')
+HUC14$mean_decid <- exact_extract(deciduous, HUC14, 'mean')
+HUC14$mean_cpg <- exact_extract(cpgPrecip, HUC14, 'mean')
+HUC14$mean_npp <- exact_extract(nppMid30, HUC14, 'mean')
+HUC14$mean_cad <- exact_extract(CAD, HUC14, 'mean')
+HUC14$mean_ndvi <- exact_extract(ndvi, HUC14, 'mean')
+HUC14$mean_lnAccum <- exact_extract(lnAccum, HUC14, 'mean')
+```
+
+
+```{r}
+plot(HUC14[-1])
+```
+
+
+From here we can start exploring the data spatially (e.g. mapping). How about looking at the mean prism data from both the HUC14 and HUC12.
+
+```{r}
+ggplot(data = HUC12)  + geom_sf(data = HUC14, aes(fill = mean_prism))+ geom_sf(aes(color = cut_number(mean_prism, 6)), size = 2, fill = NA) + 
+  scale_fill_distiller(palette = "RdBu", trans = "reverse") + scale_color_brewer(palette = "RdBu")
+
+```
+
+Or, see if there are any trends with PRISM and NPP, i.e. water and energy.
+
+```{r}
+ggplot(data = HUC12)  + geom_sf(data = HUC12, aes(fill = mean_prism))+ geom_sf(aes(color = cut_number(mean_npp, 6)), size = 2, fill = NA) + 
+  scale_fill_distiller(palette = "RdBu", trans = "reverse") + scale_color_brewer(palette = "RdBu")
+
+```
+
+We can see that it's hard to interpret the polygons because there are so many colors and outlines, etc... So maybe lets just look at them individually. It does give you an idea of how changing polygon size can really affect the results and we haven't even started down the path of mod, median, sd, etc.... Regardless, let's keep exploring.
+
+
+```{r}
+HUC14 %>% mutate(prism_cut = cut_number(mean_prism, n = 5)) %>% ggplot() + geom_sf(aes(fill = prism_cut))  + scale_fill_brewer(palette = "RdBu")
+HUC12 %>% mutate(prism_cut = cut_number(mean_prism, n = 5)) %>% ggplot() + geom_sf(aes(fill = prism_cut)) + scale_fill_brewer(palette = "RdBu")
+
+
+```
+
+Much better! But what about the distributions? The nice thing about this workflow is we can jump right into a data frame and histograms.
+
+```{r}
+HUC14 %>% mutate(prism_cut = cut_interval(mean_prism, 4)) %>% ggplot() + geom_bar(aes(prism_cut))
+HUC12 %>% mutate(prism_cut = cut_interval(mean_prism, 4)) %>% ggplot() + geom_bar(aes(prism_cut))
+
+HUC14 %>% ggplot() + geom_histogram(aes(mean_prism))
+HUC12 %>% ggplot() + geom_histogram(aes(mean_prism), binwidth = 150)
+```
+
+As you can see here, most of our data is in different ranges depending on the polygon size, which leads to different shapes of the distributions. This might affect how we interpret the trends or relationships. That being said, this is where domain knoweledge is **key** for EDA! Now that we've looked at how the PRISM data is distributed across the different HUCs we might want to look at some possible covariations. Let's plot and see if there is anything. Here we need to drop the geometry to use base R `plot()`.
+
+```{r}
+HUC12 %>% st_drop_geometry() %>% select(-Name) %>% plot()
+HUC14 %>% st_drop_geometry() %>% select(-Name) %>% plot()
+
+```
+
+
+To me NPP and PRISM look like an interesting combination. If you increase PRISM you get to a point where NPP increases but then levels off. Maybe there is something to explore here. Also, NDVI and PRISM look interesting as well. This probably has to do with NPP being highly colinear with NDVI. We can check the correlation as well.
+
+```{r}
+HUC14 %>% select(mean_ndvi, mean_npp, mean_prism) %>% st_drop_geometry() %>% plot()
+HUC14 %>% select(mean_ndvi, mean_npp, mean_prism) %>% st_drop_geometry() %>% pairs.panels()
+```
+
+This is great but it's always nice to look at the data in a multivariate way -- that is to say, adding some color or size with a third variable. Hopefully see if there are any interactions with other covariates, i.e. multivariate.
+
+```{r}
+
+HUC14 %>% st_drop_geometry() %>% ggplot(aes(mean_prism, mean_npp)) + geom_point(aes(color = cut_number(round(mean_deficit), 4)), size = 2) + geom_smooth()+ labs(title = "Net Primary Productivity (NPP) and PRISM", subtitle = "Water Deficit as color",color = "Water Deficit", x = "PRISM 30-year median", y = "NPP 30-year median")
+
+HUC14 %>% st_drop_geometry() %>% ggplot(aes(mean_prism, mean_npp)) + geom_point(aes(color = cut_interval(round(mean_cad), 4)), size = 2) + geom_smooth() + ggtitle("Net Primary Productivity (NPP) and PRISM", subtitle = "Cold Air Drainage as color") + labs(color = "Cold Air Drainage", x = "PRISM 30 year median", y = "NPP 30-year median")
+
+HUC14 %>% st_drop_geometry() %>% ggplot(aes(mean_prism, mean_npp)) + geom_point(aes(color = cut_interval(round(mean_ndvi,3), 4)), size = 2) + geom_smooth() + ggtitle("Net Primary Productivity (NPP) and PRISM", subtitle = "NDVI 30-year median as color") + labs(color = "NDVI", x = "PRISM 30 year median", y = "NPP 30-year median")
+```
+
+I like the last plot with 30 year NDVI as the color. It looks like it might help collect some of the edge effects and outliers within the data, so we will play around with that combination. There are many ways to further explore these relationships. I'm really getting into PCA right now (Principal Component Analysis) so I decided to go that route but remember this is just exploring and a tutorial for exploring. Not a full blown analysis! PCA in itself is highly exploratory (unsupervised). That being said, here is a quick and dirty PCA exploration. 
+
+Let's run PCA on all variables except for NPP and see what kind of seperation we get when running PCA.
+
+```{r, eval=FALSE}
+
+HUC14 <- HUC14 %>% mutate(NPP = cut_interval(round(mean_npp), 6))
+pca_huc14 <- HUC14[,c(1,7,11)] %>% st_drop_geometry()
+
+#clean up to make similar scale (high good, low bad)
+pca_huc14 <- pca_huc14 %>% as_tibble() %>% mutate_at(vars(mean_deficit, mean_decid, mean_cad), ~max(., na.rm = TRUE) - (.))
+
+huc_pca <- prcomp(pca_huc14, center = TRUE, scale. = TRUE)
+
+```
+
+```{r}
+
+summary(huc_pca)
+huc_pca$rotation
+
+
+ggbiplot(huc_pca,ellipse=TRUE, groups=HUC14$NPP) + scale_color_brewer(palette = "RdBu")
+
+ggbiplot(huc_pca,ellipse=TRUE, choices = c(3,4), groups=HUC14$NPP) + scale_color_brewer(palette = "RdBu")
+```
+
+
+Now we can look at how the 12th HUC seperates the data.
+
+```{r, eval = FALSE}
+
+pca_huc12<- HUC12 %>% mutate(NPP = cut_interval(mean_npp, 3))
+
+pca_huc12 <- HUC12[, -c(1, 7,11)] %>% st_drop_geometry()
+
+#clean up to make similar scale (high good, low bad)
+pca_huc12 <- pca_huc12 %>% as_tibble() %>% mutate_at(vars(mean_deficit, mean_decid, mean_cad), ~max(., na.rm = TRUE) - (.))
+
+pca_pca12 <- prcomp(pca_huc12, center = TRUE, scale. = TRUE)
+
+```
+
+```{r}
+
+summary(huc_pca12)
+huc_pca12$rotation
+
+ggbiplot(pca_pca12,ellipse=TRUE, groups=HUC12$NPP)
+
+ggbiplot(pca_pca12,ellipse=TRUE, choices = c(3,4), groups=HUC12$NPP)
+```
+
+
+This is pretty cool! It looks like the bigger the dependance structure (e.g. 14th to 12th) the more you can tease out a signal with the variables. This is all unsupervised and might be affected by outliers... However, there does seem to be a pattern between hydrological units and NPP patterns, which might be helpful for understanding NPP trends given these dependance structures or 'productivity' relationships given the variables. Further investigation would be interesting and of course absolutely necessary :) 

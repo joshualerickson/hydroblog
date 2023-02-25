@@ -1,0 +1,204 @@
+---
+title: 'Mann-Kendall'
+layout: single-sidebar
+date: '2021-08-28'
+categories:
+  - R
+  - Hydrology
+  - Statistics
+subtitle: 'A look into Mann-Kenall test for monotonic trend.'
+summary: 'A look into Mann-Kenall test for monotonic trend.'
+authors: []
+lastmod: ''
+featured: yes
+output:
+  blogdown::html_page:
+    css: "style.css"
+image:
+  caption: '[Image credit: Josh Erickson](featured.png)'
+  placement: 2
+  focal_point: 'Center'
+  preview_only: no
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+
+
+<div id="intro" class="section level2">
+<h2>Intro</h2>
+<p>A lot of times in hydrology you’ll want to know whether a set of observations over time has a trend. This is usually obvious when the trend is substantial (eye-catching 👀) but less so when it is more subtle. To test the hypothesis that there is a trend we need to find a test statistic of some sort. There are a couple ways of doing this: regression coefficient or Mann-Kendall tests. Linear regression is a way of testing and is just fine (if assumptions are met) but today we’ll look into the Mann-Kendall test. The Mann-Kendall test is a non-parametric test that tests for a monotonic trend in a time series (or really any rank/ordered set). This means it is distribution free, which is very helpful if your data does not meet the assumptions of the linear regression test; however, it does need to be independent, e.g. no serial correlation. With this we’ll dive into <strong>Mann-Kendall</strong>!</p>
+</div>
+<div id="eda" class="section level2">
+<h2>EDA</h2>
+<p>I think it’s always good to bring in some data and start looking at a graph. Let’s take the annual water year peak flows from a gauging station and see what the observations look like. In the graph below it really looks like the trend is decreasing but it’s very close! This is where the Mann-Kendall (MK) test can help us make a decision; trend or no trend?</p>
+<pre class="r"><code>library(wildlandhydRo)
+library(tidyverse)
+yaak_peaks &lt;- wyUSGS(sites = &#39;12304500&#39;) %&gt;% filter(!is.na(Peak))
+
+yaak_peaks %&gt;% ggplot(aes(peak_dt, Peak)) + 
+  geom_line(size = 1) +
+  geom_smooth(method = &#39;lm&#39;)+
+  labs(x = &#39;Peak Date&#39;, y = &#39;Peak Flow (CFS)&#39;, title = &#39;Peak Flows for USGS Station 12304500; Yaak River, MT&#39;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="960" /></p>
+</div>
+<div id="calculating" class="section level2">
+<h2>Calculating</h2>
+The MK test is built around a standard normal distribution test. This is ultimately what we will be testing for, e.g. <span class="math inline">\(u_c\)</span>. Where,
+<center>
+<p><span class="math display">\[
+u_c=\frac{S-sign(S)}{\sqrt{Var(S)}}
+\]</span></p>
+</center>
+<p>If <span class="math inline">\(\left|{u_c}\right|\gt Z_{(\alpha/2)}\)</span> and <span class="math inline">\(Z_{(\alpha/2)}\)</span> is the standard normal variate, then the null hypothesis for a trend can be rejected. We can do this because Mann (1945) and Kendall (1975) showed that <span class="math inline">\(S\)</span> follows a standard normal distribution as well as solved for the <span class="math inline">\(\sqrt{Var(S)}\)</span>. So, how the heck do we solve for <span class="math inline">\(S\)</span>? What is <span class="math inline">\(S\)</span>? This is where we’ll need to dig in a little bit and understand what something called ‘<span class="math inline">\(sign\)</span>’ does and also how to solve for <span class="math inline">\(\sqrt{Var(S)}\)</span>.</p>
+<div id="s-and-sign" class="section level3">
+<h3>S and sign</h3>
+<p>When I first started this deep dive into Mann-Kendall I got a little hung up on the sign function aka <em>signum</em>. It’s a little abstract at first (IMO) but is really just a counting algorithm. At it’s core, it <em>really is</em> just figuring out whether a value is <span class="math inline">\(\lt 0\)</span>, <span class="math inline">\(\gt 0\)</span> or <span class="math inline">\(= 0\)</span>. The sign function is within the <span class="math inline">\(S\)</span> statistic. The <span class="math inline">\(S\)</span> statistic is approximately normally distributed (remember above and solving for <span class="math inline">\(u_c\)</span>) with a mean of 0 and a variance of <span class="math inline">\(\sqrt{Var(S)}\)</span>. Below is the equation for <span class="math inline">\(S\)</span>,</p>
+<center>
+<span class="math display">\[
+S = \sum^{N-1}_{t=1}\sum^{N}_{t&#39;=t+1}sign(X(t&#39;)-X(t))
+\]</span>
+</center>
+<p>For example, let’s say we had some observations over time (important because they are ordered) and we wanted to know whether the point after (<span class="math inline">\(X(t&#39;)\)</span>) is bigger or smaller than (<span class="math inline">\(X(t)\)</span>) we could just take <span class="math inline">\(X(t&#39;)-X(t)\)</span> and if it’s negative it means it’s smaller and if it’s positive it means it’s bigger (also 0 if they’re equal). But let’s say we do this as a rolling subtraction, e.g. <span class="math inline">\(x_1-x_1, x_2-(x_1, x_2),x_3-(x_1, x_2,x_3),\dots, x_n-(x_1,\dots,x_n)\)</span>. Now if we did this for each point as we progress to the end we would have a lot of positive and negative values and maybe some equal results right? In the code below you can see that this is what is going on, that is we are subtracting but rolling in time from the beginning to end.</p>
+<pre class="r"><code>x &lt;- yaak_peaks$Peak
+n &lt;- length(x)
+S &lt;- 0.0   
+for(j in 1:n) {
+    S2 &lt;- list(data.frame(rolling_sub = x[j] - x[1:j], name = paste0(j)))
+    S &lt;- append(S, S2)
+  } 
+head(S)</code></pre>
+<pre><code>## [[1]]
+## [1] 0
+## 
+## [[2]]
+##   rolling_sub name
+## 1           0    1
+## 
+## [[3]]
+##   rolling_sub name
+## 1       -4170    2
+## 2           0    2
+## 
+## [[4]]
+##   rolling_sub name
+## 1       -5830    3
+## 2       -1660    3
+## 3           0    3
+## 
+## [[5]]
+##   rolling_sub name
+## 1       -5290    4
+## 2       -1120    4
+## 3         540    4
+## 4           0    4
+## 
+## [[6]]
+##   rolling_sub name
+## 1       -4420    5
+## 2        -250    5
+## 3        1410    5
+## 4         870    5
+## 5           0    5</code></pre>
+<p>Let’s take a closer look in the graph below. The data.frame below <code>S</code> is just taking the peaks and subtracting <span class="math inline">\(X(t&#39;)-X(t)\)</span> in this rolling pattern which inevitably is getting larger and larger samples as time goes on, e.g. <span class="math inline">\(x_n-(x_1,\dots,x_n)\)</span>. As you can see, values with more blue tend to be higher than values with more black. This will matter in the next steps.</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+<p>Ok, the next step would be to add them up right? Well, sure but <em>sign</em> does this in an pretty cool and effective way that doesn’t let outliers drive the final results. Remember, the sign function is a counting method and all it does is determine whether the value is -, + or 0 and then gives either a -1, 1 or 0 as a result! By doing this the <code>sign()</code> makes it easy to interpret all of the -, + and 0’s.</p>
+<p><span class="math display">\[
+sign(a)=\begin{cases}\frac{a}{\left|a\right|}, &amp; \text{if} \ x \neq 0 \\
+0, &amp; \text{if} \ x = 0
+\end{cases}=\large\begin{cases}1, &amp; \text{if} \ a \gt 0 \\ 
+0, &amp; \text{if} \ a = 0 \\
+-1, &amp; \text{if} \ a \lt 0
+\end{cases}
+\]</span></p>
+<p>So if we do this to the graph above we can see what each iteration expresses in terms of lower, higher or equal to in point graph. The point graph is a intuitive graphic for me in this problem because S is essentially a reflection of ‘the more +, - or 0’s you have as time goes on, the more this will determine your trend’.</p>
+<pre class="r"><code>sign_it &lt;- S_df %&gt;% 
+  group_by(name) %&gt;% 
+  nest() %&gt;%
+  mutate(sign_result = map(data, ~sign(.$rolling_sub))) %&gt;% 
+  select(name, sign_result) %&gt;% 
+  unnest(sign_result) %&gt;% 
+  ungroup()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="960" /></p>
+<p>So the next step in solving for <span class="math inline">\(S\)</span> is to sum up all of those points! This will give us a final sum and an reflection of a trend, e.g. more negative means downward and more positive means upward and closer to zero means no trend!</p>
+<pre class="r"><code>sum(sign_it$sign_result)</code></pre>
+<pre><code>## [1] -373</code></pre>
+<p>Now if we look at the <code>Kendall::MannKendall()</code> function you’ll see we get the same answer. How cool is that!?</p>
+<pre class="r"><code>#Mann-Kendall function S score
+
+Kendall::MannKendall(yaak_peaks$Peak)$S[1]</code></pre>
+<pre><code>## [1] -373</code></pre>
+</div>
+<div id="sqrtvars" class="section level3">
+<h3><span class="math inline">\(\sqrt{Var(S)}\)</span></h3>
+<p>Now let’s move on to the variance part of the <span class="math inline">\(S\)</span> equation. The <span class="math inline">\(VAR(S)\)</span> will help us finish the <span class="math inline">\(S\)</span> and also give us an idea of the what’s going on with the variation in the data. To solve for <span class="math inline">\(VAR(S)\)</span> we need to use the equation below,</p>
+<p><span class="math display">\[
+VAR(S)=\frac{1}{18}\left[n(n-1)(2n+5)-\sum_{p-1}^{g}t_{p}(t_{p}-1)(2t_{p}+5)\right]
+\]</span></p>
+<p>where <span class="math inline">\(n\)</span> is equal to the sample size and <span class="math inline">\(t_p\)</span> is equal to repeated values in the sample. Most of the time in hydrology we will not get repeated values when we sample but in this example we did so we’ll need to account for those repeats using <span class="math inline">\(\sum_{p-1}^{g}t_{p}(t_{p}-1)(2t_{p}+5)\)</span> above, e.g. peaks that are the same. There are also some rules for sample size where <span class="math inline">\(n \le 10\)</span> will need to use a table of probabilities and not perform <span class="math inline">\(VAR(S)\)</span> but most of the time you’ll have over 10 samples (i hope 😉).</p>
+<pre class="r"><code>yaak_peaks %&gt;% count(Peak) %&gt;% filter(n&gt;1)</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##    Peak     n
+##   &lt;dbl&gt; &lt;int&gt;
+## 1  4600     2
+## 2  6490     3
+## 3  6600     2
+## 4 10200     2
+## 5 12100     2</code></pre>
+<div class="b--red ba bw2 ma2 pa4 shadow-1">
+<p>FYI you won’t use <span class="math inline">\(\sum_{p-1}^{g}t_{p}(t_{p}-1)(2t_{p}+5)\)</span> if there are no repeats in the time series and will just solve for <span class="math inline">\(\frac{n(n-1)(2n+5)}{18}\)</span>.</p>
+</div>
+<p>So let’s solve for <span class="math inline">\(VAR(S)\)</span>! We’ll need the length of the vector to get <span class="math inline">\(n\)</span> and we’ll need to perform the summation of the repeated values.</p>
+<pre class="r"><code>n &lt;- length(yaak_peaks$Peak)
+repeats &lt;- yaak_peaks %&gt;% count(Peak) %&gt;% filter(n&gt;1)
+
+repeat_res &lt;- vector()
+for(i in 1:length(repeats$n)){
+  rr &lt;- repeats$n[i]*(repeats$n[i]-1)*(2*repeats$n[i] + 5)
+  repeat_res &lt;- append(repeat_res, rr)
+}
+
+var_s &lt;- (1/18)*(n*(n-1)*(2*n+5) - sum(repeat_res))
+var_s</code></pre>
+<pre><code>## [1] 31192.33</code></pre>
+<p>And now if we look at the <code>Kendall::MannKendall()</code> result we can see that they are the same!</p>
+<pre class="r"><code>Kendall::MannKendall(yaak_peaks$Peak)$varS[1]</code></pre>
+<pre><code>## [1] 31192.33</code></pre>
+<p>With that we can now complete the equation for <span class="math inline">\(S\)</span>!</p>
+</div>
+</div>
+<div id="findings" class="section level2">
+<h2>Findings</h2>
+<p>So we went through the details of solving for <span class="math inline">\(S\)</span> and now we need to bring it all back together. Remember,</p>
+<p><span class="math display">\[
+u_c=\frac{S-sign(S)}{\sqrt{Var(S)}}
+\]</span></p>
+<p>That means we can now plug in the numbers from above and find out what <span class="math inline">\(u_c\)</span> is!</p>
+<pre class="r"><code>u_c &lt;- (sum(sign_it$sign_result)-sign(sum(sign_it$sign_result)))/(sqrt(var_s))</code></pre>
+<p>From here, since <span class="math inline">\(u_c\)</span> follows a normal distribution we can test whether <span class="math inline">\(\left|{u_c}\right|\gt Z_{(\alpha/2)}\)</span>. To do that we’ll just use the code below.</p>
+<pre class="r"><code>z_alpha_div_2 &lt;- qnorm(0.95, mean = 0, sd = 1)
+
+abs(u_c) &gt; z_alpha_div_2</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>p_value &lt;- 2*pnorm(-abs(u_c), mean = 0, sd = 1)
+p_value</code></pre>
+<pre><code>## [1] 0.03517881</code></pre>
+<p>Thus, we can reject the null hypothesis at a significance level of 0.05 that a trend exists.</p>
+</div>
+<div id="the-easy-way" class="section level2">
+<h2>The easy way</h2>
+<p>Most of the time (all) you will just run a Mann-Kendall type function and get the results of your test via a p value. Like in the code below, the print out says that we have a p value of 0.0352 and if we set our <span class="math inline">\(Z_{\alpha/2}\)</span> to 0.05 then we can reject the null!</p>
+<pre class="r"><code>Kendall::MannKendall(yaak_peaks$Peak)</code></pre>
+<pre><code>## tau = -0.18, 2-sided pvalue =0.035179</code></pre>
+<p>As you can see it is the same as the example above with <code>p_value</code>. Now we can say that the peak flow are trending down!</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="960" /></p>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>When using Mann-Kendall test to find a trend in a time series just remember that the data shouldn’t be autocorrelated (serial correlation) and it’s good to have at least more than 10 samples. From there, it’s a counting method (signum) that figures out how much the observations move +, - or don’t change over time. Since it’s normally distributed (<span class="math inline">\(S\)</span>), we can test whether the value <span class="math inline">\(S\)</span> is statistically significant or not using the standard normal distribution! Hope this helps! Until next time.</p>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Kendall, M. G. (1975). Rank correlation methods. 2nd impression. Charles Griffin and Company Ltd. London and High Wycombe.</p>
+<p>Mann, H. B. (1945). Nonparametric tests against trend. Econometrica: Journal of the econometric society, 245-259.</p>
+</div>

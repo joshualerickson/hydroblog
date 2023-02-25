@@ -1,0 +1,101 @@
+---
+title: tidyrgee
+layout: single-sidbar
+author: Josh Erickson
+date: '2022-09-22'
+slug: []
+categories:
+  - Hydrology
+  - Remote Sensing
+  - R
+tags:
+  - https://github.com/r-tidy-remote-sensing/tidyrgee
+subtitle: ''
+summary: 'Taking a look at the {remr} and how one might use it for art or analysis.'
+authors: []
+lastmod: ''
+featured: yes
+output:
+  blogdown::html_page:
+    css: "style.css"
+    toc: true
+    toc_depth: 3
+    self_contained: false
+image:
+  caption: '[Image credit: Josh Erickson](featured.png)'
+  placement: 2
+  focal_point: 'Center'
+  preview_only: no
+draft: yes
+---
+
+```{r, message=FALSE, warning=FALSE, error = F, include=F}
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")),fig.width = 10, fig.height = 5,
+                      warning = FALSE, message = FALSE, error = FALSE)
+```
+
+
+```{r}
+library(rgee)
+library(tidyrgee)
+ee_Initialize(gcs = TRUE)
+```
+
+```{r}
+
+library(gwavr)
+library(tidyverse)
+library(exploreRGEE)
+library(whitewater)
+library(sf)
+
+cur_cond <- ww_current_conditions()
+
+basins <- cur_cond %>% filter(TimeZoneCode == 'MDT',
+                              StatisticsStatusDescription %in% c('All-time high for this day'))
+
+library(future)
+plan(multisession(workers = 11))
+basins_dv <- ww_dvUSGS(basins$SiteNumber,
+                       parallel = TRUE,
+                       verbose = FALSE)
+
+basins_sf <- basins %>% st_as_sf(coords = c('Longitude', 'Latitude'), crs = 4326)
+
+basins_nhd <- gwavr:::get_Basin(basins_sf)
+
+prism <- ee$ImageCollection("IDAHO_EPSCOR/GRIDMET")$select('pr')
+
+ee_prism <- prism %>% 
+            as_tidyee() %>% 
+            mutate(wy = whitewater:::waterYear(date)) %>% 
+            group_by(wy) %>% 
+            summarise('sum')
+
+
+ee_basin_extract <- ee_extract_tidy(ee_prism, 
+                                    basins_nhd,
+                                    stat = 'sum',
+                                    scale = 4638.3,
+                                    via = 'gcs',
+                                    container = 'jle_rasters')
+
+basin_wy <- basins_dv %>% ww_wyUSGS(basins_dv, 
+                                    parallel = TRUE,
+                                    verbose = FALSE)
+
+meta <- ee_prism$ee_ob$getInfo()
+
+ee_basin_stats <- ee_basin_extract %>% 
+                  mutate(wy = ee_prism$vrt$wy) %>% 
+                  left_join(basin_wy, by = c('wy', 'SiteNumber' = 'site_no'))
+
+ee_basin_stats %>% 
+  ggplot(aes(date, rs)) +
+  geom_line() +
+  geom_line(aes(date,Flow*1000), col = 'red') + 
+  scale_y_continuous(sec.axis = sec_axis(~./1000)) +
+  facet_wrap(~SiteNumber, scales = 'free')
+
+```
+

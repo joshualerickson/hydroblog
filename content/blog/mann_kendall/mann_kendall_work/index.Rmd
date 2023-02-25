@@ -1,0 +1,253 @@
+---
+title: 'Mann-Kendall'
+layout: single-sidebar
+date: '2021-08-28'
+categories:
+  - R
+  - Hydrology
+  - Statistics
+subtitle: 'A look into Mann-Kenall test for monotonic trend.'
+summary: 'A look into Mann-Kenall test for monotonic trend.'
+authors: []
+lastmod: ''
+featured: yes
+output:
+  blogdown::html_page:
+    css: "style.css"
+image:
+  caption: '[Image credit: Josh Erickson](featured.png)'
+  placement: 2
+  focal_point: 'Center'
+  preview_only: no
+---
+```{r,include=F}
+library(latex2exp)
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")),fig.width = 10, fig.height = 5,
+                      warning = FALSE, message = FALSE, error = FALSE)
+thematic::thematic_rmd(font = 'Montserrat', bg = '#f2f2f1', fg = '#000000')
+ggplot2::theme_set(ggplot2::theme_bw(base_size = 17))
+```
+
+## Intro
+
+A lot of times in hydrology you'll want to know whether a set of observations over time has a trend. This is usually obvious when the trend is substantial (eye-catching `r emo::ji('eyes')`) but less so when it is more subtle. To test the hypothesis that there is a trend we need to find a test statistic of some sort. There are a couple ways of doing this: regression coefficient or Mann-Kendall tests. Linear regression is a way of testing and is just fine (if assumptions are met) but today we'll look into the Mann-Kendall test. The Mann-Kendall test is a non-parametric test that tests for a monotonic trend in a time series (or really any rank/ordered set). This means it is distribution free, which is very helpful if your data does not meet the assumptions of the linear regression test; however, it does need to be independent, e.g. no serial correlation. With this we'll dive into **Mann-Kendall**!   
+
+## EDA  
+
+I think it's always good to bring in some data and start looking at a graph. Let's take the annual water year peak flows from a gauging station and see what the observations look like. In the graph below it really looks like the trend is decreasing but it's very close! This is where the Mann-Kendall (MK) test can help us make a decision; trend or no trend?
+
+```{r}
+library(wildlandhydRo)
+library(tidyverse)
+yaak_peaks <- wyUSGS(sites = '12304500') %>% filter(!is.na(Peak))
+
+yaak_peaks %>% ggplot(aes(peak_dt, Peak)) + 
+  geom_line(size = 1) +
+  geom_smooth(method = 'lm')+
+  labs(x = 'Peak Date', y = 'Peak Flow (CFS)', title = 'Peak Flows for USGS Station 12304500; Yaak River, MT')
+```
+
+
+## Calculating  
+
+The MK test is built around a standard normal distribution test. This is ultimately what we will be testing for, e.g. $u_c$. Where, 
+<center>
+$$
+u_c=\frac{S-sign(S)}{\sqrt{Var(S)}}
+$$
+
+</center>
+
+If $\left|{u_c}\right|\gt Z_{(\alpha/2)}$ and $Z_{(\alpha/2)}$ is the standard normal variate, then the null hypothesis for a trend can be rejected. We can do this because Mann (1945) and Kendall (1975) showed that $S$ follows a standard normal distribution as well as solved for the $\sqrt{Var(S)}$. So, how the heck do we solve for $S$? What is $S$? This is where we'll need to dig in a little bit and understand what something called '$sign$' does and also how to solve for $\sqrt{Var(S)}$.
+
+### S and sign 
+
+When I first started this deep dive into Mann-Kendall I got a little hung up on the sign function aka *signum*. It's a little abstract at first (IMO) but is really just a counting algorithm. At it's core, it *really is* just figuring out whether a value is $\lt 0$, $\gt 0$ or $= 0$. The sign function is within the $S$ statistic. The $S$ statistic is approximately normally distributed (remember above and solving for $u_c$) with a mean of 0 and a variance of $\sqrt{Var(S)}$. Below is the equation for $S$,
+
+<center>
+$$
+S = \sum^{N-1}_{t=1}\sum^{N}_{t'=t+1}sign(X(t')-X(t))
+$$
+</center>
+
+For example, let's say we had some observations over time (important because they are ordered) and we wanted to know whether the point after ($X(t')$) is bigger or smaller than ($X(t)$) we could just take $X(t')-X(t)$ and if it's negative it means it's smaller and if it's positive it means it's bigger (also 0 if they're equal). But let's say we do this as a rolling subtraction, e.g. $x_1-x_1, x_2-(x_1, x_2),x_3-(x_1, x_2,x_3),\dots, x_n-(x_1,\dots,x_n)$. Now if we did this for each point as we progress to the end we would have a lot of positive and negative values and maybe some equal results right? In the code below you can see that this is what is going on, that is we are subtracting but rolling in time from the beginning to end.
+```{r}
+x <- yaak_peaks$Peak
+n <- length(x)
+S <- 0.0   
+for(j in 1:n) {
+    S2 <- list(data.frame(rolling_sub = x[j] - x[1:j], name = paste0(j)))
+    S <- append(S, S2)
+  }	
+head(S)
+```
+
+Let's take a closer look in the graph below. The data.frame below `S` is just taking the peaks and subtracting $X(t')-X(t)$ in this rolling pattern which inevitably is getting larger and larger samples as time goes on, e.g. $x_n-(x_1,\dots,x_n)$. As you can see, values with more blue tend to be higher than values with more black. This will matter in the next steps.  
+
+```{r, echo = F}
+S_df <- plyr::rbind.fill(S[2:65])
+
+S_df %>% 
+  mutate(sign = if_else(rolling_sub>0, 'pos',if_else(rolling_sub==0, 'zero', 'neg')),
+         sign = factor(sign, levels = c('pos', 'zero' , 'neg' ))) %>% 
+  ggplot(aes(name, rolling_sub, fill = sign)) + geom_col()+
+  scale_fill_manual(values = c("#3B9AB2" ,"#F21A00", "#1C1718")) +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x  = element_blank())
+
+```
+
+
+Ok, the next step would be to add them up right? Well, sure but *sign* does this in an pretty cool and effective way that doesn't let outliers drive the final results.  Remember, the sign function is a counting method and all it does is determine whether the value is -, + or 0 and then gives either a -1, 1 or 0 as a result! By doing this the `sign()` makes it easy to interpret all of the -, + and 0's.
+
+$$
+sign(a)=\begin{cases}\frac{a}{\left|a\right|}, & \text{if} \ x \neq 0 \\
+0, & \text{if} \ x = 0
+\end{cases}=\large\begin{cases}1, & \text{if} \ a \gt 0 \\ 
+0, & \text{if} \ a = 0 \\
+-1, & \text{if} \ a \lt 0
+\end{cases}
+$$
+
+So if we do this to the graph above we can see what each iteration expresses in terms of lower, higher or equal to in point graph. The point graph is a intuitive graphic for me in this problem because S is essentially a reflection of 'the more +, - or 0's you have as time goes on, the more this will determine your trend'.  
+
+```{r}
+
+sign_it <- S_df %>% 
+  group_by(name) %>% 
+  nest() %>%
+  mutate(sign_result = map(data, ~sign(.$rolling_sub))) %>% 
+  select(name, sign_result) %>% 
+  unnest(sign_result) %>% 
+  ungroup()
+```
+
+```{r echo = F}
+sign_it  %>% 
+  group_by(name) %>% 
+  summarise(sum_name = sum(sign_result)) %>% 
+  mutate(sign = if_else(sum_name>0, 'pos',if_else(sum_name==0, 'zero', 'neg')),
+         sign = factor(sign, levels = c('pos', 'zero' , 'neg' ))) %>% 
+  ggplot(aes(name, sum_name, color = sign)) +
+  geom_point(size = 3, alpha = 0.9) +
+  scale_color_manual(values = c("#3B9AB2" ,"#F21A00", "#1C1718")) +
+  theme(axis.text.x = element_blank()) +
+  labs(color = 'result', title = TeX("Looking at $\\sum sign(X(t')-X(t))$ over each iteration"),
+       y = TeX("$\\sum sign(X(t')-X(t))$"), x = 'Iterations' 
+       ) 
+```
+
+
+So the next step in solving for $S$ is to sum up all of those points! This will give us a final sum and an reflection of a trend, e.g. more negative means downward and more positive means upward and closer to zero means no trend!  
+
+```{r}
+sum(sign_it$sign_result)
+```
+
+Now if we look at the `Kendall::MannKendall()` function you'll see we get the same answer. How cool is that!?
+
+```{r}
+#Mann-Kendall function S score
+
+Kendall::MannKendall(yaak_peaks$Peak)$S[1]
+```
+
+### $\sqrt{Var(S)}$  
+
+Now let's move on to the variance part of the $S$ equation.  The $VAR(S)$ will help us finish the $S$ and also give us an idea of the what's going on with the variation in the data. To solve for $VAR(S)$ we need to use the equation below,
+
+$$
+VAR(S)=\frac{1}{18}\left[n(n-1)(2n+5)-\sum_{p-1}^{g}t_{p}(t_{p}-1)(2t_{p}+5)\right]
+$$
+
+where $n$ is equal to the sample size and $t_p$ is equal to repeated values in the sample. Most of the time in hydrology we will not get repeated values when we sample but in this example we did so we'll need to account for those repeats using $\sum_{p-1}^{g}t_{p}(t_{p}-1)(2t_{p}+5)$ above, e.g. peaks that are the same. There are also some rules for sample size where $n \le 10$ will need to use a table of probabilities and not perform $VAR(S)$ but most of the time you'll have over 10 samples (i hope `r emo::ji('wink')`).  
+```{r}
+yaak_peaks %>% count(Peak) %>% filter(n>1)
+```
+:::{.b--red .ba .bw2 .ma2 .pa4 .shadow-1}
+FYI you won't use $\sum_{p-1}^{g}t_{p}(t_{p}-1)(2t_{p}+5)$ if there are no repeats in the time series and will just solve for $\frac{n(n-1)(2n+5)}{18}$.  
+:::  
+
+So let's solve for $VAR(S)$! We'll need the length of the vector to get $n$ and we'll need to perform the summation of the repeated values.  
+```{r}
+n <- length(yaak_peaks$Peak)
+repeats <- yaak_peaks %>% count(Peak) %>% filter(n>1)
+
+repeat_res <- vector()
+for(i in 1:length(repeats$n)){
+  rr <- repeats$n[i]*(repeats$n[i]-1)*(2*repeats$n[i] + 5)
+  repeat_res <- append(repeat_res, rr)
+}
+
+var_s <- (1/18)*(n*(n-1)*(2*n+5) - sum(repeat_res))
+var_s
+```
+
+And now if we look at the `Kendall::MannKendall()` result we can see that they are the same! 
+
+```{r}
+Kendall::MannKendall(yaak_peaks$Peak)$varS[1]
+```
+
+With that we can now complete the equation for $S$!  
+
+## Findings  
+
+So we went through the details of solving for $S$ and now we need to bring it all back together. Remember, 
+
+$$
+u_c=\frac{S-sign(S)}{\sqrt{Var(S)}}
+$$
+
+That means we can now plug in the numbers from above and find out what $u_c$ is!  
+
+```{r}
+u_c <- (sum(sign_it$sign_result)-sign(sum(sign_it$sign_result)))/(sqrt(var_s))
+```
+
+From here, since $u_c$ follows a normal distribution we can test whether $\left|{u_c}\right|\gt Z_{(\alpha/2)}$. To do that we'll just use the code below.  
+
+```{r}
+z_alpha_div_2 <- qnorm(0.95, mean = 0, sd = 1)
+
+abs(u_c) > z_alpha_div_2
+p_value <- 2*pnorm(-abs(u_c), mean = 0, sd = 1)
+p_value
+```
+
+Thus, we can reject the null hypothesis at a significance level of 0.05 that a trend exists.  
+
+## The easy way
+
+Most of the time (all) you will just run a Mann-Kendall type function and get the results of your test via a p value. Like in the code below, the print out says that we have a p value of `r round(Kendall::MannKendall(yaak_peaks$Peak)$sl[1], 4)` and if we set our $Z_{\alpha/2}$ to 0.05 then we can reject the null!  
+
+```{r}
+Kendall::MannKendall(yaak_peaks$Peak)
+```
+
+As you can see it is the same as the example above with `p_value`. Now we can say that the peak flow are trending down!
+
+```{r echo = F}
+yaak_peaks %>% ggplot(aes(peak_dt, Peak)) + 
+  geom_line(size = 1) +
+  geom_smooth(method = 'lm')+
+  labs(x = 'Peak Date', y = 'Peak Flow (CFS)', title = 'Peak Flows for USGS Station 12304500; Yaak River, MT') +
+  annotate(geom = 'text', x = as.Date('1985-01-01'),
+           y = 7500,size = 34, label = 'Rejected!')
+```
+
+## Conclusion  
+
+When using Mann-Kendall test to find a trend in a time series just remember that the data shouldn't be autocorrelated (serial correlation) and it's good to have at least more than 10 samples. From there, it's a counting method (signum) that figures out how much the observations move +, - or don't change over time. Since it's normally distributed ($S$), we can test whether the value $S$ is statistically significant or not using the standard normal distribution! Hope this helps! Until next time.  
+
+
+## References  
+
+Kendall, M. G. (1975). Rank correlation methods. 2nd impression. Charles Griffin and Company Ltd. London and High Wycombe.
+
+Mann, H. B. (1945). Nonparametric tests against trend. Econometrica: Journal of the econometric society, 245-259.
+
+
+
+
+

@@ -1,0 +1,43 @@
+
+.compliment-extra {
+  font-size: 2em;
+  color: black;
+  bold: true;
+  font-family: Sans-Serif;
+
+}
+
+.me-box {
+background-image: url(trexr_files/www/images/me.png);
+height: 280px;
+width: 220px;
+position: absolute;
+bottom:100px;
+    right:40%;
+    left:40%;
+}
+
+
+
+.trexr-box {
+background-image: url(trexr_files/www/images/trexrgif.gif);
+height: 375px;
+width: 600px;
+position: absolute;
+bottom:50px;
+    right:25%;
+    left:25%;
+}
+
+.so-box {
+background-image: url(trexr_files/www/images/shout_out.png);
+height: 380px;
+width: 1130px;
+position: absolute;
+bottom:10px;
+    right:0%;
+    left:0%;
+}
+
+
+

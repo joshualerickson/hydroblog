@@ -1,0 +1,205 @@
+---
+title: 'Ridges & Wes Anderson'
+layout: single-sidebar
+date: '2021-04-04'
+slug: 2021-04-04-ridges-wes-anderson/ridges
+categories:
+  - R
+  - Hydrology
+tags:
+  - R
+  - Hydrology
+subtitle: 'This is a quick exploration into the {wesanderson} and {ggridges} using USGS daily data.'
+summary: 'This is a quick exploration into the {wesanderson} and {ggridges} using USGS daily data.'
+authors: []
+lastmod: ''
+featured: yes
+output:
+  blogdown::html_page:
+    css: "style.css"
+image:
+  caption: '[Image credit: Josh Erickson](featured.png)'
+  placement: 2
+  focal_point: 'Center'
+  preview_only: no
+---
+```{r, include=FALSE}
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")),fig.width = 10, fig.height = 5,
+                      warning = FALSE, message = FALSE, error = FALSE)
+thematic::thematic_rmd(font = 'Montserrat', bg = '#f2f2f1', fg = '#000000')
+```
+
+# Intro
+
+I've been wanting to use the [wesanderson](https://github.com/karthik/wesanderson) package on some hydrological data using ridge plots ([ggridges](https://github.com/wilkelab/ggridges)) and today I had the chance to play around and finally make some graphs. So, we'll just make some basic graphs that hopefully will be aestetically pleasing and get the message across to stake holders, layperson, or others in your circle. 
+
+First we'll need a few packages.
+
+```{r, message=F, warning=F}
+library(wildlandhydRo)
+library(ggridges)
+library(wesanderson)
+library(tidyverse)
+```
+
+Now let's get some USGS streamflow data! We'll grab the daily values for the Yaak River gauging station near Troy, Montana and also grab some annual and monthly stats using some functions in [wildlandhydRo](https://github.com/joshualerickson/wildlandhydRo). The wildlandhydRo package is a wrapper around [dataRetrieval]() but does some tidying and extra stats and also can run in parallel which is nice if your grabbing lots of data, e.g. multiple sites.
+
+```{r, message=F, warning=F}
+
+yaak_dv <- batch_USGSdv(sites = '12304500',parameterCd = '00060')
+
+yaak_my <- yaak_dv %>% wymUSGS()
+
+```
+
+Sweet, now we have some data we can explore with `ggplot2` and `ggridges` to see if there are any density plots that might help us understand the distribution of streamflow at this site.
+
+Let's start with monthly stats; like, what's the monthly distribution of daily streamflow at this site? We'll bring in the daily values and group by month.
+
+```{r, message=F, warning=F}
+yaak_dv %>% 
+  ggplot(aes(Flow, month, group = month)) +
+  geom_density_ridges() + theme_ridges() + labs(title = 'Monthly Distribution of Daily Flow; Yaak River near Troy, Montana')
+```
+
+As you can see, some of the data distributions (months April, May, June) have way different values. This might not be the most aestetically pleasing graph but it does tell us that these months are the high streamflow months on average! What if we just looked at them together? Here, we'll start to add some color with the `wesanderson` palette.
+
+```{r, warning=F, message=F}
+yaak_dv %>% filter(month %in% c(4,5,6)) %>%
+  ggplot(aes(Flow, month_abb,  fill = stat(x))) +
+  geom_density_ridges_gradient()+ 
+  scale_fill_gradientn(colors = wes_palette('Darjeeling2', type = 'continuous')) + theme_ridges()  +
+  labs(title = 'Apr-Jun Distribution of Daily Flow; Yaak River near Troy, Montana', y = 'Month', fill = 'Mean Flow (cfs)')
+```
+ Or, what's nice with `ggridges` is overlaying a cdf gradient and add a rug as well.
+ 
+```{r}
+yaak_dv %>% filter(month %in% c(4,5,6)) %>%
+  ggplot(aes(Flow, month_abb, fill = 0.5 - abs(0.5 - stat(ecdf)))) +
+  stat_density_ridges(geom = "density_ridges_gradient", calc_ecdf = TRUE,
+    jittered_points = TRUE,
+    position = position_points_jitter(width = 0.05, height = 0),
+    point_shape = '|', point_size = 1, point_alpha = 1) +
+  scale_fill_gradientn(colors = wes_palette('Chevalier1', type = 'continuous')) + theme_ridges()  +
+  labs(title = 'Apr-Jun Distribution of Daily Flow; \nYaak River near Troy, Montana', y = 'Month', fill = 'Probability (CDF)')
+```
+ 
+Here we can start to see that May has the highest mean Flow and June/April are very similar. What would the other months look like if we left out Apr-Jun? We can do the same as above except leave those months out.
+
+```{r, warning=F, message=F}
+yaak_dv %>% filter(!month %in% c(4,5,6)) %>%
+  ggplot(aes(Flow, month_abb, fill = stat(x))) +
+  geom_density_ridges_gradient()+ 
+  scale_fill_gradientn(colors = wes_palette('Chevalier1', type = 'continuous')) + theme_ridges()  +
+  labs(title = 'July-March Distribution of Daily Flow; \nYaak River near Troy, Montana', y = 'Month', fill = 'Mean Flow (cfs)') + scale_x_continuous(limits = c(1,1500))
+```
+
+
+Probably not the best graph to do because we are leaving out a chunk of data, i.e. can be misleading... However, you can play with the `scale` and `rel_min_height` argument in `geom_density_ridges` which might make it possible to include all the months while keeping the balance of message and aesthetics. Let's see. 
+```{r, warning=F, message=F}
+yaak_dv %>% 
+  group_by(month) %>% mutate(mean_flow = round(mean(Flow),0)) %>% 
+  ungroup() %>% 
+  ggplot(aes(Flow, month_abb)) +
+  geom_density_ridges(aes(fill = mean_flow),scale = 15,rel_min_height = 0.01)+ 
+  scale_fill_gradientn(colors = wes_palette('Zissou1', type = 'continuous')) + theme_ridges()  +
+  labs(title = 'Monthly Distribution of Daily Flow; \nYaak River near Troy, Montana', y = 'Month', fill = 'Mean Flow (cfs)')+ scale_x_continuous(limits = c(-500,12000))
+```
+
+Not the best but better than the first try. Play around with these arguments a try and strike a balance with the message and looks. Here, we are showing that May is the month with the highest mean flow and that you decrease mean flow the farther you move away. 
+
+What about across years? Now that we know what month has the highest mean flow we can also use that to our advantage when plotting by year. But first, let's see how the daily flow looks over the period of record for this gauging station.
+
+```{r, warning=F, message=F}
+yaak_dv %>% 
+  group_by(wy) %>% mutate(mean_flow = round(mean(Flow),0)) %>% 
+  ungroup() %>% 
+  ggplot(aes(Flow, wy, group = wy)) +
+  geom_density_ridges(aes(fill = mean_flow),scale = 10,rel_min_height = 0.1)+ 
+  scale_fill_gradientn(colors = wes_palette('Rushmore1', type = 'continuous')) + theme_ridges()  +
+  labs(title = 'Water Year Distribution of Daily Flow; \nYaak River near Troy, Montana', y = 'Water Year', fill = 'Mean Flow (cfs)')+ scale_x_continuous(limits = c(1,500))
+```
+
+This is cool to look at but probably not the most revealing or easy to dissecting anything meaningful. What if we only used Apr-Jun daily flow values and looked at the distributions, would that clear anything up?
+
+```{r, warning=F, message=F}
+yaak_dv %>% filter(month %in% c(4,5,6)) %>% 
+  group_by(wy) %>% mutate(mean_flow = round(mean(Flow),0)) %>% 
+  ungroup() %>% 
+  ggplot(aes(Flow, wy, group = wy)) +
+  geom_density_ridges(aes(fill = mean_flow),scale = 15,rel_min_height = 0.001)+ 
+  scale_fill_gradientn(colors = wes_palette('Darjeeling2', type = 'continuous')) + theme_ridges()  +
+  labs(title = 'Water Year Distribution of Daily Flow; \nYaak River near Troy, Montana',subtitle = 'Mean Flow for Apr-Jun', y = 'Water Year', fill = 'Mean Flow (cfs)')+ scale_x_continuous(limits = c(-500,10000))
+```
+
+Still not the best, so what if we faceted by month!? Let's try that and see if there are any patterns in streamflow distributions.
+
+```{r, warning=F, message=F}
+yaak_dv %>% filter(month %in% c(3,4,5,6,7,8)) %>%  
+  ggplot(aes(Flow, wy, group = wy, fill = stat(x))) +
+  geom_density_ridges_gradient(scale = 25,rel_min_height = 0.1)+ 
+  scale_fill_gradientn(colors = wes_palette('Darjeeling2', type = 'continuous')) + 
+theme_ridges() + 
+  labs(title = 'Water Year Distribution of Daily Flow; \nYaak River near Troy, Montana', y = 'Water Year', fill = 'Mean Flow (cfs)', subtitle = 'broken into months') + facet_wrap(~month_abb, scales = 'free', ncol = 2)
+```
+
+
+This is somewhat more revealing, especially the later summer distributions. It almost looks like July and August are lower than in the past. Let's look at August.
+
+
+```{r, warning=F, message=F}
+yaak_dv %>% filter(month %in% c(8)) %>% 
+  group_by(wy) %>% mutate(mean_flow = round(mean(Flow),0)) %>% 
+  ungroup() %>% 
+  ggplot(aes(Flow, wy, group = wy)) +
+  geom_density_ridges(aes(fill = mean_flow))+ 
+  scale_fill_gradientn(colors = wes_palette('Cavalcanti1', type = 'continuous')) + theme_ridges(grid = F)  +
+  labs(title = 'Water Year Distribution of Daily Flow \nby in August; Yaak River near Troy, Montana', y = 'Water Year', fill = 'Mean Flow (cfs)')
+```
+
+Ok, now let's look at it with a scatterplot. We'll use the `yaak_my` data we grabbed at the beginning. Be careful when applying smoothing parameters and always remember to be in 'exploratory' mode not 'confirmatory' mode. 
+
+```{r, warning=F, message=F}
+yaak_my %>% filter(month_abb == 'Aug') %>% 
+  pivot_longer(c('Maximum', 'Minimum', 'Median')) %>% 
+  ggplot(aes(wy, value, color = name)) + geom_line() + 
+  scale_color_manual(values = wes_palette('Darjeeling1')) +
+  geom_smooth() + 
+  facet_wrap(~name, scales = 'free') + 
+  labs(color = 'Stats', title = 'Period of Record August Stats at \nYaak River near Troy, MT', y = 'Discharge (cfs)', x = 'Water Year')
+
+```
+
+
+```{r, message=F, warning=F}
+library(ggstream)
+
+yaak_my %>% filter(month_abb == 'Aug') %>% 
+  pivot_longer(c('Maximum', 'Minimum', 'Median', 'Mean')) %>% 
+  ggplot(aes(wy, value, fill = name, color = name, label = name)) + 
+    geom_stream(extra_span = 0.013,bw = 0.8, type = "ridge", n_grid = 3000) +
+    geom_stream_label(size = 4, type = "ridge", n_grid = 1000) +
+  cowplot::theme_minimal_vgrid(font_size = 12) +
+  theme(legend.position = "none") +
+  scale_colour_manual(values = wes_palette('Chevalier1') %>% colorspace::darken(.8)) +
+  scale_fill_manual(values =  wes_palette('Chevalier1')  %>% colorspace::lighten(.2))+
+  labs(title = 'Period of Record August Stats at \nYaak River near Troy, MT', y = 'Discharge (cfs)', x = 'Water Year') 
+ 
+```
+```{r, message=F, warning=F, echo=F}
+yaak_my %>% filter(month %in% c(3,4,5,6,7,8)) %>%  
+  pivot_longer(c('Maximum', 'Minimum', 'Median', 'Mean')) %>% 
+  ggplot(aes(wy, value, fill = name, color = name, label = name)) + 
+  geom_stream(extra_span = 0.013,bw = 0.8, type = "ridge", n_grid = 3000) +
+  geom_stream_label(size = 2, type = "ridge", n_grid = 1000) +
+  facet_wrap(~month_abb, scales = 'free') +
+  cowplot::theme_minimal_vgrid(font_size = 12) +
+  theme(legend.position = "none") +
+  scale_colour_manual(values = wes_palette('Chevalier1') %>% colorspace::darken(.8)) +
+  scale_fill_manual(values =  wes_palette('Chevalier1')  %>% colorspace::lighten(.2))+
+  labs(title = 'Period of Record Mar-Aug Stats at \nYaak River near Troy, MT', y = 'Discharge (cfs)', x = 'Water Year') 
+
+```
+
+So, this leads us to more exploration and doing more time series analysis but for now we'll just end this dive into `ggridges` and the `wesanderson` packages. Have a good one!
+

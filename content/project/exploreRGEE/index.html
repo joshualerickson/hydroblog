@@ -1,0 +1,89 @@
+---
+title: "exploreRGEE"
+excerpt: " is a package that utilizes [RGEE](https://github.com/r-spatial/rgee) and functional programming."
+date: 2021-08-18
+author: "Josh Erickson"
+featured: true
+draft: false
+tags:
+- dataRetrieval
+- R
+categories:
+- R
+- Remote Sensing
+# layout options: single or single-sidebar
+layout: single
+links:
+- icon: images
+  icon_pack: fas
+  name: Code
+  url: https://github.com/joshualerickson/exploreRGEE
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="explorergee" class="section level1">
+<h1>exploreRGEE</h1>
+<p>The goal of exploreRGEE is to explore Google Earth Engine (GEE) in the Rstudio IDE. This package uses bindings and functions from <a href="https://github.com/r-spatial/rgee">rgee</a> and other spatial packages (<a href="https://github.com/r-spatial/sf">sf</a>, <a href="https://github.com/rstudio/leaflet">leaflet</a>) to explore Google Earth Engine collections relatively quickly while using R. This package is meant to be exploratory and experimental but also provides the user quick functions to reproducible tasks, e.g. repetitive workflows. The reason for doing this in
+R is that some people are not familiar with JavaScript or Python but versed in R and this provides easy access to use GEE with commonly used methods for exploratory data analysis (<a href="https://github.com/tidyverse/tidyverse">tidyverse</a>).</p>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<p>Development version from <a href="https://github.com/">GitHub</a> with:</p>
+<pre class="r"><code># install.packages(&quot;devtools&quot;)
+devtools::install_github(&quot;joshualerickson/exploreRGEE&quot;)
+# recommended
+# https://github.com/mikejohnson51/AOI/tree/master/R
+remotes::install_github(&quot;mikejohnson51/AOI&quot;)</code></pre>
+</div>
+<div id="important-note" class="section level2">
+<h2>Important Note</h2>
+<p>The backbone of this package relies on <a href="https://github.com/r-spatial/rgee">rgee</a> and a GEE account (it’s free), so for more information go to the rgee <a href="https://github.com/r-spatial/rgee">website</a> or the GEE
+<a href="https://developers.google.com/earth-engine/">website</a> for more details on how to get set-up and also tons of functionality using the <a href="https://github.com/r-spatial/rgee">rgee</a> package!</p>
+</div>
+<div id="similar-packages" class="section level2">
+<h2>Similar Packages</h2>
+<p>Here is a list of similar packages that I’ve come across. Please let me know of any more!</p>
+<p><a href="https://github.com/r-spatial/rgee">rgee</a></p>
+<p><a href="https://github.com/r-earthengine/rgeeExtra">rgeeExtra</a></p>
+<p><a href="https://github.com/davemlz/eemont">eemont</a></p>
+<p><a href="https://jesjehle.github.io/earthEngineGrabR/">earthEngineGrabR</a></p>
+<p><a href="https://github.com/giswqs/geemap">geemap</a></p>
+</div>
+<div id="flow" class="section level2">
+<h2>Flow</h2>
+<p>The main flow of exploreRGEE is to <strong>get</strong> GEE data and then either vizualize (<code>viz()</code>), reduce regions (<code>rr()</code>) or look at time series (<code>band()</code>). For example,</p>
+<pre class="r"><code>get_*() %&gt;% viz()
+get_*() %&gt;% rr()
+get_*() %&gt;% band()</code></pre>
+</div>
+<div id="development" class="section level2">
+<h2>Development</h2>
+<p>Contributions are welcome!</p>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>This is a basic example which shows you how to solve a common problem: visualizing net annual NPP data and creating a time series.</p>
+<pre class="r"><code>library(exploreRGEE)
+library(rgee)
+library(AOI)
+#this initializes the API
+ee_Initialize()</code></pre>
+<p>Let’s look at Northwestern Montana and the median NPP over a 30 year span (1986 to 2016). To do this, we’ll call the <code>get_npp()</code>. This <code>gets</code> the collection while doing some pre-processing steps, e.g. date range, cloud masking, etc. You could also just use the <code>get_any()</code> function and provide the appropriate arguments.</p>
+<pre class="r"><code>lincoln_county &lt;- AOI::aoi_get(state = &quot;Montana&quot;, county = &quot;Lincoln&quot;)
+npp &lt;- get_npp(lincoln_county, method = &#39;ld_NPP&#39;, param = &#39;annualNPP&#39;, stat = &#39;median&#39;, startDate = &#39;1986-01-01&#39;, endDate = &#39;2016-01-01&#39;)</code></pre>
+<p><br></p>
+<p>Now we can vizualize this Image with <code>viz()</code>. The scale argument in this function is a way to get a <em>close</em> guess at a min/max argument. If you already have an idea of a min/max value (e.g. Normalized Difference: 0-1) then just put that into the arguments and <code>viz()</code> will not run <code>getInfo()</code>. This approach makes visualising much faster.</p>
+<pre class="r"><code>npp %&gt;% viz(scale = 250)</code></pre>
+<p><img src="man/figures/npp.png" width="50%" style="display: block; margin: auto;" /></p>
+<p><br>
+Ok, now that we’ve got an idea of the area let’s see what it would look like if we reduced this area of interest. To do that we’ll use the <code>rr()</code> function. This function uses any GEE Feature Collection or sf object to reduce regions to common statistics, e.g. mean, max, min, median, stdDev and sum. <strong>Scale</strong> matters in this situation! So, make sure you understand what the underlying scale is. Sometimes I’ll use a big scale just to see a coarse depiction and then when I go to the analyis I’ll reduce that scale, up the <code>tileScale</code> and run <code>lazy = TRUE</code>.</p>
+<pre class="r"><code>npp %&gt;% rr(scale = 250, leaflet = TRUE)</code></pre>
+<p><img src="man/figures/npp2.png" width="50%" style="display: block; margin: auto;" />
+<br>
+Maybe we want to see how this region looked over time and not as static statistics? Well, we can use the <code>band()</code> function to do this. This function takes each year and <code>toBands()</code> the ImageCollection. From there, using rgee <code>ee_extract()</code> we can then convert to table values. This is an expensive function and you can use <code>lazy = TRUE</code>. This will split the object into 10 groups and run a for loop in the background in sequential. Future developments will hopefully make this parallel.</p>
+<pre class="r"><code>npp %&gt;% band(scale = 1000, ggplot = TRUE)</code></pre>
+<p><br>
+<img src="man/figures/npp3.png" width="532" /></p>
+</div>
+</div>

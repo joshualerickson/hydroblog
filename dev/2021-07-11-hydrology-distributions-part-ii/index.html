@@ -1,0 +1,178 @@
+<script src="index_files/header-attrs-2.8/header-attrs.js"></script>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This will be part two of a three part blog series <em>‘Hydrology Distributions’</em> where we’ll look at different distributions in R using a handful of packages. A lot of times in hydrology you’ll end up collecting data (rainfall, snowdepth, runoff, etc) to try and fit a theoretical distribution for further analysis, e.g. frequency, probabilities, hypothesis testing etc. These probability distributions come in all shapes and sizes (literally) and can be confusing at times but hopefully we can break these concepts down without too much incredulity from those pesky/pedantic statisticians 😊. First (<a href="https://hydroblog.netlify.app/2021/06/07/2021-06-07-hydroclimatic-distributions/">part I</a>), we’ll look at descriptive statistics and probability distributions (pmf and pdf). Second (part II), we’ll bring in some data and compare distributions visually for some commonly used theoretical distributions in hydrology, e.g. normal (N), Lognormal (LN), Log-Pearson Type III (LP3), Pearson Type III (P3), Gumbel (G), Weibull (W) and Generalized Extreme-value Distribution (GEV). Third (part III), we’ll use a few goodness-of-fit tests to see which theoretical distribution best represents the underlying empirical distribution.</p>
+</div>
+<div id="part-ii" class="section level1">
+<h1>Part II</h1>
+<p>In (<a href="https://hydroblog.netlify.app/2021/06/07/2021-06-07-hydroclimatic-distributions/">part I</a>) we went over probability mass functions (pmf) and probability density functions (pdf) as well as introduced the cumulative distribution function (cdf). If you haven’t read (<a href="https://hydroblog.netlify.app/2021/06/07/2021-06-07-hydroclimatic-distributions/">part I</a>) please go back and read unless you are comfortable with these aforementioned topics. In part II we will go beyond the normal distribution and start looking at other distributions that are commonly used in hydrology. We will focus on recurrence intervals, which will only involve continuous distributions so discrete will have to be for another time 🙍. In part one we talked about pdf’s and how we can use theoretical pdf’s as a proxy for our sampled data. In that we just looked at the normal distribution but there are many other relavant pdf’s for hydroclimatic variables. We can use these theoretical pdf’s to our advantage since they have already been worked out mathematically! From there, we can introduce the idea of a <em>frequency of occurrence</em> and how one would go about calculating it along with how we might want to use it. But first we’ll go through the pdf’s mathematically and visually to get a better understanding of these different distributions.</p>
+</div>
+<div id="theoretical-pdfs" class="section level1">
+<h1>Theoretical PDF’s</h1>
+<p>I know it’s a lot but I think it’s helpful to just see the different pdf’s (<span class="math inline">\(f_{x}(x)\)</span>) written out symbolically. Thus, we’ll look at the following distributions below: normal (N), Lognormal (LN), Log-Pearson Type III (LP3), Pearson Type III (P), Gumbel (G), Weibull (W) and Generalized Extreme-value Distribution (GEV).</p>
+<div style="display: flex;">
+<div class="thing_row">
+<div style="flex-basis: 10px;">
+<center>
+<strong>Normal</strong>
+</center>
+<p><span class="math display">\[
+{\displaystyle {\frac {1}{\sqrt {2\pi \sigma^2 }}}\;e^{-(x-\mu)^{2}/2\sigma^2}}
+\]</span></p>
+</div>
+</div>
+<div style="flex-basis: 175px;">
+
+</div>
+<div class="thing_row">
+<div style="flex-basis: 10px;">
+<center>
+<strong>Lognormal</strong>
+</center>
+<p><span class="math display">\[
+{\displaystyle {\frac {1}{\sqrt {2\pi \beta^2 }}}\;e^{-\ln(x-\alpha)^{2}/2\beta^2}}
+\]</span></p>
+</div>
+</div>
+<div style="flex-basis: 175px;">
+
+</div>
+<div class="thing_row">
+<div style="flex-basis: 10px;">
+<center>
+<strong>Log-Pearson III</strong>
+</center>
+<p><span class="math display">\[ 
+{\displaystyle {\frac {\lambda^\beta(\log(x)-\epsilon)^{\beta-1}e^{-\lambda(\log(x)-\epsilon)}}{\Gamma(\beta)}}}
+\]</span></p>
+</div>
+</div>
+<div style="flex-basis: 175px;">
+
+</div>
+<div class="thing_row">
+<div style="flex-basis: 1%;">
+<center>
+<strong>Pearson III</strong>
+</center>
+<p><span class="math display">\[
+{\displaystyle {\frac {\lambda^\beta(x-\epsilon)^{\beta-1}e^{-\lambda(x-\epsilon)}}{\Gamma(\beta)}}}
+\]</span></p>
+</div>
+</div>
+</div>
+<p><br></p>
+<div style="display: flex;">
+<div style="flex-basis: 125px;">
+
+</div>
+<div class="thing_row">
+<div style="flex-basis: 10px;">
+<center>
+<strong>Gumbel</strong>
+</center>
+<p><span class="math display">\[
+{\displaystyle \frac{1}{\alpha}\exp\bigg[ \mp\frac{x-\beta}{\alpha}-\exp\bigg(\mp\frac{x-\beta}{\alpha}\bigg)\bigg]}
+\]</span></p>
+</div>
+</div>
+<div style="flex-basis: 10px;">
+
+</div>
+<div class="thing_row">
+<div style="flex-basis: 10%;">
+<center>
+<strong>Weibull</strong>
+</center>
+<p><span class="math display">\[
+{\displaystyle {\alpha}x^{\alpha-1}\beta^{-\alpha}\exp\Big[-\Big(x/\beta\Big)^\alpha\Big]} 
+\]</span></p>
+</div>
+</div>
+<div style="flex-basis: 10px;">
+
+</div>
+<div class="thing_row">
+<div style="flex-basis: 10%;">
+<center>
+<strong>GEV</strong>
+</center>
+<p><span class="math display">\[
+{\displaystyle 
+\frac{1}{\sigma}\,t(x)^{\xi+1}e^{-t(x)} \\
+\text{where} \\
+t(x)=\begin{cases}{\big (}1+\xi ({\tfrac {x-\mu }{\sigma }}){\big )}^{-1/\xi }&amp;{\textrm {if}}\ \xi \neq 0\\e^{-(x-\mu )/\sigma }&amp;{\textrm {if}}\ \xi =0\end{cases}}
+\]</span></p>
+</div>
+</div>
+</div>
+<p>So what do these things look like with real data? That is to say, what would these pdf’s produce if we fed it some observations? Well, that is what we’ll look into in the next part! Visualizing!</p>
+<div id="visualizing" class="section level2">
+<h2>Visualizing</h2>
+<p>To do this let’s bring in a set of peak flows from a USGS gauging station. Then we can start to view the data in a few different ways: time series, histogram and density plots.</p>
+<pre class="r"><code>yaak_peak &lt;- wildlandhydRo::wyUSGS(sites = &#39;12304500&#39;)</code></pre>
+<center>
+<strong>Visualizing Plots of Peak Discharge in Different Ways</strong>
+</center>
+<div style="display: flex;">
+<div style="flex-basis: 33%;">
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="960" /></p>
+</div>
+<div style="flex-basis: 33%;">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+</div>
+<div style="flex-basis: 33%;">
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
+</div>
+</div>
+<p>By the eye test the data is skewed right (skewness), maybe a little heavy on the tails (kurtosis) and looks maybe lognormal? See, this is where the eye test doesn’t really help with the ultimate goal, i.e. use the theoretical distribution to estimate stuff! Before we get ahead of ourselves though let’s just look at the above distributions and try to understand what is going on intuitively, i.e. ‘can we find something close?’. To do that we’ll need to <em>fit</em> our empirical data (<code>yaak_peak</code>) to a theoretical one. Ahhh, ok back on track just plug and chug, right? Well, what the heck. Yes!</p>
+<div class="b--red ba bw2 ma2 pa4 shadow-1">
+<p><strong>This is where it gets pretty mathy and is just better to use a package to do the math for you. When we solved for the normal distribution pdf in Part I it was easy since the parameters are the mean (<span class="math inline">\(\mu\)</span>) and standard deviation (<span class="math inline">\(\sigma\)</span>) of the sample distribution; however, this is not the case for all distributions! We need something called sample statistics or parameter estimation to accomplish this task but it’s too much for this blog post (maybe another time 😄). </strong></p>
+</div>
+<p>We’ll just have R run the parameter estimations for us and then plot them against each other. Of note, some will be off and some close (think about why?).</p>
+<pre class="r"><code>library(smwrBase)
+library(evd)
+
+yaak_dist &lt;- yaak_peak %&gt;% wildlandhydRo::batch_distribution(Peak)
+
+wildlandhydRo::plot_densDist(yaak_dist, facet = F) + geom_density(data = yaak_peak, aes(Peak, linetype = &#39;Empirical&#39;), size = 2, key_glyph = &#39;path&#39;) + scale_linetype_manual(values = c(&#39;Empirical&#39; = 2), label = &#39;&#39;) + labs(linetype = &#39;Empirical&#39;) + theme(text = element_text(size = 16))</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>The graph above shows us both the empirical histogram and density against the theoretical distributions. What’s nice about this is we can start to see what it means by ‘fit a distribution’ to the empirical. This is an important step in frequency analysis as it will determine what you use for your final probabilities/results. As we can see, there are a couple distributions that are a little different than the others and a few that look really close to the empirical distribution. The idea is that the more data we collect the more our empirical data will fit a theoretical one. We can see that some distributions are underfitting and overfitting against the empirical at different values! This is where we need help and would need to use some hypothesis testing for ‘goodness of fit’ but we’ll deal with that in part III. For now, let’s assume the best fit distribution is a log-pearson type III (LPIII). In the next section we’ll dive into the LPIII and pick it apart. Just remember though that these are just pdf’s (<a href="https://hydroblog.netlify.app/2021/06/07/2021-06-07-hydroclimatic-distributions/">part I</a>) and we use our sample data to estimate the parameters. That’s it! Well, domain expertise, sample size and GOF is a nice addition as well 😉 but you get the point. It’s just a pdf!</p>
+</div>
+<div id="frequency-of-occurrence" class="section level2">
+<h2>Frequency of Occurrence</h2>
+So why do we care about pdf’s in hydrology? Well, a lot of times we will use these pdf’s to calculate frequency of occurrence aka probability of occurrence. These probabilities give us a statistical understanding of discharge and it’s probability of occurring during a water year. From that, we can use for planning, risk and reliability of hydrologic design. There are a few different ways to calculate probability of occurrence: . We are going to use the pdf in this blogpost to calculate the probability of occurrence. Frequency analysis is pretty intuitive and it will look really familiar to something in <a href="https://hydroblog.netlify.app/2021/06/07/2021-06-07-hydroclimatic-distributions/">part I</a> (Z-score) but is referred to as the <em>general equation of frequency analysis</em>, given by<br />
+<br>
+<center>
+<strong><em>general equation of frequency analysis</em></strong>
+</center>
+<p><span class="math display">\[
+X_T = \overline{X} + KS \\ 
+\displaystyle{\text{where,} \\
+X_T = \text{magnitude of the hydrologic variable with a return period of}\ T; \\
+\overline{X} = \text{mean of the hydrologic variable}; \\
+S = \text{standard deviation of the hydrologic variable; and} \\ 
+K = \text{frequency factor, a function of the return period} \ T\ \text{and the assumed frequency distribution function}}
+\]</span></p>
+This looks really similar to the Z score for a normal distribution, right?<br />
+<br>
+<center>
+<strong>Z score</strong>
+</center>
+<p><span class="math display">\[
+Z=\frac{(\text{value} - \overline{x})}{s^2} \leftrightarrow Zs^2 + \overline{x} = \text{value}
+\]</span></p>
+<p><span class="math display">\[
+\displaystyle{\text{where,} \\
+Z = \text{frequency factor (aka K)} \\
+\text{value}= \text{magnitude of the variable aka} \ X_T}
+\]</span></p>
+<p>That’s because it is! We are just now solving for a value (<span class="math inline">\(X_T\)</span> magnitude with reoccurrence interval) instead of the <span class="math inline">\(Z\)</span> or <span class="math inline">\(K\)</span> value. Below we’ll work through an example using a LPIII distribution. Step-by-step.</p>
+</div>
+<div id="solving" class="section level2">
+<h2>Solving</h2>
+</div>
+</div>

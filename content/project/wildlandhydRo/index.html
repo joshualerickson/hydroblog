@@ -1,0 +1,127 @@
+---
+title: "wildlandhydRo is a package that leverages USGS and SNOTEL APIs."
+excerpt: "The goal of {wildlandhydRo} is to create wrapper functions around commonly used packages like [streamstats](https://github.com/markwh/streamstats), [snotelr](https://github.com/bluegreen-labs/snotelr) and [dataRetrieval](https://github.com/USGS-R/dataRetrieval) and prepare them for chunk-based parallelism, data munging and reporting."
+date: 2021-08-19
+author: "Josh Erickson"
+featured: true
+draft: false
+tags:
+- dataRetrieval
+- R
+categories:
+- R
+- Hydrology
+# layout options: single or single-sidebar
+layout: single
+links:
+- icon: images
+  icon_pack: fas
+  name: Code
+  url: https://github.com/joshualerickson/wildlandhydRo
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="intro" class="section level1">
+<h1>Intro</h1>
+<p>The goal of wildlandhydRo is to create wrapper functions around commonly used packages like <a href="https://github.com/markwh/streamstats">streamstats</a>, <a href="https://github.com/bluegreen-labs/snotelr">snotelr</a> and <a href="https://github.com/USGS-R/dataRetrieval">dataRetrieval</a> and prepare them for chunk-based parallelism, data munging and reporting. Basically, a package for me but worth sharing with others.</p>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<p>You can install the development version from <a href="https://github.com/">GitHub</a> with:</p>
+<pre class="r"><code># install.packages(&quot;devtools&quot;)
+devtools::install_github(&quot;joshualerickson/wildlandhydRo&quot;)</code></pre>
+</div>
+<div id="examples" class="section level2">
+<h2>Examples</h2>
+<p>Below are some common examples that I routinely use with the package.</p>
+<div id="parallel" class="section level3">
+<h3>Parallel</h3>
+<p>With {wildlandhydRo} it is really easy to get station data in parallel. The functions use the <a href="https://github.com/DavisVaughan/furrr">{furrr}</a> framework and will work by planning a session prior to calling the function. Below is a quick benchmark between the options; regular (np) or parallel (para).</p>
+<pre class="r"><code>library(wildlandhydRo)
+library(microbenchmark)
+library(dataRetrieval)
+
+sites &lt;- dataRetrieval::whatNWISsites(stateCd=&#39;MT&#39;, parameterCd = &#39;00060&#39;) %&gt;% 
+  filter(nchar(site_no) &lt;= 8)
+
+tm &lt;- microbenchmark(
+ &#39;np&#39; = {
+   batch_USGSdv(sites = sites[1:50,]$site_no, parallel = FALSE)},
+ &#39;para&#39; = {
+   future::plan(&#39;multisession&#39;)
+   batch_USGSdv(sites = sites[1:50,]$site_no, parallel = TRUE)},
+ times = 10
+)
+
+tm
+
+autoplot(tm)</code></pre>
+<p><img src="para_vs_np.png" width="100%" height="100%" /></p>
+<p>You can do this for most functions in the package, e.g. <code>batch_*(), wym*(), ym*(), get_Basin()</code>, etc.</p>
+</div>
+<div id="annual-and-monthly-stats" class="section level3">
+<h3>Annual and Monthly Stats</h3>
+<p>With the package you can get monthly, annual and monthly-annual statistics for a snotel or usgs sites. You can provide a previously create <code>batch_*()</code> data.frame or the station id. This creates/mungs the results of the daily values to generate mean, maximum, median and standard deviation per water year or per water year per month. It also includes peaks from dataRetrieval::readNWISpeak(); annual base-flow (tp = 0.9, window = 5) and Base-flow Index (BFI) (total-flow/base-flow) from baseflow; annual coefficient of variance (sd of flow/mean of flow); and normalization methods Flow/drainage area, Flow/(all time mean flow) and Flow/log(standard deviation). The window for all the methods are annual, e.g. 1. This leaves it up to the user to explore different windows if inclined. Monthly stats</p>
+<pre class="r"><code>water_year &lt;- wyUSGS(sites = &#39;12304500&#39;)
+ggplot(water_year, aes(peak_dt, Peak)) + 
+  geom_line() +
+  labs(title = &#39;Peak Flow per Water Year&#39;, 
+       subtitle = paste0(water_year %&gt;% slice(n=1) %&gt;% .$Station))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="960" /></p>
+<pre class="r"><code>monthly &lt;- wymUSGS(sites = &#39;12304500&#39;)
+ggplot(monthly, aes(year_month, coef_var)) +
+  geom_line() +
+  labs(title = &#39;Monthly Coefficient of Variance&#39;, 
+       subtitle = paste0(monthly %&gt;% slice(n=1) %&gt;% .$Station))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-2.png" width="960" /></p>
+</div>
+<div id="get-percentiles-for-reporting" class="section level3">
+<h3>Get Percentiles for Reporting</h3>
+<p>You can also just generate percentiles for daily values or months.</p>
+<ul>
+<li>Daily</li>
+</ul>
+<pre class="r"><code>yaak_dv &lt;- batch_USGSdv(sites = &#39;12304500&#39;)
+
+usgs_rep &lt;- reportUSGSdv(procDV = yaak_dv, days = 60)
+
+plot_reportUSGS(usgs_rep)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+<ul>
+<li>Monthly</li>
+</ul>
+<pre class="r"><code>usgs_rep_month &lt;- reportUSGSmv(procDV = yaak_dv)
+
+plot_reportUSGS(usgs_rep_month %&gt;% filter(year_nu &gt;2020), time = &#39;month&#39;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
+</div>
+<div id="get-a-drain-point" class="section level3">
+<h3>Get a Drain Point</h3>
+<p>Sometimes you just want to get the drainage area above a point and then do some other things. With <code>get_Basin()</code> function you just have to provide a sf point and it will return the basin. If you want zonal stats associated with that drainage area then just use <code>get_BasinStats()</code>.</p>
+<ul>
+<li>Basin</li>
+</ul>
+<pre class="r"><code>pt &lt;- tibble(lon = -114.36, lat = 48.92)
+pt &lt;- sf::st_as_sf(pt, coords = c(&#39;lon&#39;, &#39;lat&#39;))
+
+basin &lt;- get_Basin(pt)
+
+ggplot() + geom_sf(data = basin)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="960" /></p>
+<ul>
+<li>Basin Stats</li>
+</ul>
+<pre class="r"><code>basin_stats &lt;- get_BasinStats(basin)
+
+basin_stats %&gt;% sf::st_drop_geometry() %&gt;% 
+  pivot_longer(cols = c(&#39;TOT_PET&#39;, &#39;TOT_BFI&#39;, &#39;TOT_TWI&#39;)) %&gt;% 
+  select(name, value, comid) %&gt;% 
+  right_join(basin_stats, by =&#39;comid&#39;) %&gt;% sf::st_as_sf() %&gt;% 
+  ggplot() + 
+  geom_sf(aes(fill = value)) +
+    facet_wrap(~name, nrow = 3) + theme_void()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="960" /></p>
+</div>
+</div>
+</div>

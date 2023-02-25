@@ -1,0 +1,296 @@
+---
+title: 'Exploring Obs vs Pred (BFI)'
+layout: single-sidebar
+date: '2021-08-20'
+categories:
+  - R
+  - Hydrology
+subtitle: 'Generating empirical BFI and comparing with predicted.'
+summary: 'Generating empirical BFI and comparing with predicted.'
+authors: []
+lastmod: ''
+featured: yes
+output:
+  html_document:
+    css: "style.css"
+image:
+  caption: '[Image credit: Josh Erickson](featured.png)'
+  placement: 2
+  focal_point: 'Center'
+  preview_only: no
+---
+
+```{r,include=F}
+library(wildlandhydRo)
+library(tidyverse)
+library(sf)
+library(feather)
+library(leaflet)
+
+usgs_sites <- read_feather('C:/Users/joshualerickson/Box/01. joshua.l.erickson Workspace/BAER/BAER/greater_than_30.feather')
+usgs_sites <- usgs_sites %>% 
+  group_by(site_no, year) %>% 
+  add_count() %>% 
+  ungroup() %>% 
+  filter(n >= 355,
+         drainage_area < 1000,
+         drainage_area > 50)
+
+usgs_sites_filtered <- usgs_sites %>% group_by(site_no, year) %>% 
+  mutate(baseflow = lfstat::baseflow(Flow),
+         bfi = sum(baseflow, na.rm = T)/sum(Flow, na.rm = TRUE)) %>% ungroup()
+site_no_ls_30 <- usgs_sites_filtered %>% 
+  group_by(site_no, wy) %>% 
+  slice_max(Flow) %>% 
+  slice(n=1) %>% 
+  ungroup(wy) %>% 
+  count(site_no) %>% filter(n < 30)
+
+usgs_sites_filtered <- usgs_sites_filtered %>% anti_join(site_no_ls_30, by = 'site_no')
+# p <- usgs_sites_filtered %>% 
+#   group_by(site_no, Station, wy) %>% 
+#   slice_max(Flow) %>% 
+#   slice(n=1) %>% 
+#   ungroup(wy) %>% 
+#   count(month) %>% 
+#   nest() %>% mutate(new_df = map(data, ~right_join(., tibble(month = seq(1,12,1)), by = 'month')),
+#                     new_df = map(new_df, ~mutate(.,month_abb = factor(month.abb[seq(1,12,1)], levels = month.abb))),
+#                     gg_obj = map(new_df, ~ggplot(data = .x,aes(month_abb, n))+
+#   geom_col() + 
+#   labs(title = "Month of Maximum Flows for USGS stations", x = 'Month')))
+
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")),fig.width = 10, fig.height = 5, warning = FALSE, message = FALSE, error = FALSE)
+thematic::thematic_on(font = 'Montserrat', bg = '#f2f2f1', fg = '#000000')
+ggplot2::theme_set(ggplot2::theme_bw(base_size = 16))
+bfi_grid <- raster::raster('D:/R_folder/Rasters/common/bfi48grd/bfi48grd')
+bflow_grid <- raster::raster('D:/R_folder/Rasters/common/rech48grd/rech48grd')
+tflow_grid <- bflow_grid/bfi_grid
+usgs_sites_bfi_sf <- read_sf('C:/Users/joshualerickson/Box/01. joshua.l.erickson Workspace/BAER/BAER/usgs_sites_bfi_sf.gpkg', layer = 'usgs_sites_bfi_sf') %>% semi_join(usgs_sites_filtered, by = 'site_no')
+
+bfi_basin_stats_df <- read_csv('C:/Users/joshualerickson/Box/01. joshua.l.erickson Workspace/BAER/BAER/bfi_basin_stats_df.csv') %>% 
+  inner_join(usgs_sites_filtered %>% 
+              mutate(site_no = as.numeric(site_no)) %>% 
+              select(site_no, Station) %>% group_by(site_no) %>% slice(n=1) %>% ungroup(), by = 'site_no')
+
+
+```
+
+## Intro
+
+This is a quick look into Montana and Idaho USGS gauging stations where we'll take observed baseflow calculations and compare to predicted ones. There are a lot of different ways to measure, evaluate, predict, or interpret baseflow as it's complex in its own right. Thus in this context we'll assume baseflow as the 'the portion of streamflow that contains groundwater flow and flow from other delayed sources' (Singh, Shailesh Kumar, et al, 2019), for more info see the blogpost [Baseflow Index (BFI)](https://www.hydroblog.org/blog/2021-07-31-baseflow-index-bfi/2021-07-31-baseflow-index-bfi/baseflow/). Again, this can be determined a number of different ways, e.g. (recursive digital filter) Singh, Shailesh Kumar, et al, 2019; (minima smoothing) Tallaksen and van Lanen, 2004; Koffler and Laaha (2012); Gustard et al. (1992) or manual interpretation. In this report we will be using the minima smoothing filter to determine the separation between quickflow and baseflow.   
+
+### USGS Gauging Stations  
+
+First we need to figure out our sample domain. I decided to only include USGS stations in Idaho and Montana that have 30 + years of data. In addition, the sites needed to have at least 355 days a year of recorded data or else that year was discarded. Also, drainages needed to not be too big (1000 sq.km) or too small (50 sq.km). Below is the sample domain and restrictions;  
+
+::: {style="display: flex;"}
+::: {style="flex-basis: 68%;"}
+
+```{r, echo = FALSE}
+resourceviz::google_map(aoi = usgs_sites_bfi_sf, maptype = 'terrain', zoom = 5) +
+  geom_sf(data = usgs_sites_bfi_sf , fill = 'black', size = 2.5, inherit.aes = F, shape = 17)
+```
+
+
+:::
+
+::: {style="flex-basis: 2%;"}
+:::
+
+::: {style="flex-basis: 40%;"}
+#### **Sample Requirements**
+
+* 30 + years of data
+* 355 days/year
+* Montana and Idaho
+* 50 < Drainage Area < 1000 sq.km
+
+:::
+::::
+
+From there we can start downloading all the daily values using the [{wildlandhydRo}](https://hydroblog.netlify.app/project/wildlandhydro/), which will give us easy access to use in parallel. After downloading daily values for the sites in our sample domain this will give us `r length(unique(usgs_sites_filtered$site_no))` sites for the analysis. The average length of years for each station is `r usgs_sites_filtered %>% count(site_no) %>% mutate(years = n/365) %>% summarise(mean_length = mean(years))`, which is plenty of data and power for this endeavor. The stations range in drainage size from `r min(usgs_sites_filtered$drainage_area, na.rm = T)` to `r max(usgs_sites_filtered$drainage_area, na.rm = T)` square kilometers.  
+
+
+Some questions that always come up with baseflow are 'what is the flow regime like?' or 'what is the underlying edaphic/geologic gradients like?'. This is never a clear cut answer; however, we can interpret both a few different ways: hydrographs and zonal stats. For hydrographs (flow seasonality) we can take a look at the peak runoff season for these stations. To do that, we just record the peak flow and then count the month that flow happened in. This will hopefully give us an idea of the proportion of snowmelt or rainfall driven hydrographs.   
+
+```{r, echo=F}
+usgs_sites_filtered %>% 
+  group_by(site_no, wy) %>% 
+  slice_max(Flow) %>% 
+  slice(n=1) %>% 
+  ungroup() %>% 
+  count(month) %>% 
+  mutate(month_abb = factor(month.abb[seq(1,12,1)], levels = month.abb)) %>% 
+  ggplot(aes(month_abb, n)) +
+  geom_col() + 
+  labs(title = "Month of Maximum Flows for USGS stations", x = 'Month')
+```
+
+So this is nice, it looks like from the graph that May has the most counts and then June in a close second. What this tells us is most of our sample domain is in a snowmelt driven system. But what if we wanted to see geographically what this looks like, e.g. per station bar graph. To do that we'll need a widget so that we can look through each site and see their histogram of peak dates. Just click on the site and a plot will show up with the distribution of months and peak flows.  
+<style>
+.leaflet-popup-content > img {
+    max-width: unset;
+}
+</style>
+```{r, echo=FALSE}
+
+# hydroapps:::base_map() %>% 
+#   addCircleMarkers(data = usgs_sites_bfi_sf,
+#               group = "site_no",
+#               weight = 1) %>% 
+#   leafpop::addPopupGraphs(p$gg_obj, 
+#                           group = "site_no")
+#   
+```
+
+
+This is important to note as this effects the hydrograph as well as baseflow seperation, i.e. steady/stable flow vs. flashy/spikey flow. That is to say, hydrographs that are dominated by one or two months () to relatively the same across the months. From this, we can start adding the baseflow index (BFI) to our stations. To do this, we will use a 5 day filter window and 0.9 turning point factor from the {lfstat} in R.  
+
+```{r, eval=F}
+usgs_sites_filtered <- usgs_sites %>% group_by(site_no, year) %>% 
+         mutate(baseflow = lfstat::baseflow(Flow),
+         bfi = sum(baseflow, na.rm = T)/sum(Flow, na.rm = TRUE)) %>% 
+         ungroup()
+```
+
+As you can see from the code above, BFI is just the volume of baseflow divided by the volume of total flow, e.g. $BFI = \frac{Baseflow}{Total \ Flow}$. This also gives us a baseflow measurement for exploration as well. For more information on the nuts and bolts of this method please see this [blogpost](https://hydroblog.netlify.app/2021/07/31/2021-07-31-baseflow-index-bfi/). Now that we have BFI we can see what the mean of each station is.  
+
+```{r, echo=F}
+usgs_sites_filtered %>% 
+  group_by(site_no, year) %>% 
+  summarise(mean_bfi = mean(bfi, na.rm = T)) %>%
+  mutate(mean_bfi = mean(mean_bfi)) %>% 
+  ggplot(aes(mean_bfi)) +
+  geom_density(bw = 0.025) +
+  labs(x = 'Mean BFI', title = 'Density Curve of Mean BFI per USGS station')
+```
+
+As you can see from above, most of the stations are within the 75% range. This indicates that these stations are more permeable and/or less flashy, which can be for numerous reasons, e.g. snowmelt, geology, drainage size, slope, etc. However, We can kind of see this in a flow duration curve as well. That is, as you move from lower BFI to higher you can see a change in the shape of the FDCs below. 
+
+```{r, echo = F, fig.width=20, fig.height=15}
+
+fdcs <- usgs_sites_filtered %>% filter(!is.na(Flow)) %>%  group_by(site_no) %>% nest() %>% 
+  mutate(model = map(data, ~wildlandhydRo::plot_USGSfdc(.) %>% .['data'])) %>% select(-data) %>% 
+  unnest(cols = c(site_no, model))
+fdcs <- fdcs %>% unnest(model)
+fdcs_test <- fdcs %>% left_join(usgs_sites_filtered %>% 
+  group_by(site_no, year, drainage_area) %>% 
+  summarise(mean_bfi = mean(bfi, na.rm = T)) %>%
+    ungroup() %>% 
+    group_by(site_no) %>% 
+  mutate(mean_bfi = mean(mean_bfi)) %>%
+    select(site_no, mean_bfi, drainage_area) %>% ungroup() %>% 
+    group_by(site_no) %>% slice(n=1), by = 'site_no')
+
+fdcs_test %>% 
+  filter(!is.na(mean_bfi)) %>% 
+  mutate(cut_bfi = cut(mean_bfi, breaks = c(0, 0.25, 0.5,0.75, 1))) %>% 
+  ggplot(aes(Percentile, flow)) +
+  geom_line(aes(group = site_no, color = drainage_area)) +
+  scale_y_log10(labels = scales::comma) +
+  labs(color = 'Drainage Area (sq.km)', title = "USGS stations faceted by mean historic BFI values", subtitle = 'Colors represent drainage area in square kilometers (1000 sq.km ~ 386 sq.mi)') +
+  facet_wrap(~cut_bfi) +
+  theme(text = element_text(size = 18))
+
+```
+
+In addition, there really isn't that many of stations with less than 0.5 BFI! This is an issue that comes up when using this data as most stations are not going to be in drainages with minimal water, right? That brings us back to the first point about our stations are mostly snow dominated. Then next logical step would be to look at zonal statistics of these drainages. That is, take underlying physical and biological processes within the drainage area and extract a value, e.g. evapotranspiration, rainfall, slope, elevation, etc. This might help us differentiate these confounding factors described above.
+
+### Zonal Stats 
+
+In the section below we will dive into the zonal stats of these drainages. All the heavy lifting is already done by the USGS so all we need to do is join some of our data. Below we have the drainage used in this analysis with numerous zonal stats extracted with the total catchment characteristics from the National Linked Data Index (NLDI). There is a BFI grid already completed by Wolock, D.M. (2003a) so we will use that to look at 'observed vs predicted' as well as extract the basin stats from it. As you can see in the widget below that most of the predictions are faily accurate but there is overfitting! The `mean_bfi` value in each point represents the empirical BFI value from the gauging station.
+
+```{r, echo = FALSE}
+
+mapview::mapview(bfi_grid, legend = FALSE, col.regions = hcl.colors(n = 11,palette ='Spectral')) +
+  mapview::mapview(usgs_sites_bfi_sf, zcol = 'mean_bfi',
+                   at = seq(0, .91, .1), 
+                   col.regions = hcl.colors(n = 11,palette ='Spectral')) 
+```
+
+### Observed vs. Predicted
+
+If we plot these against each other we can see that it's not the worst OP ever. The next step would be to explore the underlying basin characteristics and how they look in the graph.  
+
+```{r, echo = F}
+p1 <- bfi_basin_stats_df %>% 
+  ggplot(aes(bfi_mean_zs, mean_bfi, label = Station)) +
+  geom_point() +
+  geom_smooth(method = 'lm', se = F) +
+  labs(x = 'Gridded BFI (predicted)', y = 'Empirical BFI (Gauging Stations)')
+plotly::ggplotly(p1)
+```
+
+Putting the variance aside, we can start to look at any relationships between BFI and biophysical attributes. 
+
+```{r, echo=F, fig.width=20, fig.height=15}
+library(patchwork)
+f1 <- bfi_basin_stats_df %>% 
+  ggplot(aes(bfi_mean_zs, mean_bfi)) +
+      geom_point(fill = 'black', size = 3) +
+  geom_point(aes(color = TOT_PET), size =2.75) +
+  geom_smooth(method = 'lm', se = F) +
+      scale_color_distiller(palette = 'RdBu') +
+  labs(x = 'Gridded BFI (predicted)', y = 'Empirical BFI (Gauging Stations)',
+       color = 'PET')
+
+f2 <- bfi_basin_stats_df %>% 
+  ggplot(aes(bfi_mean_zs, mean_bfi)) +
+      geom_point(fill = 'black', size = 3) +
+  geom_point(aes(color = TOT_BASIN_SLOPE), size = 2.75) +
+  geom_smooth(method = 'lm', se = F) +
+      scale_color_distiller(palette = 'RdBu') +
+  labs(x = 'Gridded BFI (predicted)', y = 'Empirical BFI (Gauging Stations)',
+       color = 'Basin Slope')
+
+f3 <- bfi_basin_stats_df %>% 
+  ggplot(aes(bfi_mean_zs, mean_bfi)) +
+      geom_point(fill = 'black', size = 3) +
+  geom_point(aes(color = TOT_ELEV_MEAN), size = 2.75) +
+  geom_smooth(method = 'lm', se = F) +
+      scale_color_distiller(palette = 'RdBu') +
+  labs(x = 'Gridded BFI (predicted)', y = 'Empirical BFI (Gauging Stations)',
+       color = 'Mean Elev')
+
+f4 <- bfi_basin_stats_df %>% 
+  ggplot(aes(bfi_mean_zs, mean_bfi)) +
+      geom_point(fill = 'black', size = 3) +
+  geom_point(aes(color = TOT_PRSNOW), size = 2.75) +
+  geom_smooth(method = 'lm', se = F) +
+      scale_color_distiller(palette = 'RdBu') +
+  labs(x = 'Gridded BFI (predicted)', y = 'Empirical BFI (Gauging Stations)',
+       color = 'Snow % of Precip')
+
+(f1  | f2)/(f3|f4) + plot_annotation(title = 'OP graphs with basin zonal stats') & theme(plot.title = element_text(size = 16, hjust = 0.5),
+                                                                                         text = element_text(size = 18))
+
+```
+
+This color gradient change from low to high BFI is similar to the baseflow recession results from Sánchez-Murillo et al. (2015) where they found that basin slope, PET and Geology where important parameters in describing changes in recession.
+
+
+```{r, echo=F}
+library(mapview)
+pal = mapviewPalette("mapviewTopoColors")
+mapview::mapview(bfi_grid, legend = FALSE, col.regions = pal) +
+  mapview::mapview(tflow_grid, legend = FALSE, col.regions = hcl.colors(n = 11,palette ='RdBu'))+
+  mapview::mapview(bflow_grid, legend = FALSE, col.regions = hcl.colors(n = 11,palette ='RdYlGn'))
+```
+
+
+
+## References  
+
+Gebert, W.A., Graczyk, D.J., Krug, W.R., 1987. Average annual runoff in the United States, 1951–1980. US Geological Survey Hydrologic Investigations Atlas HA-710.
+
+Gustard, A., Bullock, A., & Dixon, J. M. (1992). Low flow estimation in the United Kingdom. Institute of Hydrology.
+
+Koffler, D., and G. Laaha. "LFSTAT-an R-package for low-flow analysis." EGU General Assembly Conference Abstracts. 2012.  
+
+Sánchez-Murillo, R., Brooks, E. S., Elliot, W. J., Gazel, E., & Boll, J. (2015). Baseflow recession analysis in the inland Pacific Northwest of the United States. Hydrogeology Journal, 23(2), 287-303.
+
+Singh, Shailesh Kumar, et al. "Towards baseflow index characterisation at national scale in New Zealand." Journal of Hydrology 568 (2019): 646-657.  
+
+Tallaksen, L. M. and Van Lanen, H. A. J. 2004 Hydrological Drought: Processes and Estimation Methods for Streamflow and Groundwater. Developments in Water Science 48, Amsterdam: Elsevier.  
+
+Wolock, D.M., 2003a. Base-flow index grid for the conterminous United States: US Geological Survey Open-File Report 03-263.

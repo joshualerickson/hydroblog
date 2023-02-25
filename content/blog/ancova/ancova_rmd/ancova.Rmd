@@ -1,0 +1,186 @@
+---
+title: "ANCOVA"
+author: "Josh Erickson"
+date: "10/26/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")),fig.width = 10, fig.height = 5,
+                      warning = FALSE, message = FALSE, error = FALSE)
+thematic::thematic_rmd(font = 'Montserrat', bg = '#f2f2f1', fg = '#000000')
+ggplot2::theme_set(ggplot2::theme_bw(base_size = 12))
+library(tidyverse)
+```
+
+## TL;DR  
+
+ANCOVA is a mix of both linear regression and a t-test/ANOVA and is in the family of General Linear Models (GLM). It can help you correct for Type II error, by increasing your power through covariates. This is important if you can't control for covariates in the experimental design. ANOCOVA let's you account for this in the analysis. It still uses the same fundamentals of NHST (Null Hypothesis Significance Testing) and compares the variance explained to the variance unexplained aka F-test. However, it helps *adjust* means in the F-test by decreasing the variance unexplained (Type II error) which in turn increases your F value. In addition, since it uses both linear regression and t-test/ANOVA you acquire a lot of assumptions along way, which can be unreasonable with most data. But, if your data follows these assumptions then it is a great way to account for Type II error and compare multiple groups.    
+
+## Intro  
+
+In this post we'll go over the *math* behind ANCOVA (Analysis of Covariance) and see how the final output of a function like `sasGM::GLM()` or `aov()` calculates the results. ANCOVA is very similar to ANOVA (Analysis of Variance) and if you want more on that topic please see this [post](https://www.hydroblog.org/blog/anova/anova/2021-08-17/). Just like ANOVA or t-test, ANCOVA requires a continuous dependant variable (DV) and a categorical independent variable (IV) but ANCOVA let's us add some continuous *covariates* to the equation as well. This is this coupled effect of linear regression and t-test/ANOVA. Why might we want to do this? Well, sometimes in experimental design we can't (or it's hard to) control for a random variable but we could measure that variable along the way or glean from the experiment. In other words, we get the variance attributed to these random variables through analysis rather than from experimental design. This can be thought of as 'adjusting' or 'controlling' the means between groups. The goal is to see how and why this happens. Below we will try and learn about these topics,  
+
+* Quick overview of t-test/linear regression  
+* Start adding covariates
+* Walk through results
+
+My goal is to add as much visualization as possible as I think that will help capture the interplay between linear regression and ANCOVA. I'll also skim over some of the assumptions and won't go into too much detail albeit very important.  
+
+### t-test and Linear Regression
+
+Why the heck are we going to talk about a t-test and linear regression for ANCOVA? Well, they are both for ANCOVA which is what we'll be building up to so if you understand a t-test and linear regression then ANCOVA will make a little bit more sense (IMO). First we'll go over linear regression and then show how that is really similar to a t-test.  
+
+#### Linear Regression  
+
+Linear regression is a powerful technique to use when you want to understand a relationship between a DV and a IV; however, it needs to follow certain assumptions: must be linear, normality of residuals, iid, homoscedastic, multicollinearity (more than one IV). As you can see, we are taking on a lot of assumptions with linear regression but remember if your data doesn't violate these then it is very powerful (low variance)! Let's bring in some data and start with a simple linear regression example. We'll be looking at soil surveys with post harvest detrimental soil disturbance (DSD) results. We want to see if there is a relationship between precipitation (IV) and DSD (DV).  
+
+#### Data  Visualizing  
+
+Let's plot the data and see what's going on. We would guess that if you increase your precipitation you potentially would increase the DSD due to possibly more residual soil moisture content.
+
+
+```{r, echo=F}
+
+set.seed(123)
+soil_dsd_tractor <- tibble(dsd = rnorm(200, 5.4,2.5), 
+                           group = 'tractor') 
+set.seed(123)
+soil_dsd_tractor_ls <- soil_dsd_tractor %>% 
+  filter(dsd <= 5) %>% 
+  mutate(slope = rnorm(95, 10, 8),
+         precip = rnorm(95, 800, 300),
+         dist_to_stream = rnorm(95, 500, 100)) 
+
+set.seed(123)
+soil_dsd_tractor_gr <- soil_dsd_tractor %>% 
+  filter(dsd >5) %>% 
+  mutate(slope = rnorm(105, 20, 14),
+         precip = rnorm(105, 1100, 300),
+         dist_to_stream = rnorm(105, 300, 29))
+
+soil_dsd_tractor <- bind_rows(soil_dsd_tractor_ls, soil_dsd_tractor_gr)
+
+set.seed(123)
+soil_dsd_tire <- tibble(dsd = rnorm(200, 4.4,2), 
+                           group = 'tire') 
+set.seed(123)
+soil_dsd_tire_ls <- soil_dsd_tire %>% 
+  filter(dsd <= 5) %>% 
+  mutate(slope = rnorm(128, 10, 6),
+         precip = rnorm(128, 675, 200),
+         dist_to_stream = rnorm(128, 400, 80)) 
+
+set.seed(123)
+soil_dsd_tire_gr <- soil_dsd_tire %>% 
+  filter(dsd >5) %>% 
+  mutate(slope = rnorm(72, 20, 14),
+         precip = rnorm(72, 1200, 400),
+         dist_to_stream = rnorm(72, 200, 40))
+
+soil_dsd_tire <- bind_rows(soil_dsd_tire_gr, soil_dsd_tire_ls)
+
+soil_dsd <- bind_rows(soil_dsd_tractor, soil_dsd_tire) %>% 
+  filter(slope > 0)
+
+# tractor_slice <- soil_dsd %>% filter(group == 'tractor') %>% slice_sample(n = 161)
+# # 
+# soil_dsd <- soil_dsd %>% filter(group == 'tire') %>% bind_rows(tractor_slice)
+
+```
+
+
+```{r, echo=FALSE}
+soil_dsd %>% 
+  ggplot(aes(precip, dsd)) +
+  geom_point() +
+  geom_smooth(method = 'lm', se = F) +
+  labs(x = 'Average Annual Precipitation (mm)',
+       y = 'Detrimental Soil Disturbance (DSD) %',
+       title = 'Scatterplot of DV and IV',
+       subtitle = 'line is the best fit (LS)')
+```
+
+
+As you can see from the plot above it looks like there's a relationship but how can we measure that? Like, how could we say that there is a relationship or not mathmatically? Well, within GLM's there is a nice way to test this with an F test. It is important t note though that this is not the only way and you can also look into other methods: Pearson, Kendall or Spearman correlation coefficients or $R^2$. We'll be focusing on the F test because it'll relate to the t-test/ANOVA. The F test basically compares the variance explained by the variance unexplained in the DV. This is so close to $R^2$ but I won't get distracted... What we'll do is walk through this and solve for the equation below. Let's look at the Pearson correlation coefficient.  
+<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a4cc9fe9045094c94ef2804c44d8ea098af8173f" class="mwe-math-fallback-image-inline" aria-hidden="true" style="vertical-align: -3.338ex; width:29.955ex; height:7.676ex;" alt="{\displaystyle \sum _{i=1}^{K}\sum _{j=1}^{n_{i}}\left(Y_{ij}-{\bar {Y}}_{i\cdot }\right)^{2}/(N-K),}">
+$$
+{\displaystyle F=\frac{\text{explained variance}}{\text{unexplained variance}}= \frac{\sum_{i=1}^{K}n_{i}({\bar{Y}}_{i\cdot}-{\bar {Y}})^{2}/(K-1)}{\sum _{i=1}^{K}\sum _{j=1}^{n_{i}}\left(Y_{ij}-{\bar {Y}}_{i\cdot }\right)^{2}/(N-K)}}
+$$
+
+Ok, too much? Yes, too much! Let's start with the numerator and work through that trying to understand why we are saying *explained variance*. The numerator is essentially the variance that we can explain from both the DV and the fit. Let's break this up into to ideas: sum of the squares of the DV SS(mean) and sum of the squares of the fit SS(fit). Let's visualize what these would look like with our data.  
+
+```{r, echo=F}
+mean_of_DV <- mean(soil_dsd$dsd)
+arrow_style <- arrow(length = unit(.05, "inches"),
+                     type = "closed")
+soil_dsd %>% 
+  ggplot(aes(precip, dsd)) + 
+  geom_point() +
+  geom_segment(aes(xend = precip, yend = mean_of_DV), linetype = 2,size = 0.25,
+               arrow = arrow_style)+
+  geom_hline(yintercept = mean_of_DV, size = 2, color = 'red')+
+  labs(x = 'Average Annual Precipitation (mm)',
+       y = 'Detrimental Soil Disturbance (DSD) %',
+       title = 'Looking at SS(mean) of data',
+       subtitle = 'summing up distance from point to red line')
+```
+
+In the graph above you can see that we are just taking all of the points and finding their distance to the overall DV mean, squaring, then summing them up. This is what the equation would look like below.  
+
+$$
+{\displaystyle \text{SS(mean)} = \sum_{i=1}^{n}{(x_i-\overline{x})^2}}
+$$
+Now what would the SS(fit) look like? Well below you see we just do the same thing as above except now we take the distance to the fit line. 
+
+
+```{r, echo = F}
+linear_model <- lm(dsd~precip, data = soil_dsd)
+pred_model <- predict(linear_model)
+soil_dsd$pred_lm <- pred_model
+soil_dsd %>% 
+  ggplot(aes(precip, dsd)) + 
+  geom_point() +
+  geom_segment(aes(xend = precip, yend = pred_lm), linetype = 2,size = 0.25,
+               arrow = arrow_style)+
+  geom_smooth(method = 'lm', size = 2, color = 'red', se = F)+
+  labs(x = 'Average Annual Precipitation (mm)',
+       y = 'Detrimental Soil Disturbance (DSD) %',
+       title = 'Looking at SS(fit) of data',
+       subtitle = 'summing up distance from point to red line')
+```
+
+Here's what the equation would look like.
+
+$$
+{\displaystyle \text{SS(fit)} = \sum_{i=1}^{n}{(x_i-\hat{y})^2}}
+$$
+Now if we take these two equations and subtract the error of the fit from the error of the mean we would get the explained error right? Yes, well we need to account for $N$ and $K$ but essentially that is what we're doing. Now we need to solve for the unexplained variance in the denominator. Well, lucky for us that is SS(fit)! So, now let's bring it all together.  
+$$
+{\displaystyle F= \frac{\sum_{i=1}^{K}n_{i}({\bar{Y}}_{i\cdot}-{\bar {Y}})^{2}/(K-1)}{\sum _{i=1}^{K}\sum _{j=1}^{n_{i}}\left(Y_{ij}-{\bar {Y}}_{i\cdot }\right)^{2}/(N-K)}=\frac{\text{SS(mean)}-\text{SS(fit)}/(K-1)}{\text{SS(fit)/(N-K)}}}
+$$
+
+So now let's solve for F.  
+
+```{r}
+ss_mean <- soil_dsd %>% mutate(overall_mean = mean_of_DV) %>% 
+  summarise(ssa = sum((dsd - overall_mean)^2))
+
+ss_fit <- soil_dsd %>% mutate(overall_mean = mean_of_DV) %>%
+  summarise(sse = sum((dsd - pred_lm)^2)) 
+
+mse <- 
+```
+
+
+```{r}
+sasLM::GLM(dsd ~ slope + group, Data = soil_dsd)
+t.test(dsd~group, data = soil_dsd)
+```
+
+
+
+So just like with ANCOVA we want to see if there is a difference between groups. Side-bar, if you just have two groups you use a t-test and if you have more than two you use ANOVA but if you want to control for variables then you can use ANCOVA (2 or more groups). So let's bring in some data and see what we are after.  
+
+
+

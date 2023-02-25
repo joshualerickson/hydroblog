@@ -1,0 +1,119 @@
+---
+title: Data Retrieval
+author: ''
+date: '2020-08-20'
+slug: data-retrieval
+output:
+  html_document:
+    highlight: tango
+categories: []
+tags: [https://github.com/USGS-R/dataRetrieval]
+description: 'Getting that USGS data you always wanted...'
+---
+
+
+This is a quick peek into the perks of using R and USGS package `dataRetrieval`. This package is pretty slick and has a lot of functions associated with it. We will just look into some basic functions like `readNWISdv` to get some USGS gauging data and then do some quick exploratory data analysis to using the `tidyverse`. 
+
+First, load the packages (or install) from the library(). 
+
+```{r, message = FALSE}
+library(dataRetrieval)
+library(tidyverse)
+```
+
+Now we can start bringing in some river data. The dataRetrieval github page has a lot of tutorials and information regarding the package and is where I got most of the information. So, use the website tagged at the bottom for more information, but for now just find a site location number that you want to bring in.
+
+The Basics.
+* Site Number (e.g. location # for the station)
+* Parameter Code (e.g. discharge, temp, etc.)
+
+```{r}
+#the basics
+tobacco_river <- readNWISdv(siteNumbers = "12301250", parameterCd = "00060")
+
+names(tobacco_river)
+```
+
+You can see the 'coded' names are weird so we need to change name. Normally you would just use something like `rename` in tidyverse but USGS has a nice helper function to rename them for you, `renameNWISColumns`.
+
+```{r}
+tobacco_river <- renameNWISColumns(tobacco_river)
+
+names(tobacco_river)
+```
+
+Much better and pretty slick! Now we have a data.frame with the daily flows. Let's take a look at the hydrograph using the `tidyverse`.
+
+```{r}
+theme_set(theme_light())
+tobacco_river %>% ggplot(aes(Date, Flow)) + geom_line()
+```
+
+Great we can see that there is some variation in timing, e.g. look at 2016 around November. Maybe we want to look at different days, months, or years. A way to do that easily is with the `lubridate` package. We can use tidying functions like `mutate` to create new variables like day, month, year, decade, etc. First, we need to add the old station data to this data set. Sometimes, stations get replaced or moved and subsequently get a new station ID. So, we'll just put the old one in and voila more data. 
+
+```{r}
+tobacco_river_old <- readNWISdv(siteNumbers = "12301300", parameterCd = "00060") %>% renameNWISColumns()
+
+#now rbind
+tobacco_river <- rbind(tobacco_river, tobacco_river_old)
+```
+
+Now we can do some data tranformation.
+
+```{r, message=FALSE}
+library(lubridate)
+
+tobacco_river <- tobacco_river %>% 
+mutate(year = year(Date), month = month(Date), day = day(Date), decade = year - (year %% 10), lustrum = year - (year %% 5))
+```
+
+So now we can split up the data more effectively for exploring. For example,
+
+```{r}
+tobacco_river %>% filter(!decade %in% c("1950","2020")) %>%
+ggplot(aes(Date, Flow)) + geom_line() + facet_wrap(~decade, scales = "free_x")
+```
+
+Or, if we just want to look at the 80's.
+
+```{r}
+tobacco_river %>% filter(decade == "1980") %>% ggplot(aes(Date, Flow)) + geom_line() 
+```
+
+What about overlaying decades? Well we need a x-axis that is equal to each other, e.g. 10 year chunks, but we need to 'hack' the date somehow... Well, first we will create a 'month-day' variable and then add the years a sequence (1...10). This will give us a x-axis that we can than overlay the decades on.
+
+```{r}
+tobacco_river <- tobacco_river %>% mutate(month_day = str_c(month,day, sep = "-"))
+
+tobacco_river <- tobacco_river %>% group_by(decade,month)  %>% mutate(month_day = str_c(str_sub(year, -1), month_day, sep = "-"))
+```
+
+Now we can overlay each decade onto one plot.
+
+```{r}
+tobacco_river %>% filter(!decade %in% c("1950","2020")) %>% ggplot(aes(month_day, Flow)) + geom_line(aes(color = decade, group = decade)) + scale_color_distiller(palette = "RdBu")+ theme_classic() + theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + labs(x = "Years-Months-Days within 10 year partitions, e.g. 1980-1989, etc.", y = "Maximum Daily Discharge (cfs)", title = "Looking at decades of annual discharge.")
+```
+
+Wow, really confusing and distracting! That's why it's always good to facet with lots of data; however, it's always fun to maybe find some trends. Let's just look at the maximum for each month, each year and see if there are any cool trends. 
+
+```{r}
+tobacco_river %>% filter(!decade %in% c("1950","2020")) %>% group_by(year, month) %>% slice_max(Flow) %>%  ggplot(aes(month, Flow)) + geom_line(aes(color = year, group = year)) + scale_color_distiller(palette = "Spectral")+ theme_classic()  + scale_x_continuous(breaks = seq(1,12,1)) + labs(x = "Months", y = "Maximum Monthly Discharge (cfs)", title = "Looking at monthly max discharge per year.")
+```
+
+Wow, still awful! What if we did boxplot per month? Maybe this would help see the dispersion.
+
+```{r}
+tobacco_river %>% filter(!decade %in% c("1950","2020")) %>% group_by(year, month) %>% slice_max(Flow) %>%  ggplot(aes(month, Flow)) + geom_boxplot(aes(group = month)) + 
+stat_summary(fun=median, geom="line", aes(group=1))  + 
+stat_summary(fun=median, geom="point", color = "red") + theme_classic()  + scale_x_continuous(breaks = seq(1,12,1)) + labs(x = "Months", y = "Maximum Monthly Discharge (cfs)", title = "Looking at monthly max discharge per year.") + scale_y_continuous(labels = scales::comma_format())
+```
+
+Much better! I like this as it gives more context into the extremes of the months (i.e. outliers) and you can see the median per month which is always nice. In the next blog we'll take this data and compare it to some precipitation data from the RGEE package. We'll see if there are any interesting trends with the two, i.e. gauging station and PRISM. The PRISM data takes in **total** monthly precipitation as well so we can look at both the total discharge per month and total precipitation. The plot below show the **total** discharge per month per year.
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+tobacco_river %>% filter(!decade %in% c("1950","2020")) %>% group_by(year, month) %>% summarise(total_q = sum(Flow)) %>%  ggplot(aes(month, total_q)) + geom_boxplot(aes(group = month)) + 
+stat_summary(fun=median, geom="line", aes(group=1))  + 
+stat_summary(fun=median, geom="point", color = "red") + theme_classic()  + scale_x_continuous(breaks = seq(1,12,1)) + labs(x = "Months", y = "Total Discharge (cfs)", title = "Looking at monthly total discharge per year per month.") + scale_y_continuous(labels = scales::comma_format())
+```
+

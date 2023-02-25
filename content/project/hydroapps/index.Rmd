@@ -1,0 +1,77 @@
+---
+title: "hydroapps is a package that runs hydrological shiny apps"
+excerpt: "Apps designed to make it fun and easy to look at hydrological data in various ways. "
+date: 2021-08-19
+author: "Josh Erickson"
+featured: true
+draft: false
+tags:
+- dataRetrieval
+- StreamStats
+- R
+categories:
+- R
+- Hydrology
+# layout options: single or single-sidebar
+layout: single
+links:
+- icon: images
+  icon_pack: fas
+  name: Code
+  url: https://github.com/joshualerickson/hydroapps
+---
+```{r,include=F}
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")),fig.width = 10, fig.height = 5,
+                      warning = FALSE, message = FALSE, error = FALSE)
+thematic::thematic_rmd(font = 'Montserrat', bg = '#f2f2f1', fg = '#000000')
+ggplot2::theme_set(ggplot2::theme_bw(base_size = 16))
+```
+# hydroapps
+
+<!-- badges: start -->
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+<!-- badges: end -->
+
+The goal of {hydroapps} is to to create apps for resource management in the context of hydrology monitoring and reporting. This package relies heavily on [USGS API](https://www.usgs.gov/products/data-and-tools/apis) and wouldn't be possible with out it (much thanks). However, this package is highly experimental and is used mostly by myself but I think it's worth sharing! Please enjoy and contributions are welcome!
+
+## Goals  
+
+As of **08/07/2021** the app is functional. Things to work on:  
+
+* water year and year confusion or ability to make it usable. Right now it uses a weird combo of both.... Not the best `r emo::ji('shrug')`  
+
+* cleaning up code structure and repeating code (especially in 'usgs_stats').  
+
+* reduce package dependencies.  
+
+* Any ideas? Please let me know!
+
+## Installation
+
+This is only in development right now.
+
+And the development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("joshualerickson/hydroapps")
+```
+
+## Contributions
+
+This package uses the [golem](https://github.com/ThinkR-open/golem) framework and thus uses modules to bring everything together. If you want to help contribute please be aware of this framework, i.e. see [here](https://engineering-shiny.org/golem.html) for more details. Other than that, contributions are welcomed!
+
+## Basic Example
+
+As of right now there are two app options: 'streamstats' or 'usgs_stats'. Just enter the character string into the `run_app()` and run the app. 'streamstats' is a play on the [USGS StreamStats Application](https://streamstats.usgs.gov/ss/) and also has some commonly used metrics for estimated culvert sizes. 'usgs_stats' lets the user select either historic or current stations and get a quick idea of the current daily value as well as a station hydrograph, baseflow index (BFI), flood frequency and time series of maximum flows. In addition, 'usgs_stats' includes filters to change the year and months; however, it is important to not that the maximum flows will only use the daily mean maximum if the month is filtered, i.e. maximum flow uses dataRetrieval::readNWISpeak() when months are 1:12 and wildlandhydRo::wymUSGS() otherwise.
+
+```{r, eval=F}
+run_app('streamstats')
+#or 
+run_app('usgs_stats')
+```
+
+
+**Video for streamstats**
+
+https://www.hydroblog.org/slides/hydroapp_vid/hydroapps_streamstats.mp4

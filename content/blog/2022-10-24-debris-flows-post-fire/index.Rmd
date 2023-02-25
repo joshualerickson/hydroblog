@@ -1,0 +1,36 @@
+---
+title: Debris Flows Post Fire
+author: Josh Erickson
+date: '2022-10-24'
+slug: []
+categories:
+  - Hydrology
+  - R
+  - Remote Sensing
+  - Statistics
+  - Fire
+tags:
+  - https://www.usgs.gov/programs/landslide-hazards/science/scientific-background
+subtitle: ''
+summary: 'Taking a look at the {remr} and how one might use it for art or analysis.'
+authors: []
+lastmod: ''
+featured: yes
+output:
+  blogdown::html_page:
+    css: "style.css"
+    toc: true
+    toc_depth: 3
+    self_contained: false
+image:
+  caption: '[Image credit: Josh Erickson](featured.png)'
+  placement: 2
+  focal_point: 'Center'
+  preview_only: no
+---
+
+
+```{r, message=FALSE, warning=FALSE, error = F, include=F}
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")),fig.width = 10, fig.height = 5,
+                      warning = FALSE, message = FALSE, error = FALSE)
+```

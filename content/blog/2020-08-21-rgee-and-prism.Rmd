@@ -1,0 +1,221 @@
+---
+title: RGEE and PRISM
+author: ''
+date: '2020-08-21'
+slug: rgee-and-prism
+output:
+  html_document:
+    highlight: tango
+categories: []
+tags: [https://github.com/r-spatial/rgee]
+description: 'R-spatial is killing it!'
+---
+```{r setup, include=FALSE}
+load("D:/R_folder/hydrotalks/hblog/environments/rgee.RData")
+library(rgee)
+library(sf)
+library(tidyverse)
+```
+
+This is the quick rundown on the `rgee` package that is pretty dope. The r-spatial folks have thrown down some sweet packages  `sf`, `stars`, `mapview` (just to name a few) and now `rgee`. This is some pretty slick stuff. If your versed in JavaScript (JS) and wonder 'should I waste my time with this API interface?'. Don't worry. I'm not going to try and convince you to be a 'R' person just showing some of the basics and capabilities of using GEE R. So, if you just want to do your JS thing on GEE, it's all good; however, there are some perks of doing it in R like using the tidyverse as you'll see.
+
+But, most of the time I run GEE with JS to explore image collections and do some basic wrangling. The main reason I like working with R is because of the feature collection aspect and wrangling that I'm so familiar with, e.g. `sf` and `tidyverse`. I'm just more comfortable, that's all. No reason we can't blend, i.e. GEE with R, Python, or JS. #StopThe-R-Python-Beef. 
+
+So, this is going to be a basic rundown of how to get some precipitation data from the Parameter elevation Regression on Independent Slopes Model (PRISM) and attach it to the Tobacco River watershed. What we want to do is take discharge data from the Tobacco River gage in Eureka, Montana (previous post using USGS `dataRetrieval`) and couple it with the PRISM data we generate using `rgee`. From this, we'll have discharge and precipitation data. This will give us plenty of data to explore some common distributions in hydrology in later posts, e.g. normal, lognormal, pearson- or -log pearson and gumbel. 
+
+So, let's dive in. You'll need to follow the instructions on the [r-spatial/rgee](https://github.com/r-spatial/rgee) website to get the downlow on how to install the R-python-JS API. It's pretty easy (`ee_install()`) and only takes about 10 minutes or less (I just made that up but it's probably pretty close). One important thing is to load the library and then initialize `rgee`. Also, you'll need to have an account with GEE (it's free).
+
+```{r message=FALSE, eval=FALSE}
+#install just once
+
+###ee_install()
+
+library(rgee)
+
+ee_Initialize()
+
+```
+
+Now let's pull in some PRISM image collections. But first we need to bring in our 'geometry' so that we can clip the bounds of the colletions. 
+
+```{r, message = FALSE, warning=FALSE}
+
+library(sf)
+library(tidyverse)
+
+#bring in folders I use a lot.
+lands <- "D:/R_folder/Shapes/Lands"
+hydro <- "D:/R_folder/Shapes/Hydro"
+
+#grab the gaging station location
+tobacoo_river_gage <- data.frame(y = 48.87777778, x = -115.05444444) %>% st_as_sf(coords = c("x", "y")) %>% st_set_crs("EPSG:4326") %>%  st_transform("EPSG:4326")
+
+#bring in some HUC 10s
+huc10 <- read_sf(paste0(hydro, "/district_huc10.shp")) %>% st_transform("EPSG:4326")
+
+#plot
+ggplot(data = huc10) + geom_sf() + geom_sf_text(aes(label = word(Name,1)), size = 2) + geom_sf(data = tobacoo_river_gage, aes(color = "Gaging Station")) + theme_classic() + labs(color = "USGS Tobacco River")
+
+```
+
+Looks like we could get away with including 'Fortine' and 'Tobacco', but you could probably clean it up by creating a flow path grid and then extract the necessary catchments. However, we'll just keep it simple and use the two HUC 10s as most (90%) drains into that gaging station (trust me...). To do that we need to combined those two polygons and then union so that we can then start using GEE.
+
+```{r, message = FALSE, warning=FALSE, error=FALSE}
+polygon <- huc10 %>% filter(str_detect(word(Name,1), "Fortine|Tobacco")) %>% st_union()
+```
+```{r, echo=FALSE, message = FALSE, warning=FALSE, error=FALSE}
+nhdflowline <- read_sf(paste0(hydro, "/district_nhdflowline.shp"))%>% st_transform("EPSG:4326") %>% st_intersection(st_as_sf(polygon))
+
+ggplot() + geom_sf(data = polygon)+ geom_sf(data = nhdflowline, color = "blue", alpha = 0.3) + geom_sf(data = tobacoo_river_gage, aes(color = "Gaging Station")) + theme_classic() + labs(color = "USGS Tobacco River") 
+```
+
+Geez, can we finally start working with GEE? A lot of the stuff above could be avoided if you just want to use 'point' geoms or have polygons already prepped.
+
+The Basics:
+
+* Grab an image or collection
+* Do some filters (e.g. time, geometry, etc.)
+
+Let's grab the precipitation data ('ppt') from the monthly prism data. This is the **total** monthly precip not the mean precipitation.  
+```{r, eval=FALSE}
+
+prism <- ee$ImageCollection("OREGONSTATE/PRISM/AN81m")$select('ppt')
+
+```
+
+Now let's look what dates we should grab. We can look at the time frame from the Tobacco River gage; remember (last post), 1959 and 2020 are not complete from the gage so we'll leave those out. So our date range will be 1960 to 2019.
+
+```{r, eval=FALSE}
+
+start <- ee$Date('1960-01-01')
+finish <- ee$Date('2019-01-01')
+
+mask <- st_as_sf(polygon) %>% sf_as_ee()
+
+tobacco_region <- mask$geometry()$bounds()
+```
+
+From here we can bring it in all together.
+
+```{r, eval=FALSE}
+
+filtered_prism <- prism$filterBounds(tobacco_region)$filterDate(start, finish)
+
+```
+
+Now we can extract the monthly totals for the Tobacco River drainage. First we need to reproject the GGE product to the 'polygon' we made.
+
+```{r, eval=FALSE}
+filtered_prism <- filtered_prism$map(function(x) x$reproject("EPSG:4326")$select("ppt"))
+
+```
+
+Now we can extract the **sum** of the watershed per month per year. The sum function is basically taking each pixel within this area per month per year and summing the 'ppt' values, which will be a lot of mm's gettin added together so let's grab the **mean** as well.
+
+```{r, eval=FALSE}
+prism_tabacco <- ee_extract(x = filtered_prism, y = tobacco_region, sf = FALSE, fun = ee$Reducer$sum())
+
+prism_tabacco_mean <- ee_extract(x = filtered_prism, y = tobacco_region, sf = FALSE, fun = ee$Reducer$mean())
+```
+
+Now we need to wrangle the data because it is in a long format and the variable names are long.
+```{r, eval=FALSE, message=FALSE}
+prism_tabacco$name <- "Tobacco"
+prism_tabacco_mean$name <- "Tobacco"
+library(lubridate)
+library(tidyverse)
+
+prism_mean_processed <- prism_tabacco_mean %>%
+  pivot_longer(-name, names_to = "Date", values_to = "precip_mean") %>%
+  mutate(Date = str_remove(Date, "X"), 
+         Date = parse_date_time(Date, "ym"),
+         year = year(Date), month = month(Date), day = day(Date),wy = smwrBase::waterYear(Date, TRUE))
+
+prism_processed <- prism_tabacco %>%
+  pivot_longer(-name, names_to = "Date", values_to = "precip_total") %>%
+  mutate(Date = str_remove(Date, "X"), 
+         Date = parse_date_time(Date, "ym"),
+         year = year(Date), month = month(Date), day = day(Date), wy =  smwrBase::waterYear(Date, TRUE))
+
+prism_processed <- left_join(prism_processed, select(prism_mean_processed, wy, precip_mean, year, month ), by = c("year", "month", "wy"))
+```
+
+Sweet, now we have a dataset of the same type to compare with the Tabacco River gaging data. Let's plot the PRISM data like we did with the river data.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+prism_processed %>%  ggplot(aes(month, precip_total)) + geom_boxplot(aes(group = month)) + 
+stat_summary(fun=median, geom="line", aes(group=1))  + 
+stat_summary(fun=median, geom="point", color = "red") + theme_classic()  + scale_x_continuous(breaks = seq(1,12,1)) + labs(x = "Months", y = "Total Precipitation (mm)", title = "Looking at monthly total precipitation per year per month.") + scale_y_continuous(labels = scales::comma_format())
+```
+
+Well, looks like August is the lowest (for the median).  Let's look at some other graphs before we move on and let's add decade, lustrum (5 year interval) and the overlaying decade thing. 
+
+```{r, eval=FALSE}
+prism_processed <- prism_processed %>% mutate(decade = year - (year %% 10), lustrum = year - (year %% 5), month_day = str_c(month,day, sep = "-"),month_day = str_c(str_sub(year, -1), month_day, sep = "-"))
+```
+
+
+```{r, echo=FALSE}
+prism_processed %>% ggplot(aes(month, precip_total)) + geom_line(aes(color = year, group = year)) + scale_color_distiller(palette = "Spectral")+ theme_classic()  + scale_x_continuous(breaks = seq(1,12,1)) + labs(x = "Months", y = "Total Monthly Precipitation (mm)", title = "Looking at monthly total precipitation per year per month.") + scale_y_continuous(labels = scales::comma_format())
+```
+
+These plots are actually not that bad if you can make them interactive by using `plotly`. The graph below will let you hover over areas and get data depending on what your eye hones in on (upper right corner has different viewing options). 
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
+p1 <- prism_processed %>% ggplot(aes(month_day, precip_total)) + geom_line(aes(color = decade, group = decade)) + scale_color_distiller(palette = "RdBu")+ theme_classic() + theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + labs(x = "Years-Months-Days within 10 year partitions, e.g. 1980-1989, etc.", y = "Total Precipitation (mm)", title = "Looking at decades of annual total precipitation.") + scale_y_continuous(labels = scales::comma_format())
+
+plotly::ggplotly(p1)
+```
+
+
+Wonder what it would look like if we compared the per year discharge with the per year precipitation. Is there a relationship between the previous months precipitation and discharge... Let's look.
+
+Many ways to do this but we'll keep it simple and just take the scaled values of each variable.
+
+```{r message=FALSE}
+river_total <- tobacco_river %>% filter(!year %in% c("1958", "1959", "2019" , "2020"))%>% mutate(wy = smwrBase::waterYear(Date, TRUE)) %>% group_by(year, month) %>% summarise(total_q = sum(Flow), max_q = max(Flow), sd_q = round(sd(Flow),2))
+
+all_tobacco <- left_join(prism_processed, river_total, by = c("year", "month"))
+```
+
+Alright, now we have a data set with both the precipitation totals and discharge totals. Lets just see if there is a trend between precipitation and discharge. We'll just take about 10 years of the most recent data.
+
+```{r echo=FALSE}
+p2 <- all_tobacco %>% filter(decade == "2010" ) %>% mutate(across(matches(c("precip_total", "total_q")), scale)) %>% pivot_longer(cols = c("precip_total", "total_q"), names_to = "water", values_to = "total_water") %>% ggplot(aes(month, total_water)) + geom_line(aes(color = water)) + facet_wrap(~year) + scale_x_continuous(breaks = seq(1,12, 1)) + theme_light() + geom_hline(yintercept = 0, size = .5)
+
+plotly::ggplotly(p2)
+
+```
+
+```{r, message=FALSE, echo=FALSE}
+p3 <- all_tobacco %>% mutate(across(matches(c("precip_total", "total_q")), scale)) %>% pivot_longer(cols = c("precip_total", "total_q"), names_to = "water", values_to = "total_water") %>% group_by(year, month) %>% slice_head(n =2) %>%  ggplot(aes(month, total_water)) + geom_smooth(aes(color = lustrum, group = lustrum),se=F) + facet_wrap(~water) + scale_x_continuous(breaks = seq(1,12, 1)) + theme_light()  + geom_hline(yintercept = 0, size = .5)+labs(x="Month", y = "Scaled Values") 
+
+plotly::ggplotly(p3) 
+
+```
+
+This is pretty cool. There are some great eye-ball test relationships between the two. However, we are just exploring and this would need a proper time-series analysis to see what kind of suprise we could generate. To wrap it up let's create a table that we can filter and reference any time we want to look at certain values, month, years and so on. We can do this by using the `DT` package. Won't go into too many details but here's a quick view of our data.
+
+```{r, eval=FALSE, echo=FALSE}
+library(DT)
+all_tobacco_DT <- as_tibble(all_tobacco) %>% select(Drainage = "name", 'Precipitation (ft)' = "precip_total", 'Precipitation Mean (in)' = precip_mean, Year = "year", Month = "month", 'Water Year' = "wy", 'Total Discharge (cfs)' = "total_q", 'Max Discharge (cfs)' = "max_q", 'SD Discharge (cfs)'  = "sd_q")  %>% mutate(across(matches(c("Year", "Month", "Water Year")), as.integer)) %>% mutate(`Precipitation (ft)` = `Precipitation (ft)`*0.00328084, `Precipitation Mean (in)` = `Precipitation Mean (in)`*0.03937008)%>% mutate(`Precipitation (ft)` = round(`Precipitation (ft)`,0), `Precipitation Mean (in)` = round(`Precipitation Mean (in)`,0))
+```
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+library(DT)
+library(tidyverse)
+
+d1 <- DT::datatable(all_tobacco_DT,extensions = 'FixedColumns', filter = 'top', options = list(
+  pageLength = 8, 
+  dom = 't',
+  scrollX = TRUE,
+  scrollCollapse = TRUE
+))
+```
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+widgetframe::frameWidget(d1)
+```
+
+<br>
+
+For now though, let's just end there. We'll have some good data sets to continue on with for exploring data distributions. Have a good one!
+

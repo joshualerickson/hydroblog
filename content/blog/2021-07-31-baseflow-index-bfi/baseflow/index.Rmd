@@ -1,0 +1,272 @@
+---
+title: 'Baseflow Index (BFI)'
+layout: single-sidebar
+date: '2021-07-31'
+slug: 2021-07-31-baseflow-index-bfi/baseflow
+categories:
+  - R
+  - Hydrology
+tags:
+  - R
+  - Hydrology
+subtitle: 'A quick tutorial on the {lfstat} baseflow().'
+summary: 'A quick tutorial on the {lfstat} baseflow().'
+authors: []
+lastmod: ''
+featured: yes
+output:
+  blogdown::html_page:
+    css: "style.css"
+image:
+  caption: '[Image credit: Josh Erickson](featured.png)'
+  placement: 2
+  focal_point: 'Center'
+  preview_only: no
+---
+
+```{r,include=F}
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")),fig.width = 10, fig.height = 5,
+                      warning = FALSE, message = FALSE, error = FALSE)
+thematic::thematic_rmd(font = 'Montserrat', bg = '#f2f2f1', fg = '#000000')
+ggplot2::theme_set(ggplot2::theme_bw(base_size = 20))
+```
+
+### Intro
+
+Baseflow Index (BFI) is an index that uses the total flow (or quick flow) of a stream and the theoretical baseflow (depending on methodology). The methods we'll be using in this post are from the {lfstat} package (Koffler, D., and G. Laaha. 2012) and allow the user different filtering windows and a turning point factors. Below is a great description of BFI,
+
+:::{.b--gray .ba .bw2 .ma2 .pa4 .shadow-1}
+__"Streamflow is typically divided into two components for hydrograph separation, quickflow and baseflow. Baseflow is the portion of streamflow that contains groundwater flow and flow from other delayed sources and is of key importance for river basin ecology and water resources planning and management. The BaseFlow Index (BFI) is defined as the ratio of long-term mean baseflow to total streamflow."__
+
+-- Singh, Shailesh Kumar, et al (2019).
+::: 
+
+In a basic sense it's a ratio. The ratio of total streamflow to total baseflow can be expressed simply by the equation below.
+
+$$
+Q_b = \sum_{i = 1}^{n}x_i \ ; \  \text{where} \ x_i \in \{x_1, x_2, x_3, \dots, x_n\} \\
+Q_t = \sum_{i = 1}^{n}x_i \ ; \  \text{where} \ x_i \in \{x_1, x_2, x_3, \dots, x_n\} \\
+BFI = \frac{Q_b}{Q_t}
+$$
+
+However, what the heck is $Q_b \ \text{and} \ Q_t$ and how do we derive them? This is what that blog post will dive into, i.e. the nitty gritty of the two. We'll start by looking at it visually and then move into the calculations to get there.  
+
+### Calculating BFI
+
+Starting off with the denominator of BFI $Q_t$ is relatively straight forward; it's the daily flow values of the gauging station. Below we'll look at one year of daily values from the USGS Yaak River gauging station in Northwest Montana. You can use the {dataRetrieval} package to do this or {wildlandhydRo}. I'm partial to the {wildlandhyRo} package so we'll be using it `r emo::ji('smile')`.
+
+```{r, warning=F, error=F, message=F}
+#libraries
+library(wildlandhydRo)
+library(tidyverse)
+
+#read in data
+yaak_dv <- wildlandhydRo::batch_USGSdv(sites = '12304500', 
+                                       parameterCd = '00060',
+                                       start_date = '2019-01-01', 
+                                       end_date = '2019-12-31')
+```
+
+
+Now that we have the daily values from the station we can look at the hydrograph. As you can see, $Q_t$ is the hydrograph! How simple was that?! Now that we 'derived' the denominator in the equation we can move onto the numerator.
+
+```{r, fig.align='center', echo=F}
+yaak_dv %>% ggplot(aes(Date, Flow)) +
+  geom_line(size = 0.75, alpha = 0.8) +
+  labs(y = 'Discharge (cfs)', title = paste0('Annual Hydrograph for ', slice_head(yaak_dv, n=1)$Station))
+```
+
+
+Deriving the values of $Q_b$ are not as easy as $Q_t$ and involve some filtering techniques. Below we'll start at the beginning and work through the calculation that {lfstat} package uses. So let's load the library and get started. But first, I think it's important to start with the final product and see what it is we'll be solving for. Let's get the baseflow using the {lfstat} package.
+```{r}
+library(lfstat)
+
+yaak_bf <- baseflow(yaak_dv$Flow, tp.factor = 0.9, block.len = 5) %>% data.frame(bfi = .)
+
+```
+
+From here, we just need to add a Date and then plot.
+
+```{r, echo=F}
+yaak_bf$Date = yaak_dv$Date
+
+yaak_bf %>% 
+  ggplot(aes(Date, bfi)) +
+  geom_line(size = 0.75, alpha = 0.8) +
+  labs(y = 'Discharge (cfs)', title = paste0('Daily Baseflow for ', slice_head(yaak_dv, n=1)$Station))
+```
+
+It looks pretty much like the previous hydrograph except now the values are a lot lower in certain times of quick flow, e.g. spring runoff, rain storms, etc. What if we just add $Q_t$ to this graph? We'll start to see that separation from quick flow to baseflow. 
+
+```{r, echo=F}
+yaak_bf %>% 
+  left_join(yaak_dv %>% select(Flow, Date), by = "Date")%>%
+  pivot_longer(c('bfi', 'Flow'), names_to = 'type') %>%
+  ggplot(aes(Date, value, color = type)) +
+  geom_line(size = 0.75) +
+  scale_color_manual(values = c('red', 'blue'), labels = c('Baseflow', 'Quickflow')) +
+  labs(y = 'Discharge (cfs)',color = 'Flow Type',
+       title = paste0('Baseflow and Quickflow for ', slice_head(yaak_dv, n=1)$Station))
+```
+
+
+Let's zoom into an area say `'2019-06-01' to '2019-07-05'`and look closely at what's going on.
+
+
+```{r, echo=FALSE}
+library(patchwork)
+y1 <- yaak_bf %>% 
+  left_join(yaak_dv %>% select(Flow, Date), by = "Date")%>%
+  pivot_longer(c('bfi', 'Flow'), names_to = 'type') %>% 
+  filter(Date >= '2019-06-01', Date <= '2019-07-05') %>% 
+  ggplot(aes(Date, value, color = type)) +
+  geom_line(size = 0.75) +
+  scale_color_manual(values = c('red', 'blue'), labels = c('Baseflow', 'Quickflow')) +
+  labs(y = 'Discharge (cfs)',color = 'Flow Type',
+       title = paste0('Baseflow and Quickflow for ', slice_head(yaak_dv, n=1)$Station))
+y2 <- yaak_bf %>% 
+  left_join(yaak_dv %>% select(Flow, Date), by = "Date")%>%
+  pivot_longer(c('bfi', 'Flow'), names_to = 'type') %>%
+  ggplot(aes(Date, value, color = type)) +
+  geom_line(size = 0.15, show.legend = F) +
+  theme_bw() +
+  scale_color_manual(values = c('red', 'blue'), labels = c('Baseflow', 'Quickflow')) +
+  labs(y = 'Discharge (cfs)',color = 'Flow Type',
+       title = '') + theme(axis.title.x = element_text(size = 4),
+                           axis.title.y = element_text(size = 4),
+                           axis.text = element_text(size = 4),
+                           rect = element_rect(fill = "transparent")) +
+  annotate(geom = 'rect', xmin = as.Date('2019-06-01'), xmax = as.Date('2019-07-05'),
+           ymin = 350, ymax = 1650, alpha = 0.25, fill = 'black')
+
+y1 + inset_element(y2, 0.6, 0.7, .99, 1.05)
+```
+
+So it looks like quick flow and baseflow are seperated and then become the same and then seperate again. So what's going on? How did the filtering process get to that interpolation? This is where we will start to dive into the derivation of the baseflow and look _how_ it got what it got!  
+
+First we'll need to filter the data to that time frame and then start with the process that {lfstat} package uses.  
+
+```{r}
+yaak_dv_filtered <- yaak_dv %>% 
+  filter(Date >= '2019-05-01', Date <= '2019-07-24')
+```
+
+For now we'll just use a block length of 5 and a turning point factor at 0.9. In a little bit we'll look more deeply into those parameters as well. First, the calculation breaks the data into groups of 5. If there is missing values in a group than `NA` will be added. For example, the dates we chose equals 35 which is a nice clean complete $5\times17$ matrix but if it were one more day (36) then it would be $5\times18$ matrix but with 4 `NA's` in the last column. See below for the matrix output,
+
+```{r}
+block.len <- 5
+x <- yaak_dv_filtered$Flow
+y <- matrix(c(x, rep(NA, -length(x) %% block.len)), nrow = block.len)
+y
+```
+
+Now that we have our flows constructed into a matrix we'll take the offset of the flow dates. All this does is take a sequence of the amount of columns in the above matrix minus 1 from 0, (e.g. 0,1,2,3,4,5,6) and multiply by the block length (5). This will help us index the minimum within that offset.
+
+```{r}
+offset <- seq.int(0, ncol(y) - 1) * block.len
+offset
+```
+
+Now we need to use a function to find the minimum within our matrix. We'll use the `which.min.na()` from the {lfstat} package to make sure we account for any NULL columns. This just takes each column of th matrix and finds the minimum values and return the index (location) within that column. From there we add the offset, which will give us the position in the initial vector. 
+```{r}
+which.min.na <- function(x) {
+  idx <- which.min(x)
+  if(!length(idx)) idx <- NA
+  
+  return(idx)
+}
+idx.min <- apply(y, 2, which.min.na) + offset
+```
+
+Now we can see where those 5 day minimum days are within the initial vector and plot against the original.
+
+```{r, echo = F}
+block.min <- x[idx.min]
+block.date <- yaak_dv_filtered$Date[idx.min]
+
+block_locs <- data.frame(b_min = block.min, b_date = as.Date(block.date))
+five_date <- yaak_dv_filtered$Date[offset]
+five_flow <- x[offset]
+
+five_breaks <- data.frame(date = five_date, five_day = five_flow)
+yaak_dv %>% 
+  filter(Date >= '2019-06-01', Date <= '2019-07-05') %>% 
+  ggplot() +
+  geom_line(size = 0.75,aes(Date, Flow)) +
+  coord_cartesian(xlim = c(as.Date('2019-06-01'), as.Date('2019-07-05')), 
+                  ylim = c(0, 2000)) +
+  geom_point(data = block_locs, aes(b_date, b_min, shape = 'Five Day Min'), size = 5.5) +
+  geom_point(data = five_breaks, aes(date, five_day, fill = 'Five Day Breaks'), color = 'red', shape = 20, size = 4) +
+  labs(y = 'Discharge (cfs)',color = 'Flow Type', shape = NULL, fill = NULL,
+       title = paste0('Baseflow and Quickflow for ', slice_head(yaak_dv, n=1)$Station))
+```
+
+As you can see, the five day minimum is the same as the five day splits (aka 5 filter window) until it bottoms out and then starts climbing again (quick flow). This is important because this is how the function will interpolate between these points (the black ones in graph above) along with the turning point factor. For instance, let's just add the baseflow back to this graph again and you'll see that it intersects the min points but interpolates in-between. 
+
+```{r, echo = FALSE}
+yaak_bf %>% 
+  left_join(yaak_dv %>% select(Flow, Date), by = "Date")%>%
+  pivot_longer(c('bfi', 'Flow'), names_to = 'type') %>% 
+  filter(Date >= '2019-06-01', Date <= '2019-07-05') %>% 
+  ggplot() +
+  geom_line(size = 0.75,aes(Date, value, color = type)) +
+  coord_cartesian(xlim = c(as.Date('2019-06-01'), as.Date('2019-07-05')), 
+                  ylim = c(0, 2000)) +
+  geom_point(data = block_locs, aes(b_date, b_min, shape = 'Five Day Min'), size = 5.5) +
+  geom_point(data = five_breaks, aes(date, five_day, fill = 'Five Day Breaks'), color = 'red', shape = 20, size = 4)  +
+  scale_color_manual(values = c('red', 'blue'), labels = c('Baseflow', 'Quickflow')) +
+  labs(y = 'Discharge (cfs)',color = 'Flow Type',fill = NULL, shape = NULL,
+       title = paste0('Baseflow and Quickflow for ', slice_head(yaak_dv, n=1)$Station))
+```
+
+But wait, they don't intersect them all! This is because we are not finished. What ends up happening is we didn't account for small flux's in the data, e.g. the missing intersection points. We can adjust the turning points (black points) by a factor. Above we used the default of 0.9 but be aware this can be changed for your liking, i.e. if you want it to be more responsive. What this ultimately does is generates an interpolated line between the adjusted points and the reason our interpolated baseflow line skipped a few points is because of the higher turning point factor.
+
+```{r}
+tp.factor <- 0.9
+cv.mod <- tp.factor * tail(head(block.min, -1), -1)
+vc <- 1 * tail(head(block.min, -1), -1)
+
+# check if value is a turning point, shift by +/- 1
+# first value is never a turning point because there is no observation before
+is.tp <- cv.mod <= tail(block.min, -2) & cv.mod <= head(block.min, -2)
+is.tp <- c(F, is.tp)
+
+# interpolate base flow only between turning points
+# values outside enclosing turning points become NA, because approx(rule = 1)
+bf <- approx(x = idx.min[is.tp], y = block.min[is.tp], xout = seq_along(x))$y
+```
+
+We can also show what would happen if we used 0.5 as the turning point factor. We end up connecting the points! So, if you want a more responsive baseflow then you'll need to adjust your turning point factor lower.
+
+
+```{r, echo = FALSE}
+tp.factor <- 0.5
+cv.mod <- tp.factor * tail(head(block.min, -1), -1)
+vc <- 1 * tail(head(block.min, -1), -1)
+
+# check if value is a turning point, shift by +/- 1
+# first value is never a turning point because there is no observation before
+is.tp <- cv.mod <= tail(block.min, -2) & cv.mod <= head(block.min, -2)
+is.tp <- c(F, is.tp)
+
+# interpolate base flow only between turning points
+# values outside enclosing turning points become NA, because approx(rule = 1)
+bf <- approx(x = idx.min[is.tp], y = block.min[is.tp], xout = seq_along(x))$y
+final_bf  <- data.frame(bf = bf, date = yaak_dv_filtered$Date)
+  ggplot(data = yaak_dv_filtered) +
+  geom_line(size = 0.75,aes(Date, Flow)) +
+  coord_cartesian(xlim = c(as.Date('2019-06-01'), as.Date('2019-07-05')), 
+                  ylim = c(0, 2000)) +
+  geom_point(data = final_bf, aes(date, bf, shape = 'interpolated baseflow'), size = 2)+
+  geom_point(data = block_locs, aes(b_date, b_min, fill = 'Five Day Min'), size = 2, color = 'red') +
+  labs(y = 'Discharge (cfs)',color = 'Flow Type', shape = NULL, fill=NULL,
+       title = paste0('Interpolated Baseflow with \nTurning Point Facter = 0.5'))
+```
+
+That's it! We find a minimum within a filtering window (5 days in this example) and then interpolate between the turning points after adjusting for a factor. To do this correctly you'll need to do it on a full year of data for many years to reap the benefits of BFI. Hope this helps!  
+
+## References  
+
+Koffler, D., and G. Laaha. "LFSTAT-an R-package for low-flow analysis." EGU General Assembly Conference Abstracts. 2012.
+
+Singh, Shailesh Kumar, et al. "Towards baseflow index characterisation at national scale in New Zealand." Journal of Hydrology 568 (2019): 646-657.

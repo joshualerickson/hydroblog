@@ -1,0 +1,161 @@
+---
+title: Global Forest Change
+author: 'Josh Erickson'
+date: '2021-03-04'
+bibliography: cit.bib
+output: html_document
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+<link href="{{< blogdown/postref >}}index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/anchor-sections/anchor-sections.js"></script>
+<script src="{{< blogdown/postref >}}index_files/htmlwidgets/htmlwidgets.js"></script>
+<script src="{{< blogdown/postref >}}index_files/jquery/jquery.min.js"></script>
+<link href="{{< blogdown/postref >}}index_files/leaflet/leaflet.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/leaflet/leaflet.js"></script>
+<link href="{{< blogdown/postref >}}index_files/leafletfix/leafletfix.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/Proj4Leaflet/proj4-compressed.js"></script>
+<script src="{{< blogdown/postref >}}index_files/Proj4Leaflet/proj4leaflet.js"></script>
+<link href="{{< blogdown/postref >}}index_files/rstudio_leaflet/rstudio_leaflet.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/leaflet-binding/leaflet.js"></script>
+<script src="{{< blogdown/postref >}}index_files/leaflet-providers/leaflet-providers_1.9.0.js"></script>
+<script src="{{< blogdown/postref >}}index_files/leaflet-providers-plugin/leaflet-providers-plugin.js"></script>
+<script src="{{< blogdown/postref >}}index_files/clipboard/setClipboardText.js"></script>
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Below is a workflow used to create a <em>forest change</em> raster (2011-2019) for the Watershed Condition Class (WCC) analysis in USDA-USFS Region 1. The workflow leverages Google Earth Engine (GEE) <span class="citation">(<a href="#ref-gorelick2017google" role="doc-biblioref">Gorelick et al. 2017</a>)</span> to get large remote sensing products fast and easy. This allows for reproducibility in the future as well as quick return times for clients, i.e. making large requests managable. The analysis uses the United States National Land Cover Database (NLCD) <span class="citation">(<a href="#ref-yang2018new" role="doc-biblioref">Yang et al. 2018</a>)</span> and the Hansen Global Forest Change v1.7 (2000-2019) <span class="citation">(<a href="#ref-hansen2013high" role="doc-biblioref">Hansen et al. 2013</a>)</span> to create a raster with three bands: 1) forest loss, 2). loss year, 3). percentage of forest cover. The workflow will go through code in R <span class="citation">(<a href="#ref-R" role="doc-biblioref">R Core Team 2020</a>)</span> using the <code>rgee</code> package <span class="citation">(<a href="#ref-rgee" role="doc-biblioref">Aybar et al. 2020</a>)</span> which does all of the heavy lifting; however, it is essentially JavaScript and if you want to do this workflow in JavaScript then please use this <a href="https://code.earthengine.google.com/c8964a7b60cd001ba33b747a4986ae4a"><b>link</b></a>. Also, the code is housed on github at this <a href="https://github.com/joshualerickson/land_cover_change"><b>link</b></a> if you wanted the scripts via file. The rest of the report will be mostly code and workflow, so you have been warned.</p>
+</div>
+<div id="workflow" class="section level1">
+<h1>Workflow</h1>
+<p>Libraries we’ll use.</p>
+<pre class="r"><code>library(rgee)
+ee_Initialize()
+library(sf)
+library(tidyverse)</code></pre>
+<p>First we’ll get the bbox for Region 1. This will be used for exporting the final image at the end of the analysis.</p>
+<pre class="r"><code>region_1_bbox &lt;- st_bbox(c(xmin = -117.190616, xmax = -96.554411, ymax = 49.001390, ymin = 44.26879), crs = st_crs(4326))
+
+r1_bb &lt;- st_as_sfc(region_1_bbox) %&gt;% st_as_sf() 
+
+geom = ee$Geometry$Rectangle(region_1_bbox)</code></pre>
+<p>Now we’ll just take a quick peak and see what we’ll be getting for our final image region.</p>
+<pre class="r"><code>state_r1 &lt;- aoi_get(state = c(&quot;Montana&quot;, &quot;Idaho&quot;, &quot;Wyoming&quot;, &quot;South Dakota&quot;, &quot;North Dakota&quot;))
+
+# plot showing boundary
+ggplot() + geom_sf(data = state_r1, fill = NA) +
+  geom_sf(data = r1_bb, fill = NA, color = &#39;red&#39;, aes(shape = &quot;bbox&quot;)) + theme_bw() + labs(shape = &quot;&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Below is where we’ll start working with earth engine. The goal is to get the global forest change (GFC) image from <span class="citation"><a href="#ref-hansen2013high" role="doc-biblioref">Hansen et al.</a> (<a href="#ref-hansen2013high" role="doc-biblioref">2013</a>)</span> and filter all the years greater than 2011. This will give us an image of only 2011-2019 data. To do this, we need to mask years greater than or equal to ‘11’ from the ‘lossyear’ band. We’ll also mask out no-data (0) and ‘permanent water bodies’ (2) using the ‘datamask’ band. Once we perform the masking steps we’ll have an image only including years from 2011-2019 and masked out water-bodies and no-data.<br />
+<br></p>
+<pre class="r"><code># now get the global forest change from 2011 up to 2019
+
+gfc = ee$Image(&#39;UMD/hansen/global_forest_change_2019_v1_7&#39;)
+
+# need to mask out years from 2011 to 2019
+
+gfc_11_19_mask = gfc$select(&#39;lossyear&#39;)$gte(11)
+
+gfc_11_19 = gfc$updateMask(gfc_11_19_mask)
+
+gfc_dataMask = gfc$select(&#39;datamask&#39;)$eq(1)
+
+gfc_11_19 = gfc_11_19$updateMask(gfc_dataMask) #this is the final image to use
+
+# now visualise to see the difference
+#Map$addLayer(gfc_11_19, visParams = list(bands = &#39;loss&#39;,min = 0, max = 1, palette = c(&#39;red&#39;))) | Map$addLayer(gfc, visParams = list(bands = &#39;lossyear&#39;,min = 0, max = 1, palette = &#39;blue&#39;))</code></pre>
+<br>
+The video below shows what it would look like if we didn’t mask-out the years; <span style="color: blue;">blue</span> being 2000-2019 and <span style="color: red;">red</span> being 2011-2019. Notice how some older units in <span style="color: blue;">blue</span> disappear when only looking at 2011-2019.
+<br>
+<center>
+<video width="600" height="400" controls>
+<source src="C:/Users/joshualerickson/Box/01. joshua.l.erickson Workspace/Detail/github/land_cover_change/images/difference.mp4" type="video/mp4">
+</video>
+</center>
+<p><br></p>
+Now we need to get the NLCD for 2011 so that we can determine what the ‘percent tree cover’ is at the start of our analysis. The reason we can’t just use the GFC image is that image uses percent tree cover from 2000, e.g. ‘treecover2000’ band. So, we’ll need to bring in the image and then mask out pixels with 90% or more of tree cover as well as water-bodies and no-data from the GFC image. This will provide us an image that we can then use to compare ‘total tree cover/HUC 12’ and ‘total forest loss/HUC 12.’ Without this calculation, the results would be misleading in HUC12 watersheds where most of the land is either shrub-grassland or bare.
+<br>
+<style>
+.html-widget {
+    margin: auto;
+}
+</style>
+<pre class="r"><code>nlcd = ee$Image(&quot;USGS/NLCD/NLCD2011&quot;)
+nlcd_tree &lt;- nlcd$select(&#39;percent_tree_cover&#39;)
+nlcd_tree_mask &lt;- nlcd_tree$gt(.90) # I really think above 0 is ideal
+nlcd_tree = nlcd_tree$updateMask(nlcd_tree_mask)
+nlcd_tree = nlcd_tree$updateMask(gfc_dataMask)
+
+Map$addLayer(nlcd_tree$clip(geom))</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-5"></span>
+<div id="htmlwidget-1" style="width:672px;height:480px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"options":{"minZoom":1,"maxZoom":52,"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}},"preferCanvas":false,"bounceAtZoomLimits":false,"maxBounds":[[[-90,-370]],[[90,370]]]},"calls":[{"method":"addProviderTiles","args":["CartoDB.Positron","CartoDB.Positron","CartoDB.Positron",{"errorTileUrl":"","noWrap":false,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["OpenStreetMap","OpenStreetMap","OpenStreetMap",{"errorTileUrl":"","noWrap":false,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["CartoDB.DarkMatter","CartoDB.DarkMatter","CartoDB.DarkMatter",{"errorTileUrl":"","noWrap":false,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["Esri.WorldImagery","Esri.WorldImagery","Esri.WorldImagery",{"errorTileUrl":"","noWrap":false,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["OpenTopoMap","OpenTopoMap","OpenTopoMap",{"errorTileUrl":"","noWrap":false,"detectRetina":false,"pane":"tilePane"}]},{"method":"addLayersControl","args":[["CartoDB.Positron","OpenStreetMap","CartoDB.DarkMatter","Esri.WorldImagery","OpenTopoMap"],[],{"collapsed":true,"autoZIndex":true,"position":"topleft"}]},{"method":"addScaleBar","args":[{"maxWidth":100,"metric":true,"imperial":true,"updateWhenIdle":true,"position":"bottomleft"}]},{"method":"addTiles","args":["https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/0d9b1c088d603e3df120d9686ed1c2df-064a868d305ce1ac5ce3d5f1c33420a9/tiles/{z}/{x}/{y}","NLCD2011","NLCD2011",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false}]},{"method":"addLayersControl","args":[["CartoDB.Positron","OpenStreetMap","CartoDB.DarkMatter","Esri.WorldImagery","OpenTopoMap"],"NLCD2011",{"collapsed":true,"autoZIndex":true,"position":"topleft"}]},{"method":"hideGroup","args":[null]}],"setView":[[-12.172116,-76.942478],18,[]]},"evals":[],"jsHooks":{"render":[{"code":"function(el, x, data) {\n  return (\n      function(el, x, data) {\n      // get the leaflet map\n      var map = this; //HTMLWidgets.find('#' + el.id);\n      // we need a new div element because we have to handle\n      // the mouseover output separately\n      // debugger;\n      function addElement () {\n      // generate new div Element\n      var newDiv = $(document.createElement('div'));\n      // append at end of leaflet htmlwidget container\n      $(el).append(newDiv);\n      //provide ID and style\n      newDiv.addClass('lnlt');\n      newDiv.css({\n      'position': 'relative',\n      'bottomleft':  '0px',\n      'background-color': 'rgba(255, 255, 255, 0.7)',\n      'box-shadow': '0 0 2px #bbb',\n      'background-clip': 'padding-box',\n      'margin': '0',\n      'padding-left': '5px',\n      'color': '#333',\n      'font': '9px/1.5 \"Helvetica Neue\", Arial, Helvetica, sans-serif',\n      'z-index': '700',\n      });\n      return newDiv;\n      }\n\n\n      // check for already existing lnlt class to not duplicate\n      var lnlt = $(el).find('.lnlt');\n\n      if(!lnlt.length) {\n      lnlt = addElement();\n\n      // grab the special div we generated in the beginning\n      // and put the mousmove output there\n\n      map.on('mousemove', function (e) {\n      if (e.originalEvent.ctrlKey) {\n      if (document.querySelector('.lnlt') === null) lnlt = addElement();\n      lnlt.text(\n                           ' lon: ' + (e.latlng.lng).toFixed(5) +\n                           ' | lat: ' + (e.latlng.lat).toFixed(5) +\n                           ' | zoom: ' + map.getZoom() +\n                           ' | x: ' + L.CRS.EPSG3857.project(e.latlng).x.toFixed(0) +\n                           ' | y: ' + L.CRS.EPSG3857.project(e.latlng).y.toFixed(0) +\n                           ' | epsg: 3857 ' +\n                           ' | proj4: +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs ');\n      } else {\n      if (document.querySelector('.lnlt') === null) lnlt = addElement();\n      lnlt.text(\n                      ' lon: ' + (e.latlng.lng).toFixed(5) +\n                      ' | lat: ' + (e.latlng.lat).toFixed(5) +\n                      ' | zoom: ' + map.getZoom() + ' ');\n      }\n      });\n\n      // remove the lnlt div when mouse leaves map\n      map.on('mouseout', function (e) {\n      var strip = document.querySelector('.lnlt');\n      if( strip !==null) strip.remove();\n      });\n\n      };\n\n      //$(el).keypress(67, function(e) {\n      map.on('preclick', function(e) {\n      if (e.originalEvent.ctrlKey) {\n      if (document.querySelector('.lnlt') === null) lnlt = addElement();\n      lnlt.text(\n                      ' lon: ' + (e.latlng.lng).toFixed(5) +\n                      ' | lat: ' + (e.latlng.lat).toFixed(5) +\n                      ' | zoom: ' + map.getZoom() + ' ');\n      var txt = document.querySelector('.lnlt').textContent;\n      console.log(txt);\n      //txt.innerText.focus();\n      //txt.select();\n      setClipboardText('\"' + txt + '\"');\n      }\n      });\n\n      }\n      ).call(this.getMap(), el, x, data);\n}","data":null},{"code":"function(el, x, data) {\n  return (function(el,x,data){\n           var map = this;\n\n           map.on('keypress', function(e) {\n               console.log(e.originalEvent.code);\n               var key = e.originalEvent.code;\n               if (key === 'KeyE') {\n                   var bb = this.getBounds();\n                   var txt = JSON.stringify(bb);\n                   console.log(txt);\n\n                   setClipboardText('\\'' + txt + '\\'');\n               }\n           })\n        }).call(this.getMap(), el, x, data);\n}","data":null}]}}</script>
+<p class="caption">
+Figure 1: <b>NLCD Percent Tree Cover after masking</b>
+</p>
+</div>
+<p><br></p>
+<p>Now we can add this band (<code>nlcd_tree</code>) to the <code>gfc_11_19</code> image and we’ll only grab the relevant bands: ‘percent_tree_cover,’ ‘loss,’ ‘lossyear.’ You could just export all the bands if needed or if you wanted to add other information (e.g. precip, ndvi, npp, etc) you could that in this step.</p>
+<pre class="r"><code>gfc_nlcd &lt;- gfc_11_19$addBands(nlcd_tree)
+
+gfc_nlcd &lt;- gfc_nlcd$select(c(&#39;percent_tree_cover&#39;, &#39;loss&#39;, &#39;lossyear&#39;))</code></pre>
+<p>Now we can download to a tiff but first let’s find out the crs we need to use so that we can export it without having to do any postprocessing. The crs the region uses is below (e.g., NAD_1983_Albers/EPSG:5070/NAD83/Conus Albers).</p>
+<pre class="r"><code>st_read(&quot;T:/FS/Reference/GIS/r01/Data/SpatialReference/R1SpatialReference.gdb&quot;)</code></pre>
+<pre><code>## Reading layer `R1SpatialRefTemplate100&#39; from data source `T:\FS\Reference\GIS\r01\Data\SpatialReference\R1SpatialReference.gdb&#39; using driver `OpenFileGDB&#39;
+## Simple feature collection with 0 features and 3 fields
+## bbox:           xmin: NA ymin: NA xmax: NA ymax: NA
+## projected CRS:  NAD_1983_Albers</code></pre>
+<p>This will probably take a couple of hours or more! If you want to try a smaller geom (e.g. region) and test out the process <strong>I’d recommend</strong> doing that before you export the entire image.</p>
+<pre class="r"><code>geom = ee$Geometry$Rectangle(region_1_bbox)
+
+gfc_nlcd_5070 &lt;- ee_as_raster(gfc_nlcd,
+                                 region = geom,
+                                 dsn = &quot;gfc_nlcd_5070&quot;,
+                                 scale = 30,
+                                 crs = &#39;EPSG:5070&#39;,
+                                 container = &quot;jle_rasters&quot;,
+                                 via = &quot;gcs&quot;,
+                                 lazy = TRUE)</code></pre>
+<p>From here, we can start to make some quick graphics and maybe look at some distributions, e.g. yearloss to area, etc.</p>
+<pre class="r"><code>gfc_nlcd_tif &lt;- stack(&quot;C:/Users/joshualerickson/Box/01. joshua.l.erickson Workspace/Detail/github/land_cover_change/images/gfc_nlcd_gte.tif&quot;)
+
+gfc_nlcd_lossyear &lt;- gfc_nlcd_tif[[3]]
+
+gfc_nlcd_lossyear[gfc_nlcd_lossyear&lt;11]&lt;-NA
+
+#write a raster because this calc above takes a while...
+writeRaster(gfc_nlcd_lossyear, &#39;images/gfc_nlcd_lossyear.tif&#39;) </code></pre>
+<pre class="r"><code>gfc_nlcd_lossyear &lt;- raster(&#39;C:/Users/joshualerickson/Box/01. joshua.l.erickson Workspace/Detail/github/land_cover_change/images/gfc_nlcd_lossyear.tif&#39;)</code></pre>
+<pre><code>## Warning in showSRID(uprojargs, format = &quot;PROJ&quot;, multiline = &quot;NO&quot;): Discarded datum Unknown based on GRS80 ellipsoid in CRS definition,
+##  but +towgs84= values preserved</code></pre>
+<pre class="r"><code>#stars for plotting
+gfc_nlcd_stars &lt;- st_as_stars(gfc_nlcd_lossyear)
+proj_st &lt;- &quot;+proj=aea +lat_0=23 +lon_0=-96 +lat_1=29.5 +lat_2=45.5 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs&quot;
+
+ggplot() + geom_stars(data = gfc_nlcd_stars, downsample = c(20, 20, 1)) + geom_sf(data = st_transform(state_r1, crs = 5070, proj4string = proj_st), fill = NA)  +
+  geom_sf(data = st_transform(r1_bb, crs = 5070, proj4string = proj_st), fill = NA, color = &#39;red&#39;, aes(shape = &quot;bbox&quot;)) +
+  scale_fill_distiller(na.value = &quot;white&quot;, palette = &#39;RdBu&#39;) + theme_bw() + labs(x = &#39;&#39;, y = &#39;&#39;, fill = &#39;Loss Years&#39;, shape = &#39;&#39;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>As you can see this is not the most revealing graph. Also, the joys of working with crs and projections. So, I would recommend opening in your favorite graphical interface (ArcPro, ArcMap, QGIS, etc) and exploring!</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-rgee" class="csl-entry">
+Aybar, Cesar, Quisheng Wu, Lesly Bautista, Roy Yali, and Antony Barja. 2020. <span>“Rgee: An r Package for Interacting with Google Earth Engine.”</span> <em>Journal of Open Source Software</em>.
+</div>
+<div id="ref-gorelick2017google" class="csl-entry">
+Gorelick, Noel, Matt Hancher, Mike Dixon, Simon Ilyushchenko, David Thau, and Rebecca Moore. 2017. <span>“Google Earth Engine: Planetary-Scale Geospatial Analysis for Everyone.”</span> <em>Remote Sensing of Environment</em> 202: 18–27.
+</div>
+<div id="ref-hansen2013high" class="csl-entry">
+Hansen, Matthew C, Peter V Potapov, Rebecca Moore, Matt Hancher, Svetlana A Turubanova, Alexandra Tyukavina, David Thau, et al. 2013. <span>“High-Resolution Global Maps of 21st-Century Forest Cover Change.”</span> <em>Science</em> 342 (6160): 850–53.
+</div>
+<div id="ref-R" class="csl-entry">
+R Core Team. 2020. <em>R: A Language and Environment for Statistical Computing</em>. Vienna, Austria: R Foundation for Statistical Computing. <a href="https://www.R-project.org/">https://www.R-project.org/</a>.
+</div>
+<div id="ref-yang2018new" class="csl-entry">
+Yang, Limin, Suming Jin, Patrick Danielson, Collin Homer, Leila Gass, Stacie M Bender, Adam Case, et al. 2018. <span>“A New Generation of the United States National Land Cover Database: Requirements, Research Priorities, Design, and Implementation Strategies.”</span> <em>ISPRS Journal of Photogrammetry and Remote Sensing</em> 146: 108–23.
+</div>
+</div>
+</div>
