@@ -6,7 +6,17 @@
     <description>Recent content in Talks on hydroblog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 27 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/talk/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 26 Feb 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://hydroblog.netlify.com/talk/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hydro-coding Talk</title>
+      <link>https://hydroblog.netlify.com/talk/2023-02-26-hydrologic-coding/</link>
+      <pubDate>Sun, 26 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://hydroblog.netlify.com/talk/2023-02-26-hydrologic-coding/</guid>
+      <description>Here is a link to the talk I just did about hydrologic focused coding. Hope you enjoy!
+https://www.hydroblog.org/slides/hydro_code/hydro_code.html</description>
+    </item>
+    
     <item>
       <title>Slides-Rshiny Talk</title>
       <link>https://hydroblog.netlify.com/talk/2021-05-27-slides-rshiny-talk/</link>
